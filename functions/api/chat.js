@@ -1,105 +1,141 @@
-// functions/api/chat.js
+/**
+ * Cloudflare Pages Function: POST /api/chat
+ * Integrates with Cloudflare Workers AI using Google Gemini 3 Flash
+ */
 
-// Handle CORS Preflight requests
-export async function onRequestOptions() {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
-  });
-}
+const MODEL_ID = "google/gemini-3-flash";
+
+const SYSTEM_INSTRUCTION = `You are Prasun AI, a professional, intelligent, helpful, accurate, and friendly AI assistant.
+Answer the user's question directly and clearly.
+Do not invent facts. If you are uncertain, clearly say so.
+For technical questions, provide technically accurate explanations.
+For programming questions, provide clean, working, well-formatted code.
+For engineering questions, give practical and technically sound answers.
+Use Markdown when it improves readability.
+Do not mention internal implementation details unless the user asks.
+Do not claim to have performed actions that you did not perform.
+Keep answers appropriately concise unless the user asks for detailed explanation.`;
 
 export async function onRequestPost(context) {
-  const headers = {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-  };
-
   try {
-    // 1. Check for Workers AI binding
+    // 1. Ensure Cloudflare AI Binding exists
     if (!context.env || !context.env.AI) {
       return new Response(
-        JSON.stringify({ 
-          error: "Workers AI binding is missing. Please set variable name 'AI' under Settings > Functions in Cloudflare Pages." 
-        }), 
-        { status: 500, headers }
+        JSON.stringify({
+          error: "Cloudflare AI binding ('AI') is not configured or context.env.AI is missing."
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" }
+        }
       );
     }
 
-    const body = await context.request.json().catch(() => ({}));
-    
-    // 2. Extract user input flexible to different request formats
-    let promptText = "";
-    if (typeof body === "string") {
-      promptText = body;
-    } else if (body.message) {
-      promptText = typeof body.message === "string" ? body.message : body.message.content;
-    } else if (body.prompt) {
-      promptText = body.prompt;
-    } else if (body.text) {
-      promptText = body.text;
-    } else if (Array.isArray(body.messages) && body.messages.length > 0) {
-      const lastMsg = body.messages[body.messages.length - 1];
-      promptText = typeof lastMsg === "string" ? lastMsg : (lastMsg.content || lastMsg.text);
-    }
-
-    if (!promptText) {
+    // 2. Parse incoming JSON body
+    let body;
+    try {
+      body = await context.request.json();
+    } catch (e) {
       return new Response(
-        JSON.stringify({ error: "Message content is required." }), 
-        { status: 400, headers }
+        JSON.stringify({ error: "Invalid JSON request body." }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" }
+        }
       );
     }
 
-    // 3. Call Cloudflare Workers AI with active model
-    const aiResult = await context.env.AI.run("@cf/meta/llama-3.2-3b-instruct", {
-      messages: [
-        { role: "system", content: "You are Prasun AI, an intelligent, helpful, precise, and friendly AI assistant." },
-        { role: "user", content: promptText }
-      ]
+    const { messages } = body;
+
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "Request body must include a non-empty 'messages' array." }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+
+    // 3. Limit conversation history to the last 12 messages to keep requests light & performant
+    const MAX_HISTORY = 12;
+    const recentMessages = messages.slice(-MAX_HISTORY);
+
+    // 4. Sanitize and format messages for Cloudflare AI / Gemini
+    const formattedMessages = [
+      { role: "system", content: SYSTEM_INSTRUCTION },
+      ...recentMessages.map((msg) => ({
+        role: msg.role === "assistant" ? "assistant" : "user",
+        content: String(msg.content || "").trim()
+      }))
+    ];
+
+    // 5. Run inference through Cloudflare Workers AI binding
+    const aiResult = await context.env.AI.run(MODEL_ID, {
+      messages: formattedMessages
     });
 
-    // 4. Safely extract generated output string
-    let generatedText = "";
+    // 6. Extract textual output safely
+    let aiResponseText = "";
+
     if (typeof aiResult === "string") {
-      generatedText = aiResult;
-    } else if (aiResult && typeof aiResult === "object") {
-      generatedText = aiResult.response || aiResult.result || aiResult.text || "";
-      if (!generatedText && aiResult.choices && aiResult.choices[0]) {
-        generatedText = aiResult.choices[0].message?.content || aiResult.choices[0].text || "";
-      }
+      aiResponseText = aiResult;
+    } else if (aiResult && typeof aiResult.response === "string") {
+      aiResponseText = aiResult.response;
+    } else if (aiResult && aiResult.choices && aiResult.choices[0] && aiResult.choices[0].message) {
+      aiResponseText = aiResult.choices[0].message.content || "";
+    } else if (aiResult && typeof aiResult.result === "string") {
+      aiResponseText = aiResult.result;
+    } else {
+      aiResponseText = JSON.stringify(aiResult);
     }
 
-    if (!generatedText) {
-      generatedText = "I received your message, but no output text was generated.";
-    }
-
-    // 5. Flexible JSON payload ensuring frontend app.js reads response smoothly
-    const payload = {
-      response: generatedText,
-      reply: generatedText,
-      text: generatedText,
-      message: generatedText,
-      result: generatedText,
-      choices: [
+    if (!aiResponseText || aiResponseText.trim() === "") {
+      return new Response(
+        JSON.stringify({ error: "Gemini returned an empty response." }),
         {
-          message: { role: "assistant", content: generatedText },
-          text: generatedText
+          status: 502,
+          headers: { "Content-Type": "application/json" }
         }
-      ]
-    };
+      );
+    }
 
-    return new Response(JSON.stringify(payload), { status: 200, headers });
-
-  } catch (err) {
+    // 7. Return standard JSON response
     return new Response(
-      JSON.stringify({ 
-        error: err.message || "Internal Server Error",
-        response: "An error occurred: " + err.message
-      }), 
-      { status: 500, headers }
+      JSON.stringify({ response: aiResponseText.trim() }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
+        }
+      }
+    );
+
+  } catch (error) {
+    console.error("Error inside /api/chat Pages Function:", error);
+
+    return new Response(
+      JSON.stringify({
+        error: error.message || "An unexpected error occurred on the server."
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
+  }
+}
+
+// Block non-POST methods
+export async function onRequest(context) {
+  if (context.request.method !== "POST") {
+    return new Response(
+      JSON.stringify({ error: "Method Not Allowed. Use POST." }),
+      {
+        status: 405,
+        headers: { "Content-Type": "application/json", "Allow": "POST" }
+      }
     );
   }
 }

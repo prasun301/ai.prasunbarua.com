@@ -96,9 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const newChatButton = document.getElementById('newChatButton');
   const clearChatButton = document.getElementById('clearChatButton');
 
-  // Real Gemini API Integration
+  // Real Gemini API Integration (Gemini 3.6 Flash)
   async function getGeminiResponse(query) {
-    const API_KEY = 'AIzaSyCbhcI0F5R3vmQByBZVozcwgBSJe-TDCFI'; // Replace with your actual API key
+    const API_KEY = 'AIzaSyYourActualKeyFromGoogleAIStudio...'; // Replace with your actual Google AI Studio API Key
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${API_KEY}`;
 
     try {
@@ -126,7 +126,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Modern Markdown Parser
+  // Enhanced Inline & Block Markdown/LaTeX Parser
+  function parseInlineMarkdown(text) {
+    return text
+      // Bold
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      // Italics
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      // LaTeX Math / Fractions Cleaner (e.g. $26 \frac{4}{5}$ -> 26 4/5)
+      .replace(/\$([^$]+)\$/g, (match, p1) => {
+        let cleanMath = p1
+          .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$1/$2')
+          .replace(/\\s+/g, ' ');
+        return `<span style="font-family: monospace; background: var(--hover-bg); padding: 2px 4px; border-radius: 4px;">${cleanMath}</span>`;
+      });
+  }
+
   function parseMarkdown(text) {
     if (!text) return '';
     let escaped = text
@@ -139,14 +154,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     lines.forEach(line => {
       let trimmed = line.trim();
-      let formattedLine = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
+      // Handle Headings (###, ##, #)
+      if (trimmed.startsWith('### ')) {
+        let content = parseInlineMarkdown(trimmed.replace('### ', ''));
+        htmlResult.push(`<h3 style="font-size: 1.1rem; font-weight: 600; margin: 14px 0 6px 0; color: var(--text-primary);">${content}</h3>`);
+        return;
+      }
+      if (trimmed.startsWith('## ')) {
+        let content = parseInlineMarkdown(trimmed.replace('## ', ''));
+        htmlResult.push(`<h2 style="font-size: 1.25rem; font-weight: 600; margin: 16px 0 8px 0; color: var(--text-primary);">${content}</h2>`);
+        return;
+      }
+      if (trimmed.startsWith('# ')) {
+        let content = parseInlineMarkdown(trimmed.replace('# ', ''));
+        htmlResult.push(`<h1 style="font-size: 1.4rem; font-weight: 700; margin: 18px 0 10px 0; color: var(--text-primary);">${content}</h1>`);
+        return;
+      }
+
+      let formattedLine = parseInlineMarkdown(trimmed);
+
+      // Handle Lists and Dividers
       if (/^\d+\.\s/.test(trimmed)) {
         let content = formattedLine.replace(/^\d+\.\s*/, '');
-        htmlResult.push(`<div style="margin: 6px 0 6px 16px;">• ${content}</div>`);
+        htmlResult.push(`<div style="margin: 6px 0 6px 16px; display: flex; gap: 6px;"><span>•</span><span>${content}</span></div>`);
       } else if (/^[\*\-]\s/.test(trimmed)) {
         let content = formattedLine.replace(/^[\*\-]\s*/, '');
-        htmlResult.push(`<div style="margin: 6px 0 6px 16px;">• ${content}</div>`);
+        htmlResult.push(`<div style="margin: 6px 0 6px 16px; display: flex; gap: 6px;"><span>•</span><span>${content}</span></div>`);
+      } else if (trimmed === '---') {
+        htmlResult.push(`<hr style="border: none; border-top: 1px solid var(--border-color); margin: 16px 0;">`);
       } else if (trimmed.length > 0) {
         htmlResult.push(`<p style="margin-bottom: 8px;">${formattedLine}</p>`);
       }
@@ -178,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sendButton.disabled = true;
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    // Show loading state or temporary placeholder while waiting for Gemini
+    // Show Loading Bubble
     const aiMsgDiv = document.createElement('div');
     aiMsgDiv.style.cssText = 'margin-bottom: 24px; display: flex; justify-content: flex-start; gap: 12px; width: 100%;';
     aiMsgDiv.innerHTML = `
@@ -195,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch live response from Gemini API
     const rawAiResponse = await getGeminiResponse(text);
     
-    // Update bubble with actual response
+    // Update bubble with actual response parsed cleanly
     const bubbleContent = aiMsgDiv.querySelector('#loadingBubble');
     bubbleContent.style.color = 'var(--text-primary)';
     bubbleContent.style.lineHeight = '1.6';

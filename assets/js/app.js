@@ -476,13 +476,6 @@ if (userNameInput) {
   });
 }
 
-// Auto-save Custom Instructions as user types
-if (systemPromptInput) {
-  systemPromptInput.addEventListener('input', () => {
-    localStorage.setItem('prasun_system_prompt', systemPromptInput.value.trim());
-  });
-}
-
   // ==========================================
   // 8. INPUT LISTENERS
   // ==========================================

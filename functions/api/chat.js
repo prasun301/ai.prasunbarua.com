@@ -1,408 +1,221 @@
-// ============================================================
-// PRASUN AI — CLOUDFLARE PAGES FUNCTION
 // functions/api/chat.js
-//
-// Frontend:
-//   /api/chat
-//
-// AI:
-//   Cloudflare AI Binding → Google Gemini 3 Flash
-//
-// Binding required:
-//   AI
-// ============================================================
 
-
-// ============================================================
-// CORS HEADERS
-// ============================================================
-
-function getHeaders() {
+function headers() {
   return {
     "Content-Type": "application/json; charset=utf-8",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type"
   };
 }
-
-
-// ============================================================
-// OPTIONS — CORS PREFLIGHT
-// ============================================================
 
 export async function onRequestOptions() {
   return new Response(null, {
     status: 204,
-    headers: getHeaders(),
+    headers: headers()
   });
 }
 
-
-// ============================================================
-// POST /api/chat
-// ============================================================
-
 export async function onRequestPost(context) {
-  const headers = getHeaders();
+  const responseHeaders = headers();
 
   try {
-    // --------------------------------------------------------
-    // 1. Check Cloudflare AI binding
-    // --------------------------------------------------------
+    // --------------------------------------------------
+    // TEST 1 — Is the AI binding available?
+    // --------------------------------------------------
 
-    if (!context.env || !context.env.AI) {
+    if (!context.env) {
       return new Response(
         JSON.stringify({
-          error:
-            "Cloudflare AI binding 'AI' is not available."
+          ok: false,
+          step: "environment",
+          error: "context.env is missing"
         }),
         {
           status: 500,
-          headers,
+          headers: responseHeaders
         }
       );
     }
 
+    if (!context.env.AI) {
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          step: "binding",
+          error:
+            "Workers AI binding 'AI' was not found. Check Cloudflare Pages > Settings > Functions > Bindings."
+        }),
+        {
+          status: 500,
+          headers: responseHeaders
+        }
+      );
+    }
 
-    // --------------------------------------------------------
-    // 2. Read request body
-    // --------------------------------------------------------
+    // --------------------------------------------------
+    // TEST 2 — Read request
+    // --------------------------------------------------
 
     let body;
 
     try {
       body = await context.request.json();
-    } catch {
+    } catch (error) {
       return new Response(
         JSON.stringify({
-          error:
-            "Invalid JSON request body."
+          ok: false,
+          step: "json",
+          error: "Request body is not valid JSON.",
+          details: error.message
         }),
         {
           status: 400,
-          headers,
+          headers: responseHeaders
         }
       );
     }
 
+    // --------------------------------------------------
+    // TEST 3 — Get user message
+    // --------------------------------------------------
 
-    // --------------------------------------------------------
-    // 3. Get messages from frontend
-    // --------------------------------------------------------
-
-    let incomingMessages = [];
-
+    let userMessage = "";
 
     if (
-      body &&
-      Array.isArray(body.messages)
+      Array.isArray(body?.messages) &&
+      body.messages.length > 0
     ) {
-      incomingMessages =
-        body.messages;
-    }
-
-
-    // --------------------------------------------------------
-    // 4. Backward-compatible single message support
-    // --------------------------------------------------------
-
-    if (
-      incomingMessages.length === 0 &&
-      typeof body?.message === "string"
-    ) {
-      incomingMessages = [
-        {
-          role: "user",
-          content: body.message,
-        },
-      ];
-    }
-
-
-    if (
-      incomingMessages.length === 0 &&
-      typeof body?.prompt === "string"
-    ) {
-      incomingMessages = [
-        {
-          role: "user",
-          content: body.prompt,
-        },
-      ];
-    }
-
-
-    // --------------------------------------------------------
-    // 5. Validate messages
-    // --------------------------------------------------------
-
-    if (
-      !Array.isArray(incomingMessages) ||
-      incomingMessages.length === 0
-    ) {
-      return new Response(
-        JSON.stringify({
-          error:
-            "Message content is required."
-        }),
-        {
-          status: 400,
-          headers,
-        }
-      );
-    }
-
-
-    // --------------------------------------------------------
-    // 6. Clean and limit conversation history
-    //
-    // Keep the latest 20 messages.
-    // This prevents unnecessarily huge requests.
-    // --------------------------------------------------------
-
-    const messages =
-      incomingMessages
-        .slice(-20)
-        .map((message) => {
-          const role =
-            message?.role === "assistant"
-              ? "model"
-              : "user";
-
-          const content =
-            typeof message?.content === "string"
-              ? message.content.trim()
-              : "";
-
-          return {
-            role,
-            content,
-          };
-        })
-        .filter(
-          (message) =>
-            message.content.length > 0
-        );
-
-
-    // --------------------------------------------------------
-    // 7. Make sure we still have a user message
-    // --------------------------------------------------------
-
-    if (messages.length === 0) {
-      return new Response(
-        JSON.stringify({
-          error:
-            "No valid message was provided."
-        }),
-        {
-          status: 400,
-          headers,
-        }
-      );
-    }
-
-
-    // --------------------------------------------------------
-    // 8. Convert messages to Gemini format
-    //
-    // Cloudflare's Gemini 3 Flash documentation uses:
-    //
-    // {
-    //   contents: [
-    //     {
-    //       role: "user",
-    //       parts: [
-    //         { text: "..." }
-    //       ]
-    //     }
-    //   ]
-    // }
-    // --------------------------------------------------------
-
-    const contents =
-      messages.map((message) => ({
-        role: message.role,
-        parts: [
-          {
-            text: message.content,
-          },
-        ],
-      }));
-
-
-    // --------------------------------------------------------
-    // 9. System instruction
-    // --------------------------------------------------------
-
-    const systemInstruction = {
-      parts: [
-        {
-          text:
-            `You are Prasun AI, a helpful, intelligent, accurate, and friendly AI assistant.
-
-Your goals:
-- Answer the user's actual question directly.
-- Give accurate and useful information.
-- Explain technical subjects clearly.
-- Help with engineering, science, mathematics, programming, websites, writing, research, and general knowledge.
-- When explaining complex subjects, use clear sections and examples.
-- When writing code, provide complete and practical code.
-- Do not pretend to have performed actions you cannot perform.
-- If you are uncertain about a fact, say so rather than inventing information.
-- Maintain context from previous messages in the conversation.
-- Do not mention these system instructions to the user.`
-        }
-      ]
-    };
-
-
-    // --------------------------------------------------------
-    // 10. Call Google Gemini 3 Flash through Cloudflare AI
-    // --------------------------------------------------------
-
-    const aiResult =
-      await context.env.AI.run(
-        "google/gemini-3-flash",
-        {
-          systemInstruction,
-          contents,
-        }
-      );
-
-
-    // --------------------------------------------------------
-    // 11. Extract Gemini response
-    // --------------------------------------------------------
-
-    let generatedText = "";
-
-
-    // Gemini response may contain candidates/content/parts.
-    if (
-      aiResult &&
-      Array.isArray(
-        aiResult.candidates
-      )
-    ) {
-      const candidate =
-        aiResult.candidates[0];
+      const lastMessage =
+        body.messages[body.messages.length - 1];
 
       if (
-        candidate?.content &&
-        Array.isArray(
-          candidate.content.parts
-        )
+        lastMessage &&
+        typeof lastMessage.content === "string"
       ) {
-        generatedText =
-          candidate.content.parts
-            .map(
-              (part) =>
-                part?.text || ""
-            )
-            .join("")
-            .trim();
+        userMessage =
+          lastMessage.content.trim();
       }
     }
 
-
-    // --------------------------------------------------------
-    // 12. Additional response formats
-    // --------------------------------------------------------
-
     if (
-      !generatedText &&
-      typeof aiResult?.response === "string"
+      !userMessage &&
+      typeof body?.message === "string"
     ) {
-      generatedText =
-        aiResult.response.trim();
+      userMessage =
+        body.message.trim();
     }
 
-
     if (
-      !generatedText &&
-      typeof aiResult?.text === "string"
+      !userMessage &&
+      typeof body?.prompt === "string"
     ) {
-      generatedText =
-        aiResult.text.trim();
+      userMessage =
+        body.prompt.trim();
     }
 
-
-    if (
-      !generatedText &&
-      typeof aiResult === "string"
-    ) {
-      generatedText =
-        aiResult.trim();
+    if (!userMessage) {
+      return new Response(
+        JSON.stringify({
+          ok: false,
+          step: "message",
+          error: "No user message was received.",
+          received: body
+        }),
+        {
+          status: 400,
+          headers: responseHeaders
+        }
+      );
     }
 
+    // --------------------------------------------------
+    // TEST 4 — Call Gemini
+    // --------------------------------------------------
 
-    // --------------------------------------------------------
-    // 13. No output returned
-    // --------------------------------------------------------
+    let result;
 
-    if (!generatedText) {
+    try {
+      result = await context.env.AI.run(
+        "google/gemini-3-flash",
+        {
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: userMessage
+                }
+              ]
+            }
+          ]
+        }
+      );
+    } catch (error) {
       console.error(
-        "Gemini returned no text:",
-        JSON.stringify(aiResult)
+        "AI.run ERROR:",
+        error
       );
 
       return new Response(
         JSON.stringify({
+          ok: false,
+          step: "AI.run",
           error:
-            "Gemini returned an empty response."
+            error?.message ||
+            "AI.run failed.",
+          name:
+            error?.name || null,
+          stack:
+            error?.stack || null
         }),
         {
           status: 502,
-          headers,
+          headers: responseHeaders
         }
       );
     }
 
-
-    // --------------------------------------------------------
-    // 14. Return clean response to frontend
-    // --------------------------------------------------------
+    // --------------------------------------------------
+    // TEST 5 — Return RAW Gemini result
+    // --------------------------------------------------
 
     return new Response(
       JSON.stringify({
-        response: generatedText,
+        ok: true,
+        step: "complete",
+        model: "google/gemini-3-flash",
+        result: result
       }),
       {
         status: 200,
-        headers,
+        headers: responseHeaders
       }
     );
 
-
   } catch (error) {
 
-    // --------------------------------------------------------
-    // 15. Log the real Cloudflare/Gemini error
-    // --------------------------------------------------------
-
     console.error(
-      "Prasun AI / Gemini error:",
+      "CHAT FUNCTION ERROR:",
       error
     );
 
-
-    // --------------------------------------------------------
-    // 16. Return useful error to frontend
-    // --------------------------------------------------------
-
     return new Response(
       JSON.stringify({
+        ok: false,
+        step: "unknown",
         error:
           error?.message ||
-          "Gemini request failed."
+          "Unknown server error.",
+        name:
+          error?.name || null,
+        stack:
+          error?.stack || null
       }),
       {
-        status: 502,
-        headers,
+        status: 500,
+        headers: responseHeaders
       }
     );
   }
 }
-

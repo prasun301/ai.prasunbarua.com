@@ -98,8 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Real Gemini API Integration
   async function getGeminiResponse(query) {
-    const API_KEY = 'AIzaSyCbhcI0F5R3vmQByBZVozcwgBSJe-TDCFI'; // Replace with your Google AI Studio API Key
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    const API_KEY = 'AIzaSyCbhcI0F5R3vmQByBZVozcwgBSJe-TDCFI'; // Replace with your actual API key
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${API_KEY}`;
 
     try {
       const response = await fetch(url, {

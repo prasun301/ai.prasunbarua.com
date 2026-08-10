@@ -1,47 +1,470 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prasun AI</title>
-  
-  <!-- Stylesheet in root folder -->
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Prasun AI — A modern AI assistant for answering questions, writing, coding, learning, analyzing files and more.">
+    <meta name="theme-color" content="#ffffff" id="themeColor">
+    <meta name="robots" content="index, follow">
 
-  <!-- Marked.js for Markdown parsing -->
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <title>Prasun AI — Your AI Assistant</title>
 
-  <!-- Highlight.js for Code Syntax Highlighting -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
 </head>
+
 <body>
 
-  <div class="chat-container">
-    <header class="chat-header">
-      <h2>Prasun AI</h2>
-    </header>
+<div class="app">
 
-    <div id="chat-box" class="chat-box">
-      <div class="message ai-message">
-        <div class="message-content">
-          Hello! How can I assist you today?
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+    <aside class="sidebar" id="sidebar" aria-label="Main Navigation">
+
+        <!-- SIDEBAR HEADER -->
+        <div class="sidebar-header">
+            <a href="/" class="brand" aria-label="Prasun AI Home">
+                <span class="brand-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+                    </svg>
+                </span>
+                <span class="brand-name">Prasun AI</span>
+            </a>
+
+            <button type="button" class="icon-button mobile-close" id="closeSidebar" aria-label="Close sidebar" title="Close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
         </div>
-      </div>
+
+        <!-- NEW CHAT -->
+        <button type="button" class="new-chat-button" id="newChatButton">
+            <span class="new-chat-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </span>
+            <span>New chat</span>
+        </button>
+
+        <!-- CHAT SEARCH -->
+        <div class="chat-search">
+            <span class="search-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </span>
+
+            <input type="search" id="chatSearch" placeholder="Search chats" autocomplete="off" aria-label="Search chats">
+
+            <span class="search-shortcut" aria-hidden="true">
+                <kbd>⌘</kbd><kbd>K</kbd>
+            </span>
+        </div>
+
+        <!-- CHAT HISTORY -->
+        <div class="history-container" id="historyContainer">
+
+            <!-- TODAY -->
+            <div class="history-section">
+                <div class="history-title">Today</div>
+
+                <div class="history-item active">
+                    <button type="button" class="history-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>Welcome to Prasun AI</span>
+                    </button>
+                    <div class="history-actions">
+                        <button type="button" class="action-btn" title="Rename" aria-label="Rename conversation">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </button>
+                        <button type="button" class="action-btn" title="Delete" aria-label="Delete conversation">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- YESTERDAY -->
+            <div class="history-section">
+                <div class="history-title">Yesterday</div>
+
+                <div class="history-item">
+                    <button type="button" class="history-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>Solar energy discussion</span>
+                    </button>
+                    <div class="history-actions">
+                        <button type="button" class="action-btn" title="Rename" aria-label="Rename conversation">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </button>
+                        <button type="button" class="action-btn" title="Delete" aria-label="Delete conversation">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="history-item">
+                    <button type="button" class="history-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>Website development</span>
+                    </button>
+                    <div class="history-actions">
+                        <button type="button" class="action-btn" title="Rename" aria-label="Rename conversation">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </button>
+                        <button type="button" class="action-btn" title="Delete" aria-label="Delete conversation">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SIDEBAR BOTTOM -->
+        <div class="sidebar-bottom">
+
+            <!-- APPEARANCE TOGGLE -->
+            <button type="button" class="sidebar-item" id="themeButton">
+                <span class="sidebar-item-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sun-icon">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </span>
+                <span>Appearance</span>
+            </button>
+
+            <!-- SETTINGS -->
+            <button type="button" class="sidebar-item" id="settingsButton">
+                <span class="sidebar-item-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </span>
+                <span>Settings</span>
+            </button>
+
+            <!-- USER PROFILE -->
+            <div class="user-profile" id="userProfile" tabindex="0" aria-haspopup="true" aria-expanded="false">
+                <div class="user-avatar">P</div>
+                <div class="user-info">
+                    <strong>Prasun</strong>
+                    <span>Free plan</span>
+                </div>
+                <span class="profile-more" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="19" cy="12" r="1"></circle>
+                        <circle cx="5" cy="12" r="1"></circle>
+                    </svg>
+                </span>
+            </div>
+
+        </div>
+
+    </aside>
+
+    <!-- SIDEBAR MOBILE OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- =====================================================
+         MAIN APPLICATION
+    ====================================================== -->
+    <main class="main">
+
+        <!-- =================================================
+             TOPBAR
+        ================================================== -->
+        <header class="topbar">
+
+            <!-- MOBILE MENU BUTTON -->
+            <button type="button" class="icon-button menu-button" id="openSidebar" aria-label="Open sidebar" title="Open menu">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+
+            <!-- MODEL SELECTOR -->
+            <div class="model-selector-wrapper">
+                <button type="button" class="model-selector" id="modelSelector" aria-haspopup="true" aria-expanded="false" aria-label="Select AI model">
+                    <span class="model-name">Prasun AI 4.0</span>
+                    <span class="model-badge">PRO</span>
+                    <span class="chevron" aria-hidden="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </span>
+                </button>
+
+                <!-- MODEL DROPDOWN MENU -->
+                <div class="model-dropdown" id="modelDropdown" hidden>
+                    <button type="button" class="model-option active" data-model="prasun-4">
+                        <div class="model-option-header">
+                            <strong>Prasun AI 4.0</strong>
+                            <span class="badge">Fast & Smart</span>
+                        </div>
+                        <p>Our most capable model for general tasks, writing, and code.</p>
+                    </button>
+                    <button type="button" class="model-option" data-model="prasun-mini">
+                        <div class="model-option-header">
+                            <strong>Prasun Mini</strong>
+                            <span class="badge">Lightweight</span>
+                        </div>
+                        <p>Fastest model for lightweight everyday questions.</p>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TOPBAR ACTIONS -->
+            <div class="topbar-actions">
+                <button type="button" class="icon-button" id="clearChatButton" aria-label="Clear chat" title="Clear conversation">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+
+                <button type="button" class="icon-button" id="shareButton" aria-label="Share conversation" title="Share">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                </button>
+            </div>
+
+        </header>
+
+        <!-- =================================================
+             CHAT AREA
+        ================================================== -->
+        <section class="chat-area" id="chatArea">
+
+            <!-- WELCOME SCREEN -->
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+                    </svg>
+                </div>
+
+                <h1>How can I help you today?</h1>
+
+                <p>
+                    Ask Prasun AI anything. Get help with learning, coding, writing, research, file analysis, and more.
+                </p>
+
+                <!-- SUGGESTIONS -->
+                <div class="suggestions">
+
+                    <button type="button" class="suggestion-card" data-prompt="Explain how solar panels generate electricity.">
+                        <span class="suggestion-icon">⚡</span>
+                        <div class="suggestion-text">
+                            <strong>Explain solar energy</strong>
+                            <span>How solar panels generate electricity</span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="suggestion-card" data-prompt="Help me write a professional landing page website layout using HTML and CSS.">
+                        <span class="suggestion-icon">🌐</span>
+                        <div class="suggestion-text">
+                            <strong>Website structure</strong>
+                            <span>Help me write a professional website</span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="suggestion-card" data-prompt="Teach me JavaScript from beginner level with practical code examples.">
+                        <span class="suggestion-icon">💻</span>
+                        <div class="suggestion-text">
+                            <strong>Learn JavaScript</strong>
+                            <span>Step-by-step beginner guide</span>
+                        </div>
+                    </button>
+
+                    <button type="button" class="suggestion-card" data-prompt="Give me five mind-bending science facts about space and quantum physics.">
+                        <span class="suggestion-icon">✨</span>
+                        <div class="suggestion-text">
+                            <strong>Science facts</strong>
+                            <span>Five interesting facts about space</span>
+                        </div>
+                    </button>
+
+                </div>
+            </div>
+
+            <!-- MESSAGES CONTAINER -->
+            <div class="messages" id="messages" role="log" aria-live="polite" aria-label="Conversation thread"></div>
+
+        </section>
+
+        <!-- =================================================
+             COMPOSER CONTAINER
+        ================================================== -->
+        <div class="composer-wrapper">
+
+            <!-- ATTACHMENT PREVIEW -->
+            <div class="attachment-preview" id="attachmentPreview" hidden>
+                <div class="attachment-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                </div>
+
+                <div class="attachment-info">
+                    <strong id="attachmentName">document.pdf</strong>
+                    <span id="attachmentSize">1.2 MB</span>
+                </div>
+
+                <button type="button" class="remove-attachment" id="removeAttachment" aria-label="Remove attachment" title="Remove attachment">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- COMPOSER CARD -->
+            <div class="composer">
+
+                <!-- MESSAGE TEXTAREA -->
+                <textarea id="messageInput" rows="1" placeholder="Message Prasun AI..." autocomplete="off" spellcheck="true" aria-label="Message Prasun AI"></textarea>
+
+                <!-- COMPOSER BOTTOM BAR -->
+                <div class="composer-bottom">
+
+                    <!-- TOOLBAR LEFT -->
+                    <div class="composer-toolbar">
+                        <!-- ATTACH FILE -->
+                        <button type="button" class="composer-tool" id="attachButton" title="Attach file" aria-label="Attach file">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                            </svg>
+                        </button>
+                        <input type="file" id="fileInput" hidden accept="image/*,application/pdf,.doc,.docx,.txt">
+
+                        <!-- VOICE INPUT -->
+                        <button type="button" class="composer-tool" id="voiceButton" title="Voice input" aria-label="Use voice input">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                <line x1="12" y1="19" x2="12" y2="23"></line>
+                                <line x1="8" y1="23" x2="16" y2="23"></line>
+                            </svg>
+                        </button>
+
+                        <!-- TOOLS TOGGLE -->
+                        <button type="button" class="composer-option" id="toolsButton" title="Enable Web Search & Tools">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                            </svg>
+                            <span>Search</span>
+                        </button>
+                    </div>
+
+                    <!-- SEND / STOP BUTTONS -->
+                    <div class="composer-actions">
+                        <button type="button" class="send-button" id="sendButton" disabled aria-label="Send message" title="Send message">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="12" y1="19" x2="12" y2="5"></line>
+                                <polyline points="5 12 12 5 19 12"></polyline>
+                            </svg>
+                        </button>
+
+                        <button type="button" class="stop-button" id="stopButton" hidden aria-label="Stop generation" title="Stop generating response">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                            </svg>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- DISCLAIMER -->
+            <div class="composer-disclaimer">
+                Prasun AI can make mistakes. Verify important facts and information.
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<!-- =========================================================
+     SETTINGS MODAL DIALOG
+========================================================= -->
+<dialog class="modal" id="settingsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Settings</h2>
+            <button type="button" class="icon-button" id="closeSettingsModal" aria-label="Close settings">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="setting-group">
+                <label for="apiKeyInput">API Key (Optional)</label>
+                <input type="password" id="apiKeyInput" placeholder="Enter your custom API Key...">
+            </div>
+            <div class="setting-group row">
+                <div>
+                    <strong>Stream Responses</strong>
+                    <p>Display AI replies character by character in real-time.</p>
+                </div>
+                <input type="checkbox" id="streamToggle" checked>
+            </div>
+        </div>
     </div>
+</dialog>
 
-    <form id="chat-form" class="chat-input-area">
-      <input 
-        type="text" 
-        id="user-input" 
-        placeholder="Type a message..." 
-        autocomplete="off" 
-        required
-      />
-      <button type="submit" id="send-btn">Send</button>
-    </form>
-  </div>
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+<script src="assets/js/app.js" defer></script>
 
-  <script src="app.js"></script>
 </body>
 </html>

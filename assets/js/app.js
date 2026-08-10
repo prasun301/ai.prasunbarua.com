@@ -97,18 +97,34 @@ document.addEventListener('DOMContentLoaded', () => {
   // 3. UI CONTROLLERS
   // ==========================================
 
-  // --- Sidebar Drawer ---
 // --- Sidebar Drawer ---
 function toggleSidebar() {
-  if (sidebar) sidebar.classList.toggle('open');
-  if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const isMobile = window.innerWidth <= 768;
+
+  if (!sidebar) return;
+
+  if (isMobile) {
+    // Mobile behavior: slide in/out over content with overlay
+    sidebar.classList.toggle('open');
+    if (overlay) overlay.classList.toggle('active');
+  } else {
+    // Desktop behavior: push sidebar off-screen
+    sidebar.classList.toggle('collapsed');
+  }
 }
 
-// Selects all buttons with open/close IDs or toggle classes
-document.querySelectorAll('#closeSidebar, #openSidebar, .sidebar-toggle, [title="Collapse sidebar"]').forEach(btn => {
-  btn.addEventListener('click', toggleSidebar);
+// Event Listeners
+document.addEventListener('click', (e) => {
+  const toggleBtn = e.target.closest('#openSidebar, #closeSidebar, .sidebar-toggle');
+  if (toggleBtn) {
+    e.stopPropagation();
+    toggleSidebar();
+  }
 });
 
+const sidebarOverlay = document.getElementById('sidebarOverlay');
 if (sidebarOverlay) {
   sidebarOverlay.addEventListener('click', toggleSidebar);
 }

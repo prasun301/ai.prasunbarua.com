@@ -1,363 +1,154 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
-```
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<meta
-    name="description"
-    content="Prasun AI — A modern AI assistant for answering questions, writing, coding, learning and more."
->
-
-<meta
-    name="theme-color"
-    content="#ffffff"
->
-
-<title>Prasun AI — Your AI Assistant</title>
-
-<link rel="stylesheet" href="assets/css/style.css">
-<link rel="stylesheet" href="assets/css/responsive.css">
-```
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Prasun AI — A modern AI assistant for answering questions, writing, coding, learning and more.">
+    <meta name="theme-color" content="#ffffff">
+    <title>Prasun AI — Your AI Assistant</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
 </head>
-
 <body>
-
-```
-<div class="app">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-
-        <div class="sidebar-header">
-
-            <a href="/" class="brand">
-                <span class="brand-icon">✦</span>
-                <span>Prasun AI</span>
-            </a>
-
-            <button
-                class="icon-button mobile-close"
-                id="closeSidebar"
-                aria-label="Close sidebar"
-            >
-                ×
-            </button>
-
-        </div>
-
-        <button
-            class="new-chat-button"
-            id="newChatButton"
-        >
-            <span class="new-chat-icon">＋</span>
-            <span>New chat</span>
-        </button>
-
-        <div class="chat-search">
-
-            <span class="search-icon">⌕</span>
-
-            <input
-                type="search"
-                id="chatSearch"
-                placeholder="Search chats"
-                autocomplete="off"
-            >
-
-            <span class="search-shortcut">⌘ K</span>
-
-        </div>
-
-        <div class="history-container">
-
-            <div class="history-section">
-
-                <div class="history-title">
-                    Today
-                </div>
-
-                <button class="history-item active">
-                    <span>Welcome to Prasun AI</span>
+    <div class="app">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="brand">
+                    <span class="brand-icon">✦</span>
+                    <span>Prasun AI</span>
+                </a>
+                <button class="icon-button mobile-close" id="closeSidebar" aria-label="Close sidebar">
+                    ×
                 </button>
-
             </div>
 
-            <div class="history-section">
+            <button class="new-chat-button" id="newChatButton">
+                <span class="new-chat-icon">＋</span>
+                <span>New chat</span>
+            </button>
 
-                <div class="history-title">
-                    Yesterday
+            <div class="chat-search">
+                <span class="search-icon">⌕</span>
+                <input type="search" id="chatSearch" placeholder="Search chats" autocomplete="off">
+                <span class="search-shortcut">⌘ K</span>
+            </div>
+
+            <div class="history-container">
+                <div class="history-section">
+                    <div class="history-title">Today</div>
+                    <button class="history-item active">
+                        <span>Welcome to Prasun AI</span>
+                    </button>
                 </div>
 
-                <button class="history-item">
-                    <span>Solar energy discussion</span>
+                <div class="history-section">
+                    <div class="history-title">Yesterday</div>
+                    <button class="history-item">
+                        <span>Solar energy discussion</span>
+                    </button>
+                    <button class="history-item">
+                        <span>Website development</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-bottom">
+                <button class="sidebar-item" id="themeButton">
+                    <span>☼</span>
+                    <span>Appearance</span>
                 </button>
-
-                <button class="history-item">
-                    <span>Website development</span>
+                <button class="sidebar-item">
+                    <span>⚙</span>
+                    <span>Settings</span>
                 </button>
-
-            </div>
-
-        </div>
-
-        <div class="sidebar-bottom">
-
-            <button class="sidebar-item" id="themeButton">
-                <span>☼</span>
-                <span>Appearance</span>
-            </button>
-
-            <button class="sidebar-item">
-                <span>⚙</span>
-                <span>Settings</span>
-            </button>
-
-            <div class="user-profile">
-
-                <div class="user-avatar">
-                    P
-                </div>
-
-                <div class="user-info">
-
-                    <strong>
-                        Prasun
-                    </strong>
-
-                    <span>
-                        Free plan
-                    </span>
-
-                </div>
-
-                <span class="profile-more">
-                    ⋯
-                </span>
-
-            </div>
-
-        </div>
-
-    </aside>
-
-    <div
-        class="sidebar-overlay"
-        id="sidebarOverlay"
-    ></div>
-
-
-    <!-- MAIN -->
-    <main class="main">
-
-        <header class="topbar">
-
-            <button
-                class="icon-button menu-button"
-                id="openSidebar"
-                aria-label="Open sidebar"
-            >
-                ☰
-            </button>
-
-            <button
-                class="model-selector"
-                id="modelSelector"
-            >
-
-                <span>Prasun AI</span>
-
-                <span class="model-badge">
-                    AI
-                </span>
-
-                <span class="chevron">
-                    ▾
-                </span>
-
-            </button>
-
-            <div class="topbar-actions">
-
-                <button
-                    class="icon-button"
-                    id="shareButton"
-                    aria-label="Share"
-                    title="Share"
-                >
-                    ↗
-                </button>
-
-            </div>
-
-        </header>
-
-
-        <!-- CHAT AREA -->
-        <section class="chat-area" id="chatArea">
-
-            <div
-                class="welcome-screen"
-                id="welcomeScreen"
-            >
-
-                <div class="welcome-icon">
-                    ✦
-                </div>
-
-                <h1>
-                    How can I help you today?
-                </h1>
-
-                <p>
-                    Ask Prasun AI anything. Get help with
-                    learning, coding, writing, research and more.
-                </p>
-
-                <div class="suggestions">
-
-                    <button
-                        class="suggestion-card"
-                        data-prompt="Explain how solar panels generate electricity."
-                    >
-
-                        <span class="suggestion-icon">
-                            ⚡
-                        </span>
-
-                        <span>
-                            Explain how solar panels generate electricity
-                        </span>
-
-                    </button>
-
-                    <button
-                        class="suggestion-card"
-                        data-prompt="Help me write a professional website."
-                    >
-
-                        <span class="suggestion-icon">
-                            ◇
-                        </span>
-
-                        <span>
-                            Help me write a professional website
-                        </span>
-
-                    </button>
-
-                    <button
-                        class="suggestion-card"
-                        data-prompt="Teach me JavaScript from beginner level."
-                    >
-
-                        <span class="suggestion-icon">
-                            &lt;/&gt;
-                        </span>
-
-                        <span>
-                            Teach me JavaScript from beginner level
-                        </span>
-
-                    </button>
-
-                    <button
-                        class="suggestion-card"
-                        data-prompt="Give me five interesting science facts."
-                    >
-
-                        <span class="suggestion-icon">
-                            ✨
-                        </span>
-
-                        <span>
-                            Give me five interesting science facts
-                        </span>
-
-                    </button>
-
-                </div>
-
-            </div>
-
-            <div
-                class="messages"
-                id="messages"
-            ></div>
-
-        </section>
-
-
-        <!-- COMPOSER -->
-        <div class="composer-wrapper">
-
-            <div class="composer">
-
-                <div class="composer-toolbar">
-
-                    <button
-                        class="composer-tool"
-                        id="attachButton"
-                        title="Attach file"
-                    >
-                        ＋
-                    </button>
-
-                </div>
-
-                <textarea
-                    id="messageInput"
-                    rows="1"
-                    placeholder="Message Prasun AI..."
-                    autocomplete="off"
-                ></textarea>
-
-                <div class="composer-bottom">
-
-                    <div class="composer-options">
-
-                        <button
-                            class="composer-option"
-                            id="toolsButton"
-                        >
-                            ✨
-                            <span>Tools</span>
-                        </button>
-
+                <div class="user-profile">
+                    <div class="user-avatar">P</div>
+                    <div class="user-info">
+                        <strong>Prasun</strong>
+                        <span>Free plan</span>
                     </div>
+                    <span class="profile-more">⋯</span>
+                </div>
+            </div>
+        </aside>
 
-                    <button
-                        class="send-button"
-                        id="sendButton"
-                        disabled
-                        aria-label="Send message"
-                    >
-                        ↑
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- MAIN -->
+        <main class="main">
+            <header class="topbar">
+                <button class="icon-button menu-button" id="openSidebar" aria-label="Open sidebar">
+                    ☰
+                </button>
+                <button class="model-selector" id="modelSelector">
+                    <span>Prasun AI</span>
+                    <span class="model-badge">AI</span>
+                    <span class="chevron">▾</span>
+                </button>
+                <div class="topbar-actions">
+                    <button class="icon-button" id="shareButton" aria-label="Share" title="Share">
+                        ↗
                     </button>
+                </div>
+            </header>
 
+            <!-- CHAT AREA -->
+            <section class="chat-area" id="chatArea">
+                <div class="welcome-screen" id="welcomeScreen">
+                    <div class="welcome-icon">✦</div>
+                    <h1>How can I help you today?</h1>
+                    <p>Ask Prasun AI anything. Get help with learning, coding, writing, research and more.</p>
+                    <div class="suggestions">
+                        <button class="suggestion-card" data-prompt="Explain how solar panels generate electricity.">
+                            <span class="suggestion-icon">⚡</span>
+                            <span>Explain how solar panels generate electricity</span>
+                        </button>
+                        <button class="suggestion-card" data-prompt="Help me write a professional website.">
+                            <span class="suggestion-icon">◇</span>
+                            <span>Help me write a professional website</span>
+                        </button>
+                        <button class="suggestion-card" data-prompt="Teach me JavaScript from beginner level.">
+                            <span class="suggestion-icon">&lt;/&gt;</span>
+                            <span>Teach me JavaScript from beginner level</span>
+                        </button>
+                        <button class="suggestion-card" data-prompt="Give me five interesting science facts.">
+                            <span class="suggestion-icon">✨</span>
+                            <span>Give me five interesting science facts</span>
+                        </button>
+                    </div>
                 </div>
 
+                <div class="messages" id="messages"></div>
+            </section>
+
+            <!-- COMPOSER -->
+            <div class="composer-wrapper">
+                <div class="composer">
+                    <div class="composer-toolbar">
+                        <button class="composer-tool" id="attachButton" title="Attach file">
+                            ＋
+                        </button>
+                    </div>
+                    <textarea id="messageInput" rows="1" placeholder="Message Prasun AI..." autocomplete="off"></textarea>
+                    <div class="composer-bottom">
+                        <div class="composer-options">
+                            <button class="composer-option" id="toolsButton">
+                                ✨
+                                <span>Tools</span>
+                            </button>
+                        </div>
+                        <button class="send-button" id="sendButton" disabled aria-label="Send message">
+                            ↑
+                        </button>
+                    </div>
+                </div>
+                <div class="composer-disclaimer">
+                    Prasun AI can make mistakes. Check important information.
+                </div>
             </div>
-
-            <div class="composer-disclaimer">
-                Prasun AI can make mistakes. Check important information.
-            </div>
-
-        </div>
-
-    </main>
-
-</div>
-
-<script src="assets/js/app.js"></script>
-```
-
+        </main>
+    </div>
+    <script src="assets/js/app.js"></script>
 </body>
 </html>

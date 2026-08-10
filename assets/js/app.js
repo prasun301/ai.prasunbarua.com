@@ -9,9 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let useGoogleSearch = true;
 
   // ==========================================
-  // SIDEBAR HISTORY EDIT & DELETE HANDLERS
+  // SIDEBAR HISTORY EDIT, DELETE & SEARCH HANDLERS
   // ==========================================
   const historyContainer = document.getElementById('historyContainer');
+  const sidebarSearchInput = document.querySelector('#sidebar input, .sidebar input, input[type="text"]');
+
   if (historyContainer) {
     historyContainer.addEventListener('click', (e) => {
       const deleteBtn = e.target.closest('[title="Delete"]');
@@ -38,6 +40,23 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
       }
+    });
+  }
+
+  // Sidebar Search / Filter functionality
+  if (sidebarSearchInput && historyContainer) {
+    sidebarSearchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      const historyItems = historyContainer.querySelectorAll('.history-item');
+      
+      historyItems.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(query)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
     });
   }
 

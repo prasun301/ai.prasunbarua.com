@@ -2,163 +2,702 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Prasun AI — A modern AI assistant for answering questions, writing, coding, learning and more.">
-    <meta name="theme-color" content="#ffffff">
-    <title>Prasun AI — Your AI Assistant</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/responsive.css">
-</head>
-<body>
-    <div class="app">
-        <!-- SIDEBAR -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <a href="/" class="brand">
-                    <span class="brand-icon">✦</span>
-                    <span>Prasun AI</span>
-                </a>
-                <button class="icon-button mobile-close" id="closeSidebar" aria-label="Close sidebar">
-                    ×
-                </button>
-            </div>
 
-            <button class="new-chat-button" id="newChatButton">
-                <span class="new-chat-icon">＋</span>
-                <span>New chat</span>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Prasun AI — AI assistant for learning, coding, writing, research and more."
+    >
+
+    <meta
+        name="theme-color"
+        content="#ffffff"
+    >
+
+    <title>Prasun AI</title>
+
+    <!-- Favicon -->
+    <link
+        rel="icon"
+        href="assets/images/favicon.ico"
+    >
+
+    <!-- Main stylesheet -->
+    <link
+        rel="stylesheet"
+        href="assets/css/style.css"
+    >
+
+    <!-- Responsive stylesheet -->
+    <link
+        rel="stylesheet"
+        href="assets/css/responsive.css"
+    >
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
+
+        <!-- BRAND -->
+
+        <div class="sidebar-header">
+
+            <a
+                href="/"
+                class="brand"
+                aria-label="Prasun AI Home"
+            >
+
+                <div class="brand-icon">
+                    ✦
+                </div>
+
+                <div class="brand-text">
+                    <strong>Prasun AI</strong>
+                    <span>AI Assistant</span>
+                </div>
+
+            </a>
+
+
+            <button
+                class="icon-button sidebar-close"
+                id="closeSidebar"
+                type="button"
+                aria-label="Close sidebar"
+                title="Close sidebar"
+            >
+                ×
             </button>
 
+        </div>
+
+
+        <!-- NEW CHAT -->
+
+        <div class="sidebar-main">
+
+            <button
+                class="new-chat-button"
+                id="newChatButton"
+                type="button"
+            >
+
+                <span class="new-chat-icon">
+                    ＋
+                </span>
+
+                <span>
+                    New chat
+                </span>
+
+            </button>
+
+
+            <!-- SEARCH -->
+
             <div class="chat-search">
-                <span class="search-icon">⌕</span>
-                <input type="search" id="chatSearch" placeholder="Search chats" autocomplete="off">
-                <span class="search-shortcut">⌘ K</span>
+
+                <span
+                    class="search-icon"
+                    aria-hidden="true"
+                >
+                    ⌕
+                </span>
+
+                <input
+                    type="search"
+                    id="chatSearch"
+                    placeholder="Search chats"
+                    autocomplete="off"
+                    aria-label="Search chats"
+                >
+
+                <span
+                    class="search-shortcut"
+                    aria-hidden="true"
+                >
+                    ⌘ K
+                </span>
+
             </div>
 
-            <div class="history-container">
+
+            <!-- CHAT HISTORY -->
+
+            <div
+                class="history-container"
+                id="historyContainer"
+            >
+
+                <!-- TODAY -->
+
                 <div class="history-section">
-                    <div class="history-title">Today</div>
-                    <button class="history-item active">
-                        <span>Welcome to Prasun AI</span>
+
+                    <div class="history-title">
+                        Today
+                    </div>
+
+                    <button
+                        class="history-item active"
+                        type="button"
+                    >
+
+                        <span>
+                            Welcome to Prasun AI
+                        </span>
+
                     </button>
+
                 </div>
+
+
+                <!-- YESTERDAY -->
 
                 <div class="history-section">
-                    <div class="history-title">Yesterday</div>
-                    <button class="history-item">
-                        <span>Solar energy discussion</span>
+
+                    <div class="history-title">
+                        Yesterday
+                    </div>
+
+                    <button
+                        class="history-item"
+                        type="button"
+                    >
+
+                        <span>
+                            Solar energy discussion
+                        </span>
+
                     </button>
-                    <button class="history-item">
-                        <span>Website development</span>
+
+
+                    <button
+                        class="history-item"
+                        type="button"
+                    >
+
+                        <span>
+                            Website development
+                        </span>
+
                     </button>
+
                 </div>
+
+
+                <!-- PREVIOUS -->
+
+                <div class="history-section">
+
+                    <div class="history-title">
+                        Previous
+                    </div>
+
+                    <button
+                        class="history-item"
+                        type="button"
+                    >
+
+                        <span>
+                            JavaScript learning
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        class="history-item"
+                        type="button"
+                    >
+
+                        <span>
+                            Science questions
+                        </span>
+
+                    </button>
+
+                </div>
+
             </div>
 
-            <div class="sidebar-bottom">
-                <button class="sidebar-item" id="themeButton">
-                    <span>☼</span>
-                    <span>Appearance</span>
-                </button>
-                <button class="sidebar-item">
-                    <span>⚙</span>
-                    <span>Settings</span>
-                </button>
-                <div class="user-profile">
-                    <div class="user-avatar">P</div>
-                    <div class="user-info">
-                        <strong>Prasun</strong>
-                        <span>Free plan</span>
-                    </div>
-                    <span class="profile-more">⋯</span>
+        </div>
+
+
+        <!-- SIDEBAR BOTTOM -->
+
+        <div class="sidebar-bottom">
+
+            <button
+                class="sidebar-item"
+                id="themeButton"
+                type="button"
+            >
+
+                <span aria-hidden="true">
+                    ☼
+                </span>
+
+                <span>
+                    Appearance
+                </span>
+
+            </button>
+
+
+            <button
+                class="sidebar-item"
+                id="settingsButton"
+                type="button"
+            >
+
+                <span aria-hidden="true">
+                    ⚙
+                </span>
+
+                <span>
+                    Settings
+                </span>
+
+            </button>
+
+
+            <!-- USER -->
+
+            <div class="user-profile">
+
+                <div class="user-avatar">
+                    P
                 </div>
+
+                <div class="user-info">
+
+                    <strong>
+                        Prasun
+                    </strong>
+
+                    <span>
+                        Free plan
+                    </span>
+
+                </div>
+
+                <button
+                    class="profile-more"
+                    type="button"
+                    aria-label="More profile options"
+                    title="More options"
+                >
+                    ⋯
+                </button>
+
             </div>
-        </aside>
 
-        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        </div>
 
-        <!-- MAIN -->
-        <main class="main">
-            <header class="topbar">
-                <button class="icon-button menu-button" id="openSidebar" aria-label="Open sidebar">
-                    ☰
+    </aside>
+
+
+    <!-- SIDEBAR OVERLAY -->
+
+    <div
+        class="sidebar-overlay"
+        id="sidebarOverlay"
+    ></div>
+
+
+    <!-- =====================================================
+         MAIN
+         ===================================================== -->
+
+    <main class="main">
+
+        <!-- =================================================
+             TOPBAR
+             ================================================= -->
+
+        <header class="topbar">
+
+            <!-- MOBILE MENU -->
+
+            <button
+                class="icon-button menu-button"
+                id="openSidebar"
+                type="button"
+                aria-label="Open sidebar"
+                title="Open sidebar"
+            >
+                ☰
+            </button>
+
+
+            <!-- MODEL SELECTOR -->
+
+            <button
+                class="model-selector"
+                id="modelSelector"
+                type="button"
+                aria-label="Current AI model"
+                title="AI model"
+            >
+
+                <span>
+                    Prasun AI
+                </span>
+
+                <span class="model-badge">
+                    AI
+                </span>
+
+                <span
+                    class="chevron"
+                    aria-hidden="true"
+                >
+                    ▾
+                </span>
+
+            </button>
+
+
+            <!-- TOPBAR ACTIONS -->
+
+            <div class="topbar-actions">
+
+                <button
+                    class="icon-button"
+                    id="shareButton"
+                    type="button"
+                    aria-label="Share chat"
+                    title="Share"
+                >
+                    ↗
                 </button>
-                <button class="model-selector" id="modelSelector">
-                    <span>Prasun AI</span>
-                    <span class="model-badge">AI</span>
-                    <span class="chevron">▾</span>
-                </button>
-                <div class="topbar-actions">
-                    <button class="icon-button" id="shareButton" aria-label="Share" title="Share">
-                        ↗
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             CHAT AREA
+             ================================================= -->
+
+        <section
+            class="chat-area"
+            id="chatArea"
+        >
+
+            <!-- WELCOME -->
+
+            <div
+                class="welcome-screen"
+                id="welcomeScreen"
+            >
+
+                <div class="welcome-icon">
+                    ✦
+                </div>
+
+
+                <h1>
+                    How can I help you today?
+                </h1>
+
+
+                <p>
+                    Ask Prasun AI anything. Get help with
+                    learning, coding, writing, research and more.
+                </p>
+
+
+                <!-- SUGGESTIONS -->
+
+                <div class="suggestions">
+
+
+                    <!-- CARD 1 -->
+
+                    <button
+                        class="suggestion-card"
+                        type="button"
+                        data-prompt="Explain how solar panels generate electricity."
+                    >
+
+                        <span
+                            class="suggestion-icon"
+                            aria-hidden="true"
+                        >
+                            ⚡
+                        </span>
+
+                        <span>
+                            Explain how solar panels generate electricity
+                        </span>
+
                     </button>
-                </div>
-            </header>
 
-            <!-- CHAT AREA -->
-            <section class="chat-area" id="chatArea">
-                <div class="welcome-screen" id="welcomeScreen">
-                    <div class="welcome-icon">✦</div>
-                    <h1>How can I help you today?</h1>
-                    <p>Ask Prasun AI anything. Get help with learning, coding, writing, research and more.</p>
-                    <div class="suggestions">
-                        <button class="suggestion-card" data-prompt="Explain how solar panels generate electricity.">
-                            <span class="suggestion-icon">⚡</span>
-                            <span>Explain how solar panels generate electricity</span>
-                        </button>
-                        <button class="suggestion-card" data-prompt="Help me write a professional website.">
-                            <span class="suggestion-icon">◇</span>
-                            <span>Help me write a professional website</span>
-                        </button>
-                        <button class="suggestion-card" data-prompt="Teach me JavaScript from beginner level.">
-                            <span class="suggestion-icon">&lt;/&gt;</span>
-                            <span>Teach me JavaScript from beginner level</span>
-                        </button>
-                        <button class="suggestion-card" data-prompt="Give me five interesting science facts.">
-                            <span class="suggestion-icon">✨</span>
-                            <span>Give me five interesting science facts</span>
-                        </button>
+
+                    <!-- CARD 2 -->
+
+                    <button
+                        class="suggestion-card"
+                        type="button"
+                        data-prompt="Help me write a professional website."
+                    >
+
+                        <span
+                            class="suggestion-icon"
+                            aria-hidden="true"
+                        >
+                            ◇
+                        </span>
+
+                        <span>
+                            Help me write a professional website
+                        </span>
+
+                    </button>
+
+
+                    <!-- CARD 3 -->
+
+                    <button
+                        class="suggestion-card"
+                        type="button"
+                        data-prompt="Teach me JavaScript from beginner level."
+                    >
+
+                        <span
+                            class="suggestion-icon"
+                            aria-hidden="true"
+                        >
+                            &lt;/&gt;
+                        </span>
+
+                        <span>
+                            Teach me JavaScript from beginner level
+                        </span>
+
+                    </button>
+
+
+                    <!-- CARD 4 -->
+
+                    <button
+                        class="suggestion-card"
+                        type="button"
+                        data-prompt="Give me five interesting science facts."
+                    >
+
+                        <span
+                            class="suggestion-icon"
+                            aria-hidden="true"
+                        >
+                            ✨
+                        </span>
+
+                        <span>
+                            Give me five interesting science facts
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- MESSAGES -->
+
+            <div
+                class="messages"
+                id="messages"
+                aria-live="polite"
+                aria-label="Chat messages"
+            ></div>
+
+        </section>
+
+
+        <!-- =================================================
+             COMPOSER
+             ================================================= -->
+
+        <div class="composer-wrapper">
+
+
+            <!-- ATTACHMENT PREVIEW -->
+
+            <div
+                class="attachment-preview"
+                id="attachmentPreview"
+                hidden
+            >
+
+                <div class="attachment-info">
+
+                    <span
+                        id="attachmentIcon"
+                        class="attachment-icon"
+                        aria-hidden="true"
+                    >
+                        📎
+                    </span>
+
+                    <div class="attachment-details">
+
+                        <span
+                            id="attachmentName"
+                        ></span>
+
+                        <span
+                            id="attachmentSize"
+                        ></span>
+
                     </div>
+
                 </div>
 
-                <div class="messages" id="messages"></div>
-            </section>
+
+                <button
+                    class="remove-attachment"
+                    id="removeAttachment"
+                    type="button"
+                    aria-label="Remove attachment"
+                    title="Remove attachment"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- FILE INPUT -->
+
+            <input
+                type="file"
+                id="fileInput"
+                hidden
+                accept="image/*,.pdf,.txt,.md,.csv,.json,.js,.html,.css"
+            >
+
 
             <!-- COMPOSER -->
-            <div class="composer-wrapper">
-                <div class="attachment-preview" id="attachmentPreview" hidden>
-                    <div class="attachment-info">
-                        <span id="attachmentName"></span>
-                        <span id="attachmentSize"></span>
-                    </div>
-                    <button class="remove-attachment" id="removeAttachment" aria-label="Remove attachment">×</button>
-                </div>
-                
-                <input type="file" id="fileInput" hidden>
 
-                <div class="composer">
-                    <div class="composer-toolbar">
-                        <button class="composer-tool" id="attachButton" title="Attach file">
-                            ＋
-                        </button>
-                    </div>
-                    <textarea id="messageInput" rows="1" placeholder="Message Prasun AI..." autocomplete="off"></textarea>
-                    <div class="composer-bottom">
-                        <div class="composer-options">
-                            <button class="composer-option" id="toolsButton">
+            <div class="composer">
+
+
+                <!-- TOOLBAR -->
+
+                <div class="composer-toolbar">
+
+                    <button
+                        class="composer-tool"
+                        id="attachButton"
+                        type="button"
+                        title="Attach file"
+                        aria-label="Attach file"
+                    >
+                        ＋
+                    </button>
+
+                </div>
+
+
+                <!-- MESSAGE INPUT -->
+
+                <textarea
+                    id="messageInput"
+                    rows="1"
+                    placeholder="Message Prasun AI..."
+                    autocomplete="off"
+                    aria-label="Message Prasun AI"
+                ></textarea>
+
+
+                <!-- COMPOSER BOTTOM -->
+
+                <div class="composer-bottom">
+
+
+                    <!-- OPTIONS -->
+
+                    <div class="composer-options">
+
+                        <button
+                            class="composer-option"
+                            id="toolsButton"
+                            type="button"
+                            title="Tools"
+                        >
+
+                            <span aria-hidden="true">
                                 ✨
-                                <span>Tools</span>
-                            </button>
-                        </div>
-                        <button class="send-button" id="sendButton" disabled aria-label="Send message">
-                            ↑
+                            </span>
+
+                            <span>
+                                Tools
+                            </span>
+
                         </button>
+
                     </div>
+
+
+                    <!-- SEND -->
+
+                    <button
+                        class="send-button"
+                        id="sendButton"
+                        type="button"
+                        disabled
+                        aria-label="Send message"
+                        title="Send message"
+                    >
+                        ↑
+                    </button>
+
                 </div>
-                <div class="composer-disclaimer">
-                    Prasun AI can make mistakes. Check important information.
-                </div>
+
             </div>
-        </main>
-    </div>
-    <script src="assets/js/app.js"></script>
+
+
+            <!-- DISCLAIMER -->
+
+            <div class="composer-disclaimer">
+                Prasun AI can make mistakes.
+                Check important information.
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+     ===================================================== -->
+
+<script
+    src="assets/js/app.js"
+    defer
+></script>
+
 </body>
 </html>

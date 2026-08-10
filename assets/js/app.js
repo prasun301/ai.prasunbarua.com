@@ -1,407 +1,225 @@
-/**
- * Prasun AI — Main Application Logic
- */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Prasun AI — Production AI Assistant powered by Google Gemini and Cloudflare AI.">
+  <meta name="theme-color" content="#ffffff" id="themeColor">
+  <title>Prasun AI</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/app.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    
+    <!-- Mobile Sidebar Drawer Backdrop -->
+    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
 
-document.addEventListener('DOMContentLoaded', () => {
-    // DOM Elements
-    const elements = {
-        app: document.querySelector('.app'),
-        sidebar: document.getElementById('sidebar'),
-        openSidebar: document.getElementById('openSidebar'),
-        closeSidebar: document.getElementById('closeSidebar'),
-        sidebarOverlay: document.getElementById('sidebarOverlay'),
-        
-        newChatButton: document.getElementById('newChatButton'),
-        chatSearch: document.getElementById('chatSearch'),
-        historyContainer: document.getElementById('historyContainer'),
-        
-        modelSelector: document.getElementById('modelSelector'),
-        modelDropdown: document.getElementById('modelDropdown'),
-        modelName: document.querySelector('.model-name'),
-        clearChatButton: document.getElementById('clearChatButton'),
-        shareButton: document.getElementById('shareButton'),
-        
-        themeButton: document.getElementById('themeButton'),
-        themeColorMeta: document.getElementById('themeColor'),
-        settingsButton: document.getElementById('settingsButton'),
-        
-        chatArea: document.getElementById('chatArea'),
-        welcomeScreen: document.getElementById('welcomeScreen'),
-        messages: document.getElementById('messages'),
-        suggestionCards: document.querySelectorAll('.suggestion-card'),
-        
-        messageInput: document.getElementById('messageInput'),
-        attachButton: document.getElementById('attachButton'),
-        fileInput: document.getElementById('fileInput'),
-        attachmentPreview: document.getElementById('attachmentPreview'),
-        attachmentName: document.getElementById('attachmentName'),
-        attachmentSize: document.getElementById('attachmentSize'),
-        removeAttachment: document.getElementById('removeAttachment'),
-        voiceButton: document.getElementById('voiceButton'),
-        toolsButton: document.getElementById('toolsButton'),
-        sendButton: document.getElementById('sendButton'),
-        stopButton: document.getElementById('stopButton'),
-        
-        settingsModal: document.getElementById('settingsModal'),
-        closeSettingsModal: document.getElementById('closeSettingsModal'),
-        apiKeyInput: document.getElementById('apiKeyInput')
-    };
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" aria-label="Sidebar Navigation">
+      <div class="sidebar-header">
+        <div class="brand-title">
+          <span class="brand-sparkle">✦</span>
+          <span>Prasun AI</span>
+        </div>
+        <button class="icon-btn mobile-only" id="closeSidebar" aria-label="Close Sidebar">✕</button>
+      </div>
 
-    const state = {
-        theme: localStorage.getItem('prasun_theme') || 'light',
-        activeModel: 'prasun-4',
-        attachedFile: null,
-        isGenerating: false,
-        abortController: null,
-        toolsEnabled: false,
-        isListening: false,
-        recognition: null
-    };
+      <div class="sidebar-action-container">
+        <button class="new-chat-btn" id="newChatButton">
+          <span class="btn-icon">+</span>
+          <span>New chat</span>
+        </button>
+      </div>
 
-    function init() {
-        applyTheme(state.theme);
-        setupEventListeners();
-        setupSpeechRecognition();
-        updateSendButtonState();
-    }
+      <div class="search-box">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="chatSearch" placeholder="Search chats..." aria-label="Search Chat History">
+          <kbd class="keyboard-shortcut">⌘K</kbd>
+        </div>
+      </div>
 
-    function applyTheme(theme) {
-        state.theme = theme;
-        localStorage.setItem('prasun_theme', theme);
-        
-        if (theme === 'dark') {
-            document.body.classList.add('dark-theme');
-            if (elements.themeColorMeta) elements.themeColorMeta.content = '#171717';
-        } else {
-            document.body.classList.remove('dark-theme');
-            if (elements.themeColorMeta) elements.themeColorMeta.content = '#ffffff';
-        }
-    }
+      <!-- Real Dynamic Chat History List -->
+      <div class="history-container" id="historyContainer" aria-label="Chat History">
+        <!-- Loaded via app.js localStorage -->
+      </div>
 
-    function toggleTheme() {
-        applyTheme(state.theme === 'light' ? 'dark' : 'light');
-    }
+      <!-- Sidebar Footer Controls -->
+      <div class="sidebar-footer">
+        <button class="footer-nav-btn" id="themeButton">
+          <span class="btn-icon">☀️</span>
+          <span>Appearance</span>
+        </button>
+        <button class="footer-nav-btn" id="settingsButton">
+          <span class="btn-icon">⚙️</span>
+          <span>Settings</span>
+        </button>
 
-    function toggleSidebar(show) {
-        const isOpen = show !== undefined ? show : !elements.sidebar.classList.contains('active');
-        elements.sidebar.classList.toggle('active', isOpen);
-        elements.sidebarOverlay.classList.toggle('active', isOpen);
-    }
+        <div class="user-profile-badge" id="userProfile">
+          <div class="user-avatar">P</div>
+          <div class="user-info">
+            <span class="user-name">Prasun</span>
+            <span class="user-plan">Gemini 3 Flash</span>
+          </div>
+        </div>
+      </div>
+    </aside>
 
-    function handleInputResize() {
-        elements.messageInput.style.height = 'auto';
-        const newHeight = Math.min(elements.messageInput.scrollHeight, 180);
-        elements.messageInput.style.height = `${newHeight}px`;
-        updateSendButtonState();
-    }
-
-    function updateSendButtonState() {
-        const hasText = elements.messageInput.value.trim().length > 0;
-        const hasFile = state.attachedFile !== null;
-        elements.sendButton.disabled = !(hasText || hasFile) || state.isGenerating;
-    }
-
-    function handleKeyDown(event) {
-        if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-            if (!elements.sendButton.disabled) {
-                sendMessage();
-            }
-        }
-    }
-
-    function handleFileSelect(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        state.attachedFile = file;
-        elements.attachmentName.textContent = file.name;
-        elements.attachmentSize.textContent = formatFileSize(file.size);
-        elements.attachmentPreview.hidden = false;
-        updateSendButtonState();
-    }
-
-    function removeAttachment() {
-        state.attachedFile = null;
-        elements.fileInput.value = '';
-        elements.attachmentPreview.hidden = true;
-        updateSendButtonState();
-    }
-
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-    }
-
-    function setupSpeechRecognition() {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            if (elements.voiceButton) elements.voiceButton.style.display = 'none';
-            return;
-        }
-
-        state.recognition = new SpeechRecognition();
-        state.recognition.continuous = false;
-        state.recognition.interimResults = true;
-
-        state.recognition.onstart = () => {
-            state.isListening = true;
-            elements.voiceButton.classList.add('listening');
-        };
-
-        state.recognition.onresult = (event) => {
-            const transcript = Array.from(event.results)
-                .map(result => result[0].transcript)
-                .join('');
-
-            elements.messageInput.value = transcript;
-            handleInputResize();
-        };
-
-        state.recognition.onerror = () => stopListening();
-        state.recognition.onend = () => stopListening();
-    }
-
-    function toggleVoiceInput() {
-        if (!state.recognition) return;
-        if (state.isListening) {
-            state.recognition.stop();
-        } else {
-            state.recognition.start();
-        }
-    }
-
-    function stopListening() {
-        state.isListening = false;
-        if (elements.voiceButton) elements.voiceButton.classList.remove('listening');
-    }
-
-    function sendMessage(customPrompt = null) {
-        const text = customPrompt || elements.messageInput.value.trim();
-        if ((!text && !state.attachedFile) || state.isGenerating) return;
-
-        // Hide welcome screen
-        if (elements.welcomeScreen) {
-            elements.welcomeScreen.style.display = 'none';
-        }
-
-        // Render User Message
-        appendMessage('user', text, state.attachedFile);
-
-        // Reset Input
-        elements.messageInput.value = '';
-        handleInputResize();
-        if (state.attachedFile) removeAttachment();
-
-        // Generate AI Response
-        generateAiResponse(text);
-    }
-
-    function appendMessage(role, text, file = null) {
-        const messageEl = document.createElement('div');
-        messageEl.className = `message message-${role}`;
-
-        let contentHtml = '';
-        if (file) {
-            contentHtml += `<div style="margin-bottom: 6px;"><span class="attachment-chip">📎 ${escapeHtml(file.name)}</span></div>`;
-        }
-
-        contentHtml += `<div class="message-text">${formatMessageText(text)}</div>`;
-
-        messageEl.innerHTML = `
-            <div class="message-avatar">${role === 'user' ? 'P' : '✦'}</div>
-            <div class="message-content">${contentHtml}</div>
-        `;
-
-        elements.messages.appendChild(messageEl);
-        scrollToBottom();
-        return messageEl;
-    }
-
-    // Smart Contextual Response Engine
-    function getContextualResponse(prompt) {
-        const q = (prompt || '').toLowerCase().trim();
-
-        if (q.includes('hi') || q.includes('hello') || q.includes('hey')) {
-            return `Hello! How can I assist you today? Feel free to ask a question, request code, or explore a topic like solar energy or web design.`;
-        }
-        
-        if (q.includes('solar')) {
-            return `**Solar Energy** is radiant light and heat from the Sun that is harnessed using a range of technologies such as solar power to generate electricity.\n\n### Key Highlights:\n- **Photovoltaic (PV) Cells**: Convert sunlight directly into electricity.\n- **Renewable & Clean**: Reduces carbon emissions drastically.\n- **Efficiency**: Modern residential solar panels typically operate between 18% and 22% efficiency.`;
-        }
-
-        if (q.includes('javascript') || q.includes('code') || q.includes('js')) {
-            return `JavaScript is a versatile programming language used for both client-side and server-side web development.\n\n\`\`\`javascript\n// Simple JavaScript Example\nconst greetUser = (name) => {\n  console.log(\`Welcome to Prasun AI, \${name}!\`);\n};\n\ngreetUser('Developer');\n\`\`\``;
-        }
-
-        if (q.includes('website') || q.includes('html') || q.includes('css')) {
-            return `Building a clean website requires three core pillars:\n\n1. **HTML5**: For semantic layout and page structure.\n2. **CSS3**: For responsive design, layout flex/grid, and theme variables.\n3. **JavaScript**: For interactive UI components and state management.`;
-        }
-
-        return `Here is what I found regarding **"${prompt}"**:\n\nThis is a custom response generated for your prompt. You can now wire this ` + '`generateAiResponse`' + ` function directly to an API endpoint (like OpenAI or Claude) to stream live responses!`;
-    }
-
-    function generateAiResponse(userPrompt) {
-        state.isGenerating = true;
-        setGenerationUI(true);
-
-        const aiMessageEl = document.createElement('div');
-        aiMessageEl.className = 'message message-assistant';
-        aiMessageEl.innerHTML = `
-            <div class="message-avatar">✦</div>
-            <div class="message-content">
-                <div class="message-text"><span class="typing-cursor"></span></div>
+    <!-- Main Workspace -->
+    <main class="main-wrapper">
+      
+      <!-- Top Navigation Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="topbar-icon-btn" id="openSidebar" aria-label="Open Sidebar">☰</button>
+          
+          <div class="model-selector-wrapper">
+            <button class="model-selector-btn" id="modelSelector" aria-expanded="false" aria-controls="modelDropdown">
+              <span class="model-name">Prasun AI 4.0 PRO</span>
+              <span class="dropdown-chevron">▼</span>
+            </button>
+            
+            <div class="model-dropdown" id="modelDropdown" hidden>
+              <div class="model-option active" data-model="prasun-4">
+                <div class="model-option-header">
+                  <strong>Prasun AI 4.0 PRO</strong>
+                  <span class="badge">Active</span>
+                </div>
+                <small>Powered by Google Gemini 3 Flash</small>
+              </div>
+              <div class="model-option" data-model="prasun-3.5">
+                <div class="model-option-header">
+                  <strong>Prasun AI 3.5 Flash</strong>
+                </div>
+                <small>Standard fast inference mode</small>
+              </div>
             </div>
-        `;
+          </div>
+        </div>
 
-        elements.messages.appendChild(aiMessageEl);
-        const textContainer = aiMessageEl.querySelector('.message-text');
-        scrollToBottom();
+        <div class="topbar-right">
+          <button class="topbar-icon-btn" id="clearChatButton" title="Clear Current Chat" aria-label="Clear Current Chat">🗑️</button>
+          <button class="topbar-icon-btn" id="shareButton" title="Share / Copy Conversation" aria-label="Share Conversation">🔗</button>
+        </div>
+      </header>
 
-        const fullResponse = getContextualResponse(userPrompt);
-        let currentIndex = 0;
+      <!-- Chat Workspace Area -->
+      <div class="chat-area" id="chatArea" tabIndex="0">
+        
+        <!-- Welcome Screen (Visible on fresh/empty conversation) -->
+        <div class="welcome-screen" id="welcomeScreen">
+          <div class="welcome-hero-icon">✦</div>
+          <div class="welcome-text-group">
+            <h1 class="welcome-title">How can I help you today?</h1>
+            <p class="welcome-subtitle">
+              Ask Prasun AI anything. Powered by Google Gemini 3 Flash via Cloudflare AI.
+            </p>
+          </div>
 
-        state.abortController = setInterval(() => {
-            if (currentIndex < fullResponse.length) {
-                currentIndex += Math.floor(Math.random() * 4) + 2;
-                const chunk = fullResponse.slice(0, currentIndex);
-                textContainer.innerHTML = formatMessageText(chunk) + '<span class="typing-cursor"></span>';
-                scrollToBottom();
-            } else {
-                stopGeneration(fullResponse);
-            }
-        }, 25);
-    }
+          <div class="suggestion-grid">
+            <button class="suggestion-card" data-prompt="Explain how solar panels generate electricity in simple terms.">
+              <div class="card-icon">⚡</div>
+              <div class="card-text">
+                <h4>Explain solar energy</h4>
+                <p>How solar panels generate electricity</p>
+              </div>
+            </button>
+            <button class="suggestion-card" data-prompt="Help me outline a clean website structure for a web development portfolio.">
+              <div class="card-icon">🌐</div>
+              <div class="card-text">
+                <h4>Website structure</h4>
+                <p>Help me write a professional website</p>
+              </div>
+            </button>
+            <button class="suggestion-card" data-prompt="Give me a step-by-step guide to learn JavaScript for beginners.">
+              <div class="card-icon">💻</div>
+              <div class="card-text">
+                <h4>Learn JavaScript</h4>
+                <p>Step-by-step beginner guide</p>
+              </div>
+            </button>
+            <button class="suggestion-card" data-prompt="Tell me 5 interesting and lesser-known facts about space.">
+              <div class="card-icon">✨</div>
+              <div class="card-text">
+                <h4>Science facts</h4>
+                <p>Five interesting facts about space</p>
+              </div>
+            </button>
+          </div>
+        </div>
 
-    function stopGeneration(finalText = null) {
-        if (state.abortController) {
-            clearInterval(state.abortController);
-            state.abortController = null;
-        }
+        <!-- Dynamic Message List -->
+        <div class="messages-list" id="messages"></div>
+      </div>
 
-        const lastMessage = elements.messages.querySelector('.message-assistant:last-child .message-text');
-        if (lastMessage) {
-            const cursor = lastMessage.querySelector('.typing-cursor');
-            if (cursor) cursor.remove();
-            if (finalText) {
-                lastMessage.innerHTML = formatMessageText(finalText);
-            }
-        }
+      <!-- Bottom Floating Composer -->
+      <div class="composer-container">
+        
+        <!-- Attachment Indicator (Non-functional stub kept for visual completeness) -->
+        <div class="attachment-preview" id="attachmentPreview" hidden>
+          <span id="attachmentName">file.txt</span>
+          <span id="attachmentSize" class="file-size-tag">0 KB</span>
+          <button id="removeAttachment" class="remove-att-btn" aria-label="Remove attachment">✕</button>
+        </div>
 
-        state.isGenerating = false;
-        setGenerationUI(false);
-    }
+        <div class="composer-box">
+          <textarea 
+            id="messageInput" 
+            class="message-textarea" 
+            placeholder="Message Prasun AI..." 
+            rows="1"
+            aria-label="Message Input"
+          ></textarea>
+          
+          <div class="composer-toolbar">
+            <div class="toolbar-left">
+              <button class="toolbar-btn" id="attachButton" title="Attach Text/Code File">📎 Attach</button>
+              <input type="file" id="fileInput" accept=".txt,.js,.json,.html,.css,.md" hidden>
+              <button class="toolbar-btn" id="toolsButton" title="Web Search (Coming Soon)">🌐 Search</button>
+              <button class="toolbar-btn" id="voiceButton" title="Voice Input">🎙️ Dictate</button>
+            </div>
 
-    function setGenerationUI(generating) {
-        elements.sendButton.hidden = generating;
-        elements.stopButton.hidden = !generating;
-        updateSendButtonState();
-    }
+            <div class="toolbar-right">
+              <button class="send-btn" id="sendButton" disabled aria-label="Send Message">
+                <span class="send-icon">⬆</span>
+              </button>
+              <button class="stop-btn" id="stopButton" hidden aria-label="Stop Generation">
+                <span class="stop-icon">■</span>
+              </button>
+            </div>
+          </div>
+        </div>
 
-    function formatMessageText(text) {
-        if (!text) return '';
-        let formatted = escapeHtml(text)
-            .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
-            .replace(/`([^`]+)`/g, '<code>$1</code>')
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\n/g, '<br>');
-        return formatted;
-    }
+        <div class="disclaimer-text">
+          Prasun AI can make mistakes. Verify important facts and information.
+        </div>
+      </div>
 
-    function escapeHtml(string) {
-        return String(string)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
+    </main>
+  </div>
 
-    function scrollToBottom() {
-        elements.chatArea.scrollTop = elements.chatArea.scrollHeight;
-    }
+  <!-- Settings Modal -->
+  <dialog class="modal-dialog" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Settings</h3>
+        <button class="icon-btn" id="closeSettingsModal" aria-label="Close Modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-row">
+          <label for="backendStatus">Backend Architecture</label>
+          <input type="text" id="backendStatus" value="Cloudflare Workers AI (Binding: context.env.AI)" readonly>
+        </div>
+        <div class="setting-row">
+          <label for="activeModelInput">Active AI Model</label>
+          <input type="text" id="activeModelInput" value="google/gemini-3-flash" readonly>
+        </div>
+      </div>
+    </div>
+  </dialog>
 
-    function clearChat() {
-        elements.messages.innerHTML = '';
-        if (elements.welcomeScreen) elements.welcomeScreen.style.display = 'flex';
-    }
-
-    function setupEventListeners() {
-        elements.openSidebar?.addEventListener('click', () => toggleSidebar(true));
-        elements.closeSidebar?.addEventListener('click', () => toggleSidebar(false));
-        elements.sidebarOverlay?.addEventListener('click', () => toggleSidebar(false));
-
-        elements.newChatButton?.addEventListener('click', () => {
-            clearChat();
-            if (window.innerWidth <= 768) toggleSidebar(false);
-        });
-
-        elements.clearChatButton?.addEventListener('click', clearChat);
-
-        elements.messageInput?.addEventListener('input', handleInputResize);
-        elements.messageInput?.addEventListener('keydown', handleKeyDown);
-
-        elements.sendButton?.addEventListener('click', () => sendMessage());
-        elements.stopButton?.addEventListener('click', () => stopGeneration());
-
-        elements.attachButton?.addEventListener('click', () => elements.fileInput.click());
-        elements.fileInput?.addEventListener('change', handleFileSelect);
-        elements.removeAttachment?.addEventListener('click', removeAttachment);
-
-        elements.voiceButton?.addEventListener('click', toggleVoiceInput);
-
-        elements.themeButton?.addEventListener('click', toggleTheme);
-
-        elements.suggestionCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const prompt = card.getAttribute('data-prompt');
-                if (prompt) sendMessage(prompt);
-            });
-        });
-
-        elements.modelSelector?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isHidden = elements.modelDropdown.hidden;
-            elements.modelDropdown.hidden = !isHidden;
-            elements.modelSelector.setAttribute('aria-expanded', isHidden);
-        });
-
-        document.querySelectorAll('.model-option').forEach(option => {
-            option.addEventListener('click', () => {
-                const selectedModel = option.getAttribute('data-model');
-                const modelNameText = option.querySelector('strong').textContent;
-
-                document.querySelectorAll('.model-option').forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
-
-                state.activeModel = selectedModel;
-                elements.modelName.textContent = modelNameText;
-                elements.modelDropdown.hidden = true;
-                elements.modelSelector.setAttribute('aria-expanded', 'false');
-            });
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!elements.modelSelector?.contains(e.target)) {
-                if (elements.modelDropdown) elements.modelDropdown.hidden = true;
-                elements.modelSelector?.setAttribute('aria-expanded', 'false');
-            }
-        });
-
-        elements.settingsButton?.addEventListener('click', () => elements.settingsModal?.showModal());
-        elements.closeSettingsModal?.addEventListener('click', () => elements.settingsModal?.close());
-
-        elements.chatSearch?.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            document.querySelectorAll('.history-item').forEach(item => {
-                const text = item.textContent.toLowerCase();
-                item.style.display = text.includes(query) ? 'flex' : 'none';
-            });
-        });
-    }
-
-    init();
-});
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+</body>
+</html>

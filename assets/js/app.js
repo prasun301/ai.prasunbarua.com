@@ -1,45 +1,35 @@
 /**
  * Prasun AI — Main Application Logic
- * Modern, event-driven JavaScript implementation.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // =========================================================================
-    // 1. DOM Elements
-    // =========================================================================
+    // DOM Elements
     const elements = {
-        // Layout & Navigation
         app: document.querySelector('.app'),
         sidebar: document.getElementById('sidebar'),
         openSidebar: document.getElementById('openSidebar'),
         closeSidebar: document.getElementById('closeSidebar'),
         sidebarOverlay: document.getElementById('sidebarOverlay'),
         
-        // Chat History & Search
         newChatButton: document.getElementById('newChatButton'),
         chatSearch: document.getElementById('chatSearch'),
         historyContainer: document.getElementById('historyContainer'),
         
-        // Topbar Controls
         modelSelector: document.getElementById('modelSelector'),
         modelDropdown: document.getElementById('modelDropdown'),
         modelName: document.querySelector('.model-name'),
         clearChatButton: document.getElementById('clearChatButton'),
         shareButton: document.getElementById('shareButton'),
         
-        // Sidebar Bottom
         themeButton: document.getElementById('themeButton'),
         themeColorMeta: document.getElementById('themeColor'),
         settingsButton: document.getElementById('settingsButton'),
-        userProfile: document.getElementById('userProfile'),
         
-        // Chat Area
         chatArea: document.getElementById('chatArea'),
         welcomeScreen: document.getElementById('welcomeScreen'),
         messages: document.getElementById('messages'),
         suggestionCards: document.querySelectorAll('.suggestion-card'),
         
-        // Composer & Attachments
         messageInput: document.getElementById('messageInput'),
         attachButton: document.getElementById('attachButton'),
         fileInput: document.getElementById('fileInput'),
@@ -52,16 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
         sendButton: document.getElementById('sendButton'),
         stopButton: document.getElementById('stopButton'),
         
-        // Settings Modal
         settingsModal: document.getElementById('settingsModal'),
         closeSettingsModal: document.getElementById('closeSettingsModal'),
-        apiKeyInput: document.getElementById('apiKeyInput'),
-        streamToggle: document.getElementById('streamToggle')
+        apiKeyInput: document.getElementById('apiKeyInput')
     };
 
-    // =========================================================================
-    // 2. Application State
-    // =========================================================================
     const state = {
         theme: localStorage.getItem('prasun_theme') || 'light',
         activeModel: 'prasun-4',
@@ -70,13 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
         abortController: null,
         toolsEnabled: false,
         isListening: false,
-        messagesList: [],
         recognition: null
     };
 
-    // =========================================================================
-    // 3. Initialization
-    // =========================================================================
     function init() {
         applyTheme(state.theme);
         setupEventListeners();
@@ -84,16 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSendButtonState();
     }
 
-    // =========================================================================
-    // 4. Theme & Appearance
-    // =========================================================================
     function applyTheme(theme) {
         state.theme = theme;
         localStorage.setItem('prasun_theme', theme);
         
         if (theme === 'dark') {
             document.body.classList.add('dark-theme');
-            if (elements.themeColorMeta) elements.themeColorMeta.content = '#121212';
+            if (elements.themeColorMeta) elements.themeColorMeta.content = '#171717';
         } else {
             document.body.classList.remove('dark-theme');
             if (elements.themeColorMeta) elements.themeColorMeta.content = '#ffffff';
@@ -101,25 +79,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function toggleTheme() {
-        const newTheme = state.theme === 'light' ? 'dark' : 'light';
-        applyTheme(newTheme);
+        applyTheme(state.theme === 'light' ? 'dark' : 'light');
     }
 
-    // =========================================================================
-    // 5. Sidebar & Navigation Logic
-    // =========================================================================
     function toggleSidebar(show) {
         const isOpen = show !== undefined ? show : !elements.sidebar.classList.contains('active');
         elements.sidebar.classList.toggle('active', isOpen);
         elements.sidebarOverlay.classList.toggle('active', isOpen);
     }
 
-    // =========================================================================
-    // 6. Composer & Textarea Operations
-    // =========================================================================
     function handleInputResize() {
         elements.messageInput.style.height = 'auto';
-        const newHeight = Math.min(elements.messageInput.scrollHeight, 200);
+        const newHeight = Math.min(elements.messageInput.scrollHeight, 180);
         elements.messageInput.style.height = `${newHeight}px`;
         updateSendButtonState();
     }
@@ -139,9 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // =========================================================================
-    // 7. File Attachment Logic
-    // =========================================================================
     function handleFileSelect(e) {
         const file = e.target.files[0];
         if (!file) return;
@@ -168,13 +136,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
     }
 
-    // =========================================================================
-    // 8. Speech Recognition (Voice Input)
-    // =========================================================================
     function setupSpeechRecognition() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            elements.voiceButton.style.display = 'none';
+            if (elements.voiceButton) elements.voiceButton.style.display = 'none';
             return;
         }
 
@@ -189,26 +154,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         state.recognition.onresult = (event) => {
             const transcript = Array.from(event.results)
-                .map(result => result[0])
-                .map(result => result.transcript)
+                .map(result => result[0].transcript)
                 .join('');
 
             elements.messageInput.value = transcript;
             handleInputResize();
         };
 
-        state.recognition.onerror = () => {
-            stopListening();
-        };
-
-        state.recognition.onend = () => {
-            stopListening();
-        };
+        state.recognition.onerror = () => stopListening();
+        state.recognition.onend = () => stopListening();
     }
 
     function toggleVoiceInput() {
         if (!state.recognition) return;
-
         if (state.isListening) {
             state.recognition.stop();
         } else {
@@ -218,30 +176,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function stopListening() {
         state.isListening = false;
-        elements.voiceButton.classList.remove('listening');
+        if (elements.voiceButton) elements.voiceButton.classList.remove('listening');
     }
 
-    // =========================================================================
-    // 9. Messaging & AI Streaming Logic
-    // =========================================================================
     function sendMessage(customPrompt = null) {
         const text = customPrompt || elements.messageInput.value.trim();
         if ((!text && !state.attachedFile) || state.isGenerating) return;
 
-        // Hide welcome screen on first message
-        if (elements.welcomeScreen.style.display !== 'none') {
+        // Hide welcome screen
+        if (elements.welcomeScreen) {
             elements.welcomeScreen.style.display = 'none';
         }
 
         // Render User Message
         appendMessage('user', text, state.attachedFile);
 
-        // Reset Input & Attachments
+        // Reset Input
         elements.messageInput.value = '';
         handleInputResize();
         if (state.attachedFile) removeAttachment();
 
-        // Trigger AI Stream Simulation
+        // Generate AI Response
         generateAiResponse(text);
     }
 
@@ -250,13 +205,8 @@ document.addEventListener('DOMContentLoaded', () => {
         messageEl.className = `message message-${role}`;
 
         let contentHtml = '';
-
         if (file) {
-            contentHtml += `
-                <div class="message-attachment">
-                    <span class="attachment-chip">📎 ${escapeHtml(file.name)}</span>
-                </div>
-            `;
+            contentHtml += `<div style="margin-bottom: 6px;"><span class="attachment-chip">📎 ${escapeHtml(file.name)}</span></div>`;
         }
 
         contentHtml += `<div class="message-text">${formatMessageText(text)}</div>`;
@@ -268,9 +218,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         elements.messages.appendChild(messageEl);
         scrollToBottom();
-
-        state.messagesList.push({ role, text });
         return messageEl;
+    }
+
+    // Smart Contextual Response Engine
+    function getContextualResponse(prompt) {
+        const q = (prompt || '').toLowerCase().trim();
+
+        if (q.includes('hi') || q.includes('hello') || q.includes('hey')) {
+            return `Hello! How can I assist you today? Feel free to ask a question, request code, or explore a topic like solar energy or web design.`;
+        }
+        
+        if (q.includes('solar')) {
+            return `**Solar Energy** is radiant light and heat from the Sun that is harnessed using a range of technologies such as solar power to generate electricity.\n\n### Key Highlights:\n- **Photovoltaic (PV) Cells**: Convert sunlight directly into electricity.\n- **Renewable & Clean**: Reduces carbon emissions drastically.\n- **Efficiency**: Modern residential solar panels typically operate between 18% and 22% efficiency.`;
+        }
+
+        if (q.includes('javascript') || q.includes('code') || q.includes('js')) {
+            return `JavaScript is a versatile programming language used for both client-side and server-side web development.\n\n\`\`\`javascript\n// Simple JavaScript Example\nconst greetUser = (name) => {\n  console.log(\`Welcome to Prasun AI, \${name}!\`);\n};\n\ngreetUser('Developer');\n\`\`\``;
+        }
+
+        if (q.includes('website') || q.includes('html') || q.includes('css')) {
+            return `Building a clean website requires three core pillars:\n\n1. **HTML5**: For semantic layout and page structure.\n2. **CSS3**: For responsive design, layout flex/grid, and theme variables.\n3. **JavaScript**: For interactive UI components and state management.`;
+        }
+
+        return `Here is what I found regarding **"${prompt}"**:\n\nThis is a custom response generated for your prompt. You can now wire this ` + '`generateAiResponse`' + ` function directly to an API endpoint (like OpenAI or Claude) to stream live responses!`;
     }
 
     function generateAiResponse(userPrompt) {
@@ -290,26 +261,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const textContainer = aiMessageEl.querySelector('.message-text');
         scrollToBottom();
 
-        // Simulated Streaming Response
-        const sampleResponses = [
-            `I'd be happy to help you with that! Here is a breakdown of what you asked about:\n\n1. **Key Concept**: Fast and reliable responses.\n2. **Execution**: Clean code design and optimal structure.\n\nLet me know if you would like me to dive deeper into any specific detail!`,
-            `That's a great question regarding **${userPrompt || 'your request'}**.\n\nHere is a quick summary:\n- Flexible layout built with modern HTML5.\n- Seamless dark/light theme switching.\n- Interactive controls ready for API integration.`,
-            `Here is a JavaScript solution for your implementation:\n\n\`\`\`javascript\n// Simple Async Helper Function\nasync function fetchData(url) {\n  const response = await fetch(url);\n  return await response.json();\n}\n\`\`\`\n\nIs there anything else you'd like to customize?`
-        ];
-
-        const fullResponse = sampleResponses[Math.floor(Math.random() * sampleResponses.length)];
+        const fullResponse = getContextualResponse(userPrompt);
         let currentIndex = 0;
 
         state.abortController = setInterval(() => {
             if (currentIndex < fullResponse.length) {
-                currentIndex += Math.floor(Math.random() * 3) + 1;
+                currentIndex += Math.floor(Math.random() * 4) + 2;
                 const chunk = fullResponse.slice(0, currentIndex);
                 textContainer.innerHTML = formatMessageText(chunk) + '<span class="typing-cursor"></span>';
                 scrollToBottom();
             } else {
                 stopGeneration(fullResponse);
             }
-        }, 30);
+        }, 25);
     }
 
     function stopGeneration(finalText = null) {
@@ -322,7 +286,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (lastMessage) {
             const cursor = lastMessage.querySelector('.typing-cursor');
             if (cursor) cursor.remove();
-
             if (finalText) {
                 lastMessage.innerHTML = formatMessageText(finalText);
             }
@@ -340,7 +303,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function formatMessageText(text) {
         if (!text) return '';
-        // Basic Markdown parser for code blocks, bold, linebreaks
         let formatted = escapeHtml(text)
             .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
             .replace(/`([^`]+)`/g, '<code>$1</code>')
@@ -364,20 +326,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function clearChat() {
         elements.messages.innerHTML = '';
-        elements.welcomeScreen.style.display = 'flex';
-        state.messagesList = [];
+        if (elements.welcomeScreen) elements.welcomeScreen.style.display = 'flex';
     }
 
-    // =========================================================================
-    // 10. Event Listeners Setup
-    // =========================================================================
     function setupEventListeners() {
-        // Mobile Sidebar Toggles
         elements.openSidebar?.addEventListener('click', () => toggleSidebar(true));
         elements.closeSidebar?.addEventListener('click', () => toggleSidebar(false));
         elements.sidebarOverlay?.addEventListener('click', () => toggleSidebar(false));
 
-        // New Chat & Clear Chat
         elements.newChatButton?.addEventListener('click', () => {
             clearChat();
             if (window.innerWidth <= 768) toggleSidebar(false);
@@ -385,32 +341,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         elements.clearChatButton?.addEventListener('click', clearChat);
 
-        // Input & Typing
         elements.messageInput?.addEventListener('input', handleInputResize);
         elements.messageInput?.addEventListener('keydown', handleKeyDown);
 
-        // Send & Stop Buttons
         elements.sendButton?.addEventListener('click', () => sendMessage());
         elements.stopButton?.addEventListener('click', () => stopGeneration());
 
-        // File Attachments
         elements.attachButton?.addEventListener('click', () => elements.fileInput.click());
         elements.fileInput?.addEventListener('change', handleFileSelect);
         elements.removeAttachment?.addEventListener('click', removeAttachment);
 
-        // Voice Input
         elements.voiceButton?.addEventListener('click', toggleVoiceInput);
 
-        // Tools Toggle
-        elements.toolsButton?.addEventListener('click', () => {
-            state.toolsEnabled = !state.toolsEnabled;
-            elements.toolsButton.classList.toggle('active', state.toolsEnabled);
-        });
-
-        // Theme Toggle
         elements.themeButton?.addEventListener('click', toggleTheme);
 
-        // Suggestion Cards
         elements.suggestionCards.forEach(card => {
             card.addEventListener('click', () => {
                 const prompt = card.getAttribute('data-prompt');
@@ -418,7 +362,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Model Selector Dropdown
         elements.modelSelector?.addEventListener('click', (e) => {
             e.stopPropagation();
             const isHidden = elements.modelDropdown.hidden;
@@ -441,7 +384,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Close Dropdowns on Click Outside
         document.addEventListener('click', (e) => {
             if (!elements.modelSelector?.contains(e.target)) {
                 if (elements.modelDropdown) elements.modelDropdown.hidden = true;
@@ -449,11 +391,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Settings Modal
         elements.settingsButton?.addEventListener('click', () => elements.settingsModal?.showModal());
         elements.closeSettingsModal?.addEventListener('click', () => elements.settingsModal?.close());
 
-        // Chat Search Filter
         elements.chatSearch?.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
             document.querySelectorAll('.history-item').forEach(item => {
@@ -461,24 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 item.style.display = text.includes(query) ? 'flex' : 'none';
             });
         });
-
-        // Keyboard Shortcut: Cmd/Ctrl + K to focus search
-        document.addEventListener('keydown', (e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-                e.preventDefault();
-                elements.chatSearch?.focus();
-            }
-        });
-
-        // Share Action
-        elements.shareButton?.addEventListener('click', () => {
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(window.location.href);
-                alert('Conversation link copied to clipboard!');
-            }
-        });
     }
 
-    // Start App
     init();
 });

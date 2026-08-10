@@ -1,3 +1,5 @@
+// functions/api/chat.js
+
 export async function onRequestOptions() {
   return new Response(null, {
     status: 204,
@@ -16,68 +18,35 @@ export async function onRequestPost(context) {
   };
 
   try {
-    if (!context.env || !context.env.AI) {
+    const apiKey = context.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
       return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Workers AI binding is missing. Please set variable name 'AI' under Settings > Functions in Cloudflare Pages."
-        }),
+        JSON.stringify({ error: "Missing GEMINI_API_KEY under Cloudflare Pages Environment Variables." }),
         { status: 500, headers }
       );
     }
 
     const body = await context.request.json().catch(() => ({}));
 
-    if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Invalid request format. A 'messages' array is required."
-        }),
-        { status: 400, headers }
-      );
-    }
+    // Target Google Gemini 3.6 Flash Endpoint
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
 
-    const payloadMessages = [
-      {
-        role: "system",
-        content: "You are Prasun AI, an intelligent, helpful, precise, and friendly AI assistant. Format your responses in clean Markdown."
-      },
-      ...body.messages
-    ];
+    const response = await fetch(geminiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
 
-    // Using Llama 3.2 3B Instruct, which is universally available on all Cloudflare Workers AI accounts
-    const aiResult = await context.env.AI.run(
-      "@cf/meta/llama-3.2-3b-instruct",
-      { messages: payloadMessages }
-    );
+    const data = await response.json();
 
-    let generatedText = "";
-    if (typeof aiResult === "string") {
-      generatedText = aiResult;
-    } else if (aiResult && typeof aiResult === "object") {
-      generatedText = aiResult.response || aiResult.result || "";
-    }
-
-    if (!generatedText) {
-      throw new Error("Model returned an empty response.");
-    }
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        response: generatedText
-      }),
-      { status: 200, headers }
-    );
-
+    return new Response(JSON.stringify(data), {
+      status: response.status,
+      headers,
+    });
   } catch (err) {
-    console.error("AI API Error:", err);
     return new Response(
-      JSON.stringify({
-        success: false,
-        error: err.message || "Internal Server Error"
-      }),
+      JSON.stringify({ error: err.message || "Internal Server Error" }),
       { status: 500, headers }
     );
   }

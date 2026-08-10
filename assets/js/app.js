@@ -96,73 +96,66 @@ document.addEventListener('DOMContentLoaded', () => {
   const newChatButton = document.getElementById('newChatButton');
   const clearChatButton = document.getElementById('clearChatButton');
 
-  function getSmartAIResponse(query) {
-    const lowerQuery = query.toLowerCase();
+  // Real Gemini API Integration
+  async function getGeminiResponse(query) {
+    const API_KEY = 'AIzaSyCbhcI0F5R3vmQByBZVozcwgBSJe-TDCFI'; // Replace with your Google AI Studio API Key
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-    if (lowerQuery.includes('solar') || lowerQuery.includes('electricity')) {
-      return `Solar panels generate electricity using **photovoltaic (PV) cells** made of silicon. Here is how it works step-by-step:
-1. **Sunlight Absorption:** Sunlight hits the solar panels, and the PV cells absorb energy from the photons.
-2. **Electron Movement:** This energy knocks electrons loose from their atoms, creating a flow of electrical current.
-3. **Direct Current (DC):** The movement creates direct current (DC) electricity.
-4. **Inverter Conversion:** An inverter converts this DC electricity into alternating current (AC), which is what homes and appliances use.`;
-    } 
-    else if (lowerQuery.includes('website') || lowerQuery.includes('portfolio')) {
-      return `A professional website structure typically relies on a clean, modular setup:
-* **Header / Navigation:** Clear branding and quick links to core sections.
-* **Hero Section:** A strong value proposition or introduction with a primary call-to-action (CTA).
-* **About Section:** Brief background, skills, or mission statement.
-* **Projects / Services Grid:** Showcase of your best work or offerings using clean cards.
-* **Footer:** Contact links, social profiles, and copyright info.`;
-    } 
-    else if (lowerQuery.includes('javascript') || lowerQuery.includes('learn')) {
-      return `Here is a quick beginner roadmap to learn JavaScript:
-1. **Basics:** Learn variables (\`let\`, \`const\`), data types, and basic operators.
-2. **Control Flow:** Understand \`if/else\` statements and loops.
-3. **Functions:** Learn how to write reusable blocks of code.
-4. **DOM Manipulation:** Practice selecting HTML elements with \`document.querySelector()\` and changing their content dynamically.`;
-    } 
-    else if (lowerQuery.includes('space') || lowerQuery.includes('fact')) {
-      return `Here are 5 fascinating space facts:
-1. **A year on Venus is shorter than its day:** It takes Venus longer to rotate once on its axis than to complete one orbit around the Sun.
-2. **Neutron stars are dense:** A single teaspoon of neutron star material weighs about 6 billion tons on Earth.
-3. **Diamond planet:** 55 Cancri e is believed to have a core rich in carbon, much of which is diamond.
-4. **Moon footprints:** Footprints on the Moon will stay there for millions of years due to no wind or water erosion.
-5. **Silence in space:** Space is a vacuum, meaning sound waves have no medium to travel through.`;
-    } 
-    else {
-      return `That's an interesting question regarding "${query}". As Prasun AI, I'm here to help you analyze code, write content, brainstorm ideas, or solve problems. Let me know what specific details you'd like to dive into!`;
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: query }] }]
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.candidates && data.candidates[0].content) {
+        return data.candidates[0].content.parts[0].text;
+      } else if (data.error) {
+        return `API Error: ${data.error.message}`;
+      } else {
+        return "Received an unexpected response format from Gemini.";
+      }
+    } catch (error) {
+      return "Network error: Unable to connect to Gemini API. Check your internet connection or API key.";
     }
   }
 
-  // Modern Markdown Parser to convert **text** and lists cleanly into HTML
+  // Modern Markdown Parser
   function parseMarkdown(text) {
+    if (!text) return '';
     let escaped = text
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 
-    // Convert **bold** to <strong>
-    let formatted = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-    // Split into lines for formatting paragraphs and lists
-    let lines = formatted.split('\n');
+    let lines = escaped.split('\n');
     let htmlResult = [];
 
     lines.forEach(line => {
       let trimmed = line.trim();
+      let formattedLine = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
       if (/^\d+\.\s/.test(trimmed)) {
-        htmlResult.push(`<div style="margin: 4px 0 4px 12px;">• ${trimmed.replace(/^\d+\.\s*/, '')}</div>`);
+        let content = formattedLine.replace(/^\d+\.\s*/, '');
+        htmlResult.push(`<div style="margin: 6px 0 6px 16px;">• ${content}</div>`);
       } else if (/^[\*\-]\s/.test(trimmed)) {
-        htmlResult.push(`<div style="margin: 4px 0 4px 12px;">• ${trimmed.replace(/^[\*\-]\s*/, '')}</div>`);
+        let content = formattedLine.replace(/^[\*\-]\s*/, '');
+        htmlResult.push(`<div style="margin: 6px 0 6px 16px;">• ${content}</div>`);
       } else if (trimmed.length > 0) {
-        htmlResult.push(`<p style="margin-bottom: 6px;">${trimmed}</p>`);
+        htmlResult.push(`<p style="margin-bottom: 8px;">${formattedLine}</p>`);
       }
     });
 
     return htmlResult.join('');
   }
 
-  function sendMessage() {
+  async function sendMessage() {
     const text = messageInput.value.trim();
     if (!text) return;
 
@@ -185,22 +178,30 @@ document.addEventListener('DOMContentLoaded', () => {
     sendButton.disabled = true;
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    // Simulate AI Response with Clean Modern UI
-    setTimeout(() => {
-      const rawAiResponse = getSmartAIResponse(text);
-      const aiMsgDiv = document.createElement('div');
-      aiMsgDiv.style.cssText = 'margin-bottom: 24px; display: flex; justify-content: flex-start; gap: 12px; width: 100%;';
-      aiMsgDiv.innerHTML = `
-        <div style="width: 32px; height: 32px; background-color: var(--accent-color); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <span class="material-symbols-outlined" style="font-size: 18px;">sparkles</span>
-        </div>
-        <div style="background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 14px 18px; border-radius: 16px; max-width: 80%; word-break: break-word; font-size: 0.95rem; color: var(--text-primary); line-height: 1.6;">
-          ${parseMarkdown(rawAiResponse)}
-        </div>
-      `;
-      messagesContainer.appendChild(aiMsgDiv);
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }, 600);
+    // Show loading state or temporary placeholder while waiting for Gemini
+    const aiMsgDiv = document.createElement('div');
+    aiMsgDiv.style.cssText = 'margin-bottom: 24px; display: flex; justify-content: flex-start; gap: 12px; width: 100%;';
+    aiMsgDiv.innerHTML = `
+      <div style="width: 32px; height: 32px; background-color: var(--accent-color); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <span class="material-symbols-outlined" style="font-size: 18px;">smart_toy</span>
+      </div>
+      <div id="loadingBubble" style="background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 14px 18px; border-radius: 16px; color: var(--text-muted); font-size: 0.95rem;">
+        Thinking...
+      </div>
+    `;
+    messagesContainer.appendChild(aiMsgDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    // Fetch live response from Gemini API
+    const rawAiResponse = await getGeminiResponse(text);
+    
+    // Update bubble with actual response
+    const bubbleContent = aiMsgDiv.querySelector('#loadingBubble');
+    bubbleContent.style.color = 'var(--text-primary)';
+    bubbleContent.style.lineHeight = '1.6';
+    bubbleContent.innerHTML = parseMarkdown(rawAiResponse);
+    
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
   if (messageInput && sendButton) {

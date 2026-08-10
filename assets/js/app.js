@@ -9,6 +9,39 @@ document.addEventListener('DOMContentLoaded', () => {
   let useGoogleSearch = true;
 
   // ==========================================
+  // SIDEBAR HISTORY EDIT & DELETE HANDLERS
+  // ==========================================
+  const historyContainer = document.getElementById('historyContainer');
+  if (historyContainer) {
+    historyContainer.addEventListener('click', (e) => {
+      const deleteBtn = e.target.closest('[title="Delete"]');
+      const editBtn = e.target.closest('[title="Rename"]');
+      const historyItem = e.target.closest('.history-item');
+
+      if (!historyItem) return;
+
+      if (deleteBtn) {
+        e.stopPropagation();
+        if (confirm('Delete this chat history item?')) {
+          historyItem.remove();
+        }
+      }
+
+      if (editBtn) {
+        e.stopPropagation();
+        const textSpan = historyItem.querySelector('.history-item-left span:last-child');
+        if (textSpan) {
+          const currentName = textSpan.textContent;
+          const newName = prompt('Rename chat:', currentName);
+          if (newName && newName.trim() !== '') {
+            textSpan.textContent = newName.trim();
+          }
+        }
+      }
+    });
+  }
+
+  // ==========================================
   // 2. SAFE DOM SELECTORS (Prevents Script Crashes)
   // ==========================================
   const getEl = (id) => {
@@ -275,17 +308,22 @@ if (searchButton) {
 
         let sources = [];
         const metadata = candidate.groundingMetadata;
-        if (metadata && metadata.groundingChunks) {
-          sources = metadata.groundingChunks
-            .filter(chunk => chunk.web && chunk.web.uri)
-            .map(chunk => ({
-              title: chunk.web.title || chunk.web.uri,
-              url: chunk.web.uri
-            }));
+        if (metadata) {
+          // Check standard grounding chunks
+          if (metadata.groundingChunks) {
+            sources = metadata.groundingChunks
+              .filter(chunk => chunk.web && (chunk.web.uri || chunk.web.url))
+              .map(chunk => ({
+                title: chunk.web.title || chunk.web.uri || chunk.web.url,
+                url: chunk.web.uri || chunk.web.url
+              }));
+          }
+          // Fallback check for search entry point / web search queries if chunks are formatted differently
+          else if (metadata.webSearchQueries && metadata.webSearchQueries.length > 0 && metadata.searchEntryPoint) {
+            // If search was executed, display a generic search indicator or snippet if available
+            sources = [{ title: `Searched: "${metadata.webSearchQueries[0]}"`, url: "#" }];
+          }
         }
-
-        return { text: textOutput, sources: sources };
-      }
 
       return { text: "Received an unexpected response format from server.", sources: [] };
     } catch (error) {

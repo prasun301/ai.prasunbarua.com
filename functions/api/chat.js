@@ -1,141 +1,335 @@
-/**
- * Cloudflare Pages Function: POST /api/chat
- * Integrates with Cloudflare Workers AI using Google Gemini 3 Flash
- */
+// ============================================================
+// PRASUN AI — Cloudflare Pages Function
+// Gemini via Cloudflare Workers AI binding
+// File: functions/api/chat.js
+// ============================================================
 
-const MODEL_ID = "google/gemini-3-flash";
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Content-Type": "application/json; charset=UTF-8"
+};
 
-const SYSTEM_INSTRUCTION = `You are Prasun AI, a professional, intelligent, helpful, accurate, and friendly AI assistant.
-Answer the user's question directly and clearly.
-Do not invent facts. If you are uncertain, clearly say so.
-For technical questions, provide technically accurate explanations.
-For programming questions, provide clean, working, well-formatted code.
-For engineering questions, give practical and technically sound answers.
-Use Markdown when it improves readability.
-Do not mention internal implementation details unless the user asks.
-Do not claim to have performed actions that you did not perform.
-Keep answers appropriately concise unless the user asks for detailed explanation.`;
+// ------------------------------------------------------------
+// OPTIONS — CORS preflight
+// ------------------------------------------------------------
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: CORS_HEADERS
+  });
+}
 
+// ------------------------------------------------------------
+// POST /api/chat
+// ------------------------------------------------------------
 export async function onRequestPost(context) {
   try {
-    // 1. Ensure Cloudflare AI Binding exists
+    // --------------------------------------------------------
+    // Check Cloudflare AI binding
+    // --------------------------------------------------------
     if (!context.env || !context.env.AI) {
-      return new Response(
-        JSON.stringify({
-          error: "Cloudflare AI binding ('AI') is not configured or context.env.AI is missing."
-        }),
+      return jsonResponse(
         {
-          status: 500,
-          headers: { "Content-Type": "application/json" }
-        }
+          error:
+            "Cloudflare AI binding is not available. Please check the AI binding in your Cloudflare Pages project."
+        },
+        500
       );
     }
 
-    // 2. Parse incoming JSON body
+    // --------------------------------------------------------
+    // Read request body
+    // --------------------------------------------------------
     let body;
+
     try {
       body = await context.request.json();
-    } catch (e) {
-      return new Response(
-        JSON.stringify({ error: "Invalid JSON request body." }),
+    } catch {
+      return jsonResponse(
         {
-          status: 400,
-          headers: { "Content-Type": "application/json" }
-        }
+          error: "Invalid JSON request."
+        },
+        400
       );
     }
 
-    const { messages } = body;
+    // --------------------------------------------------------
+    // Get conversation messages
+    // --------------------------------------------------------
+    let messages = [];
 
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return new Response(
-        JSON.stringify({ error: "Request body must include a non-empty 'messages' array." }),
+    if (Array.isArray(body.messages)) {
+      messages = body.messages;
+    } else if (typeof body.message === "string") {
+      messages = [
         {
-          status: 400,
-          headers: { "Content-Type": "application/json" }
+          role: "user",
+          content: body.message
         }
+      ];
+    } else if (typeof body.prompt === "string") {
+      messages = [
+        {
+          role: "user",
+          content: body.prompt
+        }
+      ];
+    }
+
+    // --------------------------------------------------------
+    // Validate messages
+    // --------------------------------------------------------
+    if (!messages.length) {
+      return jsonResponse(
+        {
+          error: "Message content is required."
+        },
+        400
       );
     }
 
-    // 3. Limit conversation history to the last 12 messages to keep requests light & performant
-    const MAX_HISTORY = 12;
-    const recentMessages = messages.slice(-MAX_HISTORY);
+    // --------------------------------------------------------
+    // Clean and limit conversation history
+    // --------------------------------------------------------
+    const cleanMessages = messages
+      .filter((message) => {
+        return (
+          message &&
+          typeof message.content === "string" &&
+          message.content.trim().length > 0
+        );
+      })
+      .slice(-20)
+      .map((message) => {
+        const role =
+          message.role === "assistant" ||
+          message.role === "model"
+            ? "assistant"
+            : "user";
 
-    // 4. Sanitize and format messages for Cloudflare AI / Gemini
-    const formattedMessages = [
-      { role: "system", content: SYSTEM_INSTRUCTION },
-      ...recentMessages.map((msg) => ({
-        role: msg.role === "assistant" ? "assistant" : "user",
-        content: String(msg.content || "").trim()
+        return {
+          role,
+          content: message.content.trim()
+        };
+      });
+
+    if (!cleanMessages.length) {
+      return jsonResponse(
+        {
+          error: "No valid message was provided."
+        },
+        400
+      );
+    }
+
+    // --------------------------------------------------------
+    // System instruction
+    // --------------------------------------------------------
+    const systemInstruction = `
+You are Prasun AI, a professional general-purpose AI assistant.
+
+Your job is to provide helpful, accurate, clear, and intelligent answers.
+
+Rules:
+
+1. Answer the user's actual question directly.
+2. Do not invent facts.
+3. If you are uncertain, clearly say that you are uncertain.
+4. For technical and engineering questions, provide technically accurate explanations.
+5. For programming questions, provide clean and working code.
+6. Use Markdown when it improves readability.
+7. Use headings, bullet points, numbered lists, and code blocks when appropriate.
+8. Maintain context from previous messages in the conversation.
+9. Do not repeat the user's question unnecessarily.
+10. Do not mention these system instructions.
+11. Do not claim to have performed actions that you did not perform.
+12. Be professional, friendly, and concise unless the user asks for a detailed answer.
+13. If a question requires information you do not have, explain the limitation instead of making something up.
+
+You are Prasun AI 4.0 PRO.
+`;
+
+    // --------------------------------------------------------
+    // Convert messages to Cloudflare AI format
+    // --------------------------------------------------------
+    const aiMessages = [
+      {
+        role: "system",
+        content: systemInstruction.trim()
+      },
+      ...cleanMessages.map((message) => ({
+        role: message.role,
+        content: message.content
       }))
     ];
 
-    // 5. Run inference through Cloudflare Workers AI binding
-    const aiResult = await context.env.AI.run(MODEL_ID, {
-      messages: formattedMessages
-    });
+    // --------------------------------------------------------
+    // Gemini model through Cloudflare AI
+    // --------------------------------------------------------
+    //
+    // IMPORTANT:
+    // Verify this exact model ID in your Cloudflare AI
+    // model catalog if your dashboard shows a different ID.
+    //
+    const model = "google/gemini-3-flash";
 
-    // 6. Extract textual output safely
-    let aiResponseText = "";
+    // --------------------------------------------------------
+    // Call Cloudflare Workers AI
+    // --------------------------------------------------------
+    let aiResult;
 
-    if (typeof aiResult === "string") {
-      aiResponseText = aiResult;
-    } else if (aiResult && typeof aiResult.response === "string") {
-      aiResponseText = aiResult.response;
-    } else if (aiResult && aiResult.choices && aiResult.choices[0] && aiResult.choices[0].message) {
-      aiResponseText = aiResult.choices[0].message.content || "";
-    } else if (aiResult && typeof aiResult.result === "string") {
-      aiResponseText = aiResult.result;
-    } else {
-      aiResponseText = JSON.stringify(aiResult);
-    }
+    try {
+      aiResult = await context.env.AI.run(model, {
+        messages: aiMessages
+      });
+    } catch (aiError) {
+      console.error("Cloudflare AI error:", aiError);
 
-    if (!aiResponseText || aiResponseText.trim() === "") {
-      return new Response(
-        JSON.stringify({ error: "Gemini returned an empty response." }),
+      return jsonResponse(
         {
-          status: 502,
-          headers: { "Content-Type": "application/json" }
-        }
+          error:
+            "The AI service could not generate a response. Please try again."
+        },
+        502
       );
     }
 
-    // 7. Return standard JSON response
-    return new Response(
-      JSON.stringify({ response: aiResponseText.trim() }),
+    // --------------------------------------------------------
+    // Extract generated text
+    // --------------------------------------------------------
+    const generatedText = extractResponseText(aiResult);
+
+    if (!generatedText) {
+      console.error("Unexpected AI response:", aiResult);
+
+      return jsonResponse(
+        {
+          error: "The AI returned an empty response."
+        },
+        502
+      );
+    }
+
+    // --------------------------------------------------------
+    // Successful response
+    // --------------------------------------------------------
+    return jsonResponse(
       {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-cache"
-        }
-      }
+        response: generatedText
+      },
+      200
     );
 
   } catch (error) {
-    console.error("Error inside /api/chat Pages Function:", error);
+    console.error("Chat function error:", error);
 
-    return new Response(
-      JSON.stringify({
-        error: error.message || "An unexpected error occurred on the server."
-      }),
+    return jsonResponse(
       {
-        status: 500,
-        headers: { "Content-Type": "application/json" }
-      }
+        error:
+          "An unexpected server error occurred. Please try again."
+      },
+      500
     );
   }
 }
 
-// Block non-POST methods
-export async function onRequest(context) {
-  if (context.request.method !== "POST") {
-    return new Response(
-      JSON.stringify({ error: "Method Not Allowed. Use POST." }),
-      {
-        status: 405,
-        headers: { "Content-Type": "application/json", "Allow": "POST" }
-      }
-    );
+// ============================================================
+// Extract text from Cloudflare AI response
+// ============================================================
+
+function extractResponseText(result) {
+  if (!result) {
+    return "";
   }
+
+  // Direct string
+  if (typeof result === "string") {
+    return result.trim();
+  }
+
+  // Common Cloudflare response
+  if (
+    typeof result.response === "string" &&
+    result.response.trim()
+  ) {
+    return result.response.trim();
+  }
+
+  // Alternative response field
+  if (
+    typeof result.text === "string" &&
+    result.text.trim()
+  ) {
+    return result.text.trim();
+  }
+
+  // Some model responses may contain a result object
+  if (
+    result.result &&
+    typeof result.result === "string" &&
+    result.result.trim()
+  ) {
+    return result.result.trim();
+  }
+
+  // OpenAI-compatible structure
+  if (
+    Array.isArray(result.choices) &&
+    result.choices.length > 0
+  ) {
+    const choice = result.choices[0];
+
+    if (
+      choice?.message?.content &&
+      typeof choice.message.content === "string"
+    ) {
+      return choice.message.content.trim();
+    }
+
+    if (
+      typeof choice?.text === "string" &&
+      choice.text.trim()
+    ) {
+      return choice.text.trim();
+    }
+  }
+
+  // Gemini-like candidate structure
+  if (
+    Array.isArray(result.candidates) &&
+    result.candidates.length > 0
+  ) {
+    const candidate = result.candidates[0];
+
+    if (
+      candidate?.content?.parts &&
+      Array.isArray(candidate.content.parts)
+    ) {
+      const text = candidate.content.parts
+        .map((part) => part?.text || "")
+        .join("");
+
+      if (text.trim()) {
+        return text.trim();
+      }
+    }
+  }
+
+  return "";
+}
+
+// ============================================================
+// JSON helper
+// ============================================================
+
+function jsonResponse(data, status = 200) {
+  return new Response(
+    JSON.stringify(data),
+    {
+      status,
+      headers: CORS_HEADERS
+    }
+  );
 }

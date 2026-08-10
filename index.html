@@ -132,13 +132,17 @@
       <div class="composer-container">
         <div class="composer-box">
           <textarea id="messageInput" class="message-textarea" placeholder="Message Prasun AI..." rows="1"></textarea>
+          
+          <!-- Hidden file input required for file selection -->
+          <input type="file" id="fileInput" style="display: none;" />
+
           <div class="composer-toolbar">
             <div class="toolbar-left">
-              <button class="toolbar-btn">
+              <button class="toolbar-btn" id="attachButton" type="button">
                 <span class="material-symbols-outlined" style="font-size: 18px;">attach_file</span>
                 <span>Attach</span>
               </button>
-              <button class="toolbar-btn">
+              <button class="toolbar-btn" id="searchButton" type="button">
                 <span class="material-symbols-outlined" style="font-size: 18px;">globe</span>
                 <span>Search</span>
               </button>

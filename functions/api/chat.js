@@ -1,5 +1,4 @@
 export async function onRequestOptions() {
-  // Handle CORS preflight requests
   return new Response(null, {
     status: 204,
     headers: {
@@ -17,7 +16,6 @@ export async function onRequestPost(context) {
   };
 
   try {
-    // 1. Verify the AI binding exists
     if (!context.env || !context.env.AI) {
       return new Response(
         JSON.stringify({
@@ -28,10 +26,8 @@ export async function onRequestPost(context) {
       );
     }
 
-    // 2. Parse the request body safely
     const body = await context.request.json().catch(() => ({}));
 
-    // 3. Validate conversation memory payload
     if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
       return new Response(
         JSON.stringify({
@@ -42,7 +38,6 @@ export async function onRequestPost(context) {
       );
     }
 
-    // 4. Prepend system instructions
     const payloadMessages = [
       {
         role: "system",
@@ -51,13 +46,12 @@ export async function onRequestPost(context) {
       ...body.messages
     ];
 
-    // 5. Call the Google Gemma 3 model via Cloudflare Workers AI
+    // Using Llama 3.2 3B Instruct, which is universally available on all Cloudflare Workers AI accounts
     const aiResult = await context.env.AI.run(
-      "@cf/google/gemma-3-12b-it",
+      "@cf/meta/llama-3.2-3b-instruct",
       { messages: payloadMessages }
     );
 
-    // 6. Parse the AI response safely
     let generatedText = "";
     if (typeof aiResult === "string") {
       generatedText = aiResult;
@@ -69,7 +63,6 @@ export async function onRequestPost(context) {
       throw new Error("Model returned an empty response.");
     }
 
-    // 7. Return strict, clean JSON payload
     return new Response(
       JSON.stringify({
         success: true,

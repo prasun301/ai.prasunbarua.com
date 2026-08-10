@@ -42,7 +42,7 @@
 
       <div class="search-box">
         <div class="search-input-wrapper">
-          <span class="material-symbols-outlined search-icon">search</span>
+          <span class="material-symbols-outlined" style="font-size: 18px; color: var(--text-muted);">search</span>
           <input type="text" id="chatSearch" placeholder="Search chats...">
           <span class="keyboard-shortcut">⌘K</span>
         </div>
@@ -53,34 +53,34 @@
         <div class="history-section-title">Today</div>
         <a class="history-item active">
           <div class="history-item-left">
-            <span class="material-symbols-outlined">chat_bubble_outline</span>
+            <span class="material-symbols-outlined" style="font-size: 18px;">chat_bubble_outline</span>
             <span style="overflow: hidden; text-overflow: ellipsis;">Welcome to Prasun AI</span>
           </div>
           <div class="history-actions">
-            <button class="action-icon-btn" title="Rename"><span class="material-symbols-outlined">edit</span></button>
-            <button class="action-icon-btn" title="Delete"><span class="material-symbols-outlined">delete</span></button>
+            <button class="action-icon-btn" title="Rename"><span class="material-symbols-outlined" style="font-size: 16px;">edit</span></button>
+            <button class="action-icon-btn" title="Delete"><span class="material-symbols-outlined" style="font-size: 16px;">delete</span></button>
           </div>
         </a>
 
         <div class="history-section-title">Yesterday</div>
         <a class="history-item">
           <div class="history-item-left">
-            <span class="material-symbols-outlined">chat_bubble_outline</span>
+            <span class="material-symbols-outlined" style="font-size: 18px;">chat_bubble_outline</span>
             <span style="overflow: hidden; text-overflow: ellipsis;">Solar energy discussion</span>
           </div>
           <div class="history-actions">
-            <button class="action-icon-btn" title="Rename"><span class="material-symbols-outlined">edit</span></button>
-            <button class="action-icon-btn" title="Delete"><span class="material-symbols-outlined">delete</span></button>
+            <button class="action-icon-btn" title="Rename"><span class="material-symbols-outlined" style="font-size: 16px;">edit</span></button>
+            <button class="action-icon-btn" title="Delete"><span class="material-symbols-outlined" style="font-size: 16px;">delete</span></button>
           </div>
         </a>
         <a class="history-item">
           <div class="history-item-left">
-            <span class="material-symbols-outlined">chat_bubble_outline</span>
+            <span class="material-symbols-outlined" style="font-size: 18px;">chat_bubble_outline</span>
             <span style="overflow: hidden; text-overflow: ellipsis;">Website development</span>
           </div>
           <div class="history-actions">
-            <button class="action-icon-btn" title="Rename"><span class="material-symbols-outlined">edit</span></button>
-            <button class="action-icon-btn" title="Delete"><span class="material-symbols-outlined">delete</span></button>
+            <button class="action-icon-btn" title="Rename"><span class="material-symbols-outlined" style="font-size: 16px;">edit</span></button>
+            <button class="action-icon-btn" title="Delete"><span class="material-symbols-outlined" style="font-size: 16px;">delete</span></button>
           </div>
         </a>
       </div>
@@ -88,11 +88,11 @@
       <!-- Sidebar Footer Controls -->
       <div class="sidebar-footer">
         <button class="footer-nav-btn" id="themeButton">
-          <span class="material-symbols-outlined">light_mode</span>
+          <span class="material-symbols-outlined" style="font-size: 18px;">light_mode</span>
           <span>Appearance</span>
         </button>
         <button class="footer-nav-btn" id="settingsButton">
-          <span class="material-symbols-outlined">settings</span>
+          <span class="material-symbols-outlined" style="font-size: 18px;">settings</span>
           <span>Settings</span>
         </button>
 
@@ -150,7 +150,7 @@
         
         <!-- Welcome Screen (Visible on empty chat) -->
         <div class="welcome-screen" id="welcomeScreen">
-          <div style="font-size: 2.5rem; color: var(--accent-color);">
+          <div style="color: var(--accent-color);">
             <span class="material-symbols-outlined" style="font-size: 48px;">sparkles</span>
           </div>
           <div>
@@ -162,19 +162,34 @@
 
           <div class="suggestion-grid">
             <div class="suggestion-card" data-prompt="Explain how solar panels generate electricity in simple terms.">
-              <h4>⚡ Explain solar energy</h4>
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                <span class="material-symbols-outlined" style="font-size: 18px; color: var(--accent-color);">solar_power</span>
+                <h4>Explain solar energy</h4>
+              </div>
               <p>How solar panels generate electricity</p>
             </div>
+            
             <div class="suggestion-card" data-prompt="Help me outline a clean website structure for a web development portfolio.">
-              <h4>🌐 Website structure</h4>
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                <span class="material-symbols-outlined" style="font-size: 18px; color: var(--accent-color);">web</span>
+                <h4>Website structure</h4>
+              </div>
               <p>Help me write a professional website</p>
             </div>
+            
             <div class="suggestion-card" data-prompt="Give me a step-by-step guide to learn JavaScript for beginners.">
-              <h4>💻 Learn JavaScript</h4>
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                <span class="material-symbols-outlined" style="font-size: 18px; color: var(--accent-color);">code</span>
+                <h4>Learn JavaScript</h4>
+              </div>
               <p>Step-by-step beginner guide</p>
             </div>
+            
             <div class="suggestion-card" data-prompt="Tell me 5 interesting and lesser-known facts about space.">
-              <h4>✨ Science facts</h4>
+              <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                <span class="material-symbols-outlined" style="font-size: 18px; color: var(--accent-color);">science</span>
+                <h4>Science facts</h4>
+              </div>
               <p>Five interesting facts about space</p>
             </div>
           </div>

@@ -1,37 +1,66 @@
 /* =========================================================
 PRASUN AI
 Frontend Application
+Real Gemini AI Connection
 ========================================================= */
 
 "use strict";
 
 /* =========================================================
+CONFIGURATION
+========================================================= */
+
+const API_URL =
+"https://prasun-ai-api.prasun301.workers.dev/";
+
+/* =========================================================
 ELEMENTS
 ========================================================= */
 
-const sidebar = document.getElementById("sidebar");
-const sidebarOverlay = document.getElementById("sidebarOverlay");
+const sidebar =
+document.getElementById("sidebar");
 
-const openSidebarButton = document.getElementById("openSidebar");
-const closeSidebarButton = document.getElementById("closeSidebar");
+const sidebarOverlay =
+document.getElementById("sidebarOverlay");
 
-const newChatButton = document.getElementById("newChatButton");
+const openSidebarButton =
+document.getElementById("openSidebar");
 
-const messageInput = document.getElementById("messageInput");
-const sendButton = document.getElementById("sendButton");
+const closeSidebarButton =
+document.getElementById("closeSidebar");
 
-const messagesContainer = document.getElementById("messages");
-const welcomeScreen = document.getElementById("welcomeScreen");
+const newChatButton =
+document.getElementById("newChatButton");
 
-const themeButton = document.getElementById("themeButton");
+const messageInput =
+document.getElementById("messageInput");
 
-const chatSearch = document.getElementById("chatSearch");
+const sendButton =
+document.getElementById("sendButton");
+
+const messagesContainer =
+document.getElementById("messages");
+
+const welcomeScreen =
+document.getElementById("welcomeScreen");
+
+const themeButton =
+document.getElementById("themeButton");
+
+const chatSearch =
+document.getElementById("chatSearch");
 
 const suggestionCards =
 document.querySelectorAll(".suggestion-card");
 
 const historyItems =
 document.querySelectorAll(".history-item");
+
+/* =========================================================
+CHAT HISTORY
+========================================================= */
+
+let conversationHistory = [];
 
 /* =========================================================
 SIDEBAR
@@ -154,12 +183,14 @@ messageInput.addEventListener(
 }
 
 /* =========================================================
-CREATE MESSAGE
+CREATE USER MESSAGE
 ========================================================= */
 
 function createUserMessage(text) {
 
 ```
+if (!messagesContainer) return;
+
 const message =
     document.createElement("div");
 
@@ -182,9 +213,15 @@ messagesContainer.appendChild(message);
 
 }
 
+/* =========================================================
+CREATE AI MESSAGE
+========================================================= */
+
 function createAIMessage(text) {
 
 ```
+if (!messagesContainer) return;
+
 const message =
     document.createElement("div");
 
@@ -219,69 +256,122 @@ messagesContainer.appendChild(message);
 }
 
 /* =========================================================
-TEMPORARY AI RESPONSE
+CREATE THINKING MESSAGE
 ========================================================= */
 
-function generateTemporaryResponse(userText) {
+function createThinkingMessage() {
 
 ```
-const text =
-    userText.toLowerCase();
+if (!messagesContainer) {
+    return null;
+}
 
-if (
-    text.includes("hello") ||
-    text.includes("hi")
-) {
+const message =
+    document.createElement("div");
 
-    return (
-        "Hello! 👋 I'm Prasun AI. " +
-        "I'm ready to help you."
+message.className =
+    "message ai thinking-message";
+
+const avatar =
+    document.createElement("div");
+
+avatar.className =
+    "ai-avatar";
+
+avatar.textContent =
+    "✦";
+
+const content =
+    document.createElement("div");
+
+content.className =
+    "message-content";
+
+content.textContent =
+    "Thinking...";
+
+message.appendChild(avatar);
+
+message.appendChild(content);
+
+messagesContainer.appendChild(message);
+
+scrollToBottom();
+
+return message;
+```
+
+}
+
+/* =========================================================
+REAL GEMINI AI
+========================================================= */
+
+async function getAIResponse(userText) {
+
+```
+const response =
+    await fetch(
+        API_URL,
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+
+            body: JSON.stringify({
+
+                message:
+                    userText,
+
+                history:
+                    conversationHistory
+
+            })
+        }
     );
 
+
+let data;
+
+try {
+
+    data =
+        await response.json();
+
+} catch (error) {
+
+    throw new Error(
+        "The AI server returned an invalid response."
+    );
+}
+
+
+if (!response.ok) {
+
+    throw new Error(
+        data &&
+        data.error
+            ? data.error
+            : "AI request failed."
+    );
 }
 
 
 if (
-    text.includes("solar") ||
-    text.includes("electricity")
+    !data ||
+    typeof data.answer !== "string"
 ) {
 
-    return (
-        "Solar panels convert sunlight into " +
-        "electricity using photovoltaic cells. " +
-        "When sunlight strikes the semiconductor " +
-        "material, it creates an electric current. " +
-        "In the next stage of development, " +
-        "Prasun AI will provide real AI-generated " +
-        "answers to questions like this."
+    throw new Error(
+        "The AI returned an invalid answer."
     );
-
 }
 
 
-if (
-    text.includes("javascript") ||
-    text.includes("code")
-) {
-
-    return (
-        "JavaScript is a programming language " +
-        "commonly used to make websites interactive. " +
-        "Prasun AI will eventually be able to " +
-        "generate, explain and debug code using " +
-        "a real AI model."
-    );
-
-}
-
-
-return (
-    "Thanks for your message! 👍\n\n" +
-    "The Prasun AI interface is working. " +
-    "Right now this is a frontend test response. " +
-    "In the next stage, we'll connect this interface " +
-    "to a real AI model through a secure backend."
-);
+return data.answer.trim();
 ```
 
 }
@@ -290,7 +380,7 @@ return (
 SEND MESSAGE
 ========================================================= */
 
-function sendMessage() {
+async function sendMessage() {
 
 ```
 if (!messageInput) return;
@@ -307,7 +397,6 @@ if (welcomeScreen) {
 
     welcomeScreen.style.display =
         "none";
-
 }
 
 
@@ -318,7 +407,8 @@ createUserMessage(text);
 
 /* Clear input */
 
-messageInput.value = "";
+messageInput.value =
+    "";
 
 messageInput.style.height =
     "auto";
@@ -331,21 +421,114 @@ updateSendButton();
 scrollToBottom();
 
 
-/* Temporary AI response */
+/* Show thinking */
 
-setTimeout(
-    () => {
+const thinkingMessage =
+    createThinkingMessage();
 
-        const response =
-            generateTemporaryResponse(text);
 
-        createAIMessage(response);
+/* Disable send button */
 
-        scrollToBottom();
+if (sendButton) {
 
-    },
-    600
-);
+    sendButton.disabled =
+        true;
+
+    sendButton.classList.add(
+        "loading"
+    );
+}
+
+
+try {
+
+    /* Ask Gemini through Cloudflare */
+
+    const answer =
+        await getAIResponse(text);
+
+
+    /* Remove thinking message */
+
+    if (thinkingMessage) {
+
+        thinkingMessage.remove();
+    }
+
+
+    /* Add AI response */
+
+    createAIMessage(answer);
+
+
+    /* Save conversation */
+
+    conversationHistory.push({
+
+        role: "user",
+
+        text: text
+
+    });
+
+
+    conversationHistory.push({
+
+        role: "model",
+
+        text: answer
+
+    });
+
+
+    /* Keep history manageable */
+
+    if (
+        conversationHistory.length >
+        40
+    ) {
+
+        conversationHistory =
+            conversationHistory.slice(
+                -40
+            );
+    }
+
+
+} catch (error) {
+
+    console.error(
+        "Prasun AI error:",
+        error
+    );
+
+
+    /* Remove thinking message */
+
+    if (thinkingMessage) {
+
+        thinkingMessage.remove();
+    }
+
+
+    createAIMessage(
+        "Sorry, I couldn't connect to Prasun AI right now.\n\n" +
+        "Please try again in a moment."
+    );
+
+} finally {
+
+    if (sendButton) {
+
+        sendButton.classList.remove(
+            "loading"
+        );
+    }
+
+    updateSendButton();
+
+    scrollToBottom();
+}
 ```
 
 }
@@ -384,9 +567,7 @@ messageInput.addEventListener(
             event.preventDefault();
 
             sendMessage();
-
         }
-
     }
 );
 ```
@@ -428,15 +609,19 @@ newChatButton.addEventListener(
     "click",
     () => {
 
-        messagesContainer.innerHTML =
-            "";
+        if (messagesContainer) {
+
+            messagesContainer.innerHTML =
+                "";
+        }
+
 
         if (welcomeScreen) {
 
             welcomeScreen.style.display =
                 "flex";
-
         }
+
 
         if (messageInput) {
 
@@ -445,19 +630,22 @@ newChatButton.addEventListener(
 
             messageInput.style.height =
                 "auto";
-
         }
+
+
+        conversationHistory =
+            [];
+
 
         updateSendButton();
 
         closeSidebar();
 
+
         if (messageInput) {
 
             messageInput.focus();
-
         }
-
     }
 );
 ```
@@ -476,13 +664,23 @@ suggestionCards.forEach(
         "click",
         () => {
 
+            if (!messageInput) {
+                return;
+            }
+
+
             const prompt =
                 card.dataset.prompt;
 
-            if (!prompt) return;
+
+            if (!prompt) {
+                return;
+            }
+
 
             messageInput.value =
                 prompt;
+
 
             resizeTextarea();
 
@@ -510,12 +708,12 @@ const savedTheme =
         "prasun-ai-theme"
     );
 
+
 if (savedTheme === "dark") {
 
     document.body.classList.add(
         "dark"
     );
-
 }
 ```
 
@@ -528,10 +726,12 @@ document.body.classList.toggle(
     "dark"
 );
 
+
 const isDark =
     document.body.classList.contains(
         "dark"
     );
+
 
 localStorage.setItem(
     "prasun-ai-theme",
@@ -572,12 +772,14 @@ chatSearch.addEventListener(
                 .trim()
                 .toLowerCase();
 
+
         historyItems.forEach(
             (item) => {
 
                 const text =
                     item.textContent
                         .toLowerCase();
+
 
                 if (
                     !search ||
@@ -591,7 +793,6 @@ chatSearch.addEventListener(
 
                     item.style.display =
                         "none";
-
                 }
 
             }
@@ -625,12 +826,13 @@ historyItems.forEach(
                 }
             );
 
+
             item.classList.add(
                 "active"
             );
 
-            closeSidebar();
 
+            closeSidebar();
         }
     );
 
@@ -656,12 +858,11 @@ document.addEventListener(
 
         event.preventDefault();
 
+
         if (chatSearch) {
 
             chatSearch.focus();
-
         }
-
     }
 
 }

@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sidebarOverlay = document.getElementById('sidebarOverlay');
 
   function toggleSidebar() {
-    sidebar.classList.toggle('open');
+    if (sidebar) sidebar.classList.toggle('open');
     if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
   }
 
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
   if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
-  // Theme / Appearance Toggle Logic
+  // Theme Toggle Logic
   const themeButton = document.getElementById('themeButton');
   if (themeButton) {
     themeButton.addEventListener('click', () => {
@@ -34,29 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeSettingsModal = document.getElementById('closeSettingsModal');
 
   if (settingsBtn && settingsModal) {
-    settingsBtn.addEventListener('click', () => {
-      settingsModal.showModal();
-    });
+    settingsBtn.addEventListener('click', () => settingsModal.showModal());
   }
 
   if (closeSettingsModal && settingsModal) {
-    closeSettingsModal.addEventListener('click', () => {
-      settingsModal.close();
-    });
-  }
-
-  if (settingsModal) {
-    settingsModal.addEventListener('click', (event) => {
-      const rect = settingsModal.getBoundingClientRect();
-      if (
-        event.clientX < rect.left ||
-        event.clientX > rect.right ||
-        event.clientY < rect.top ||
-        event.clientY > rect.bottom
-      ) {
-        settingsModal.close();
-      }
-    });
+    closeSettingsModal.addEventListener('click', () => settingsModal.close());
   }
 
   // Model Selector Dropdown Logic
@@ -80,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
       option.addEventListener('click', () => {
         modelDropdown.querySelectorAll('.model-option').forEach(opt => opt.classList.remove('active'));
         option.classList.add('active');
-        const modelName = option.querySelector('strong').textContent;
+        const modelName = option.querySelector('strong')?.textContent || 'Gemini';
         const modelBtnText = modelSelectorBtn.querySelector('.model-name');
         if (modelBtnText) modelBtnText.textContent = modelName;
         modelDropdown.hidden = true;
@@ -98,22 +80,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Gemini API Request
   async function getGeminiResponse(query) {
-    const API_KEY = 'AIzaSyCbhcI0F5R3vmQByBZVozcwgBSJe-TDCFI'; // Paste your AI Studio API key here
+    const API_KEY = 'AIzaSyCbhcI0F5R3vmQByBZVozcwgBSJe-TDCFI'; // Replace with your actual API key
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
 
     try {
       const response = await fetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: query }] }]
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: query }] }] })
       });
 
       const data = await response.json();
-      
       if (data.candidates && data.candidates[0].content) {
         return data.candidates[0].content.parts[0].text;
       } else if (data.error) {
@@ -122,48 +99,50 @@ document.addEventListener('DOMContentLoaded', () => {
         return "Received an unexpected response format from Gemini.";
       }
     } catch (error) {
-      return "Network error: Unable to connect to Gemini API. Check your internet connection or API key.";
+      return "Network error: Unable to connect to Gemini API.";
     }
   }
 
-  // Combined LaTeX & Markdown Parser
+  // Markdown & LaTeX Parser
   function parseMarkdown(text) {
     if (!text) return '';
 
-    // 1. Clean up LaTeX math formulas (e.g. $30\frac{3}{4}$ -> 30 3/4)
-    let cleanedText = text.replace(/\$([^$]+)\$/g, (match, formula) => {
+    // Convert LaTeX math expressions ($30\frac{3}{4}$ -> 30 3/4)
+    let cleaned = text.replace(/\$([^$]+)\$/g, (match, formula) => {
       let cleanMath = formula
         .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$1/$2')
         .replace(/\\/g, '')
         .trim();
-      return `<strong style="background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px;">${cleanMath}</strong>`;
+      return `<strong>${cleanMath}</strong>`;
     });
 
-    // 2. Render Markdown using Marked.js
+    // Use marked.js if available, otherwise apply basic fallback
     if (typeof marked !== 'undefined') {
-      return marked.parse(cleanedText);
+      return marked.parse(cleaned);
     }
 
-    // Fallback if marked failed to load from CDN
-    return cleanedText
+    return cleaned
+      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1>$1</h1>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/\n/g, '<br>');
   }
 
-  // Send Message Logic
+  // Send Message
   async function sendMessage() {
     const text = messageInput.value.trim();
     if (!text) return;
 
-    if (welcomeScreen) {
-      welcomeScreen.style.display = 'none';
-    }
+    if (welcomeScreen) welcomeScreen.style.display = 'none';
 
-    // Append User Message
+    // Render User Message
     const userMsgDiv = document.createElement('div');
+    userMsgDiv.className = 'user-message-wrapper';
     userMsgDiv.style.cssText = 'margin-bottom: 16px; display: flex; justify-content: flex-end; width: 100%;';
     userMsgDiv.innerHTML = `
-      <div style="background-color: var(--hover-bg, #f1f3f4); padding: 12px 16px; border-radius: 16px; max-width: 75%; word-break: break-word; font-size: 0.95rem; color: var(--text-primary, #202124);">
+      <div style="background-color: var(--hover-bg, #f1f3f4); padding: 12px 16px; border-radius: 16px; max-width: 75%; word-break: break-word;">
         ${parseMarkdown(text)}
       </div>
     `;
@@ -174,33 +153,31 @@ document.addEventListener('DOMContentLoaded', () => {
     sendButton.disabled = true;
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    // Show Loading Placeholder for AI
+    // Render Thinking Indicator
     const aiMsgDiv = document.createElement('div');
+    aiMsgDiv.className = 'ai-message-wrapper';
     aiMsgDiv.style.cssText = 'margin-bottom: 24px; display: flex; justify-content: flex-start; gap: 12px; width: 100%;';
     aiMsgDiv.innerHTML = `
       <div style="width: 32px; height: 32px; background-color: #1a73e8; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
         <span class="material-symbols-outlined" style="font-size: 18px;">smart_toy</span>
       </div>
-      <div id="loadingBubble" style="background-color: var(--card-bg, #ffffff); border: 1px solid var(--border-color, #e0e0e0); padding: 14px 18px; border-radius: 16px; color: var(--text-muted, #5f6368); font-size: 0.95rem; max-width: 85%;">
+      <div id="loadingBubble" style="background-color: var(--card-bg, #ffffff); border: 1px solid var(--border-color, #e0e0e0); padding: 14px 18px; border-radius: 16px; max-width: 85%; line-height: 1.6;">
         Thinking...
       </div>
     `;
     messagesContainer.appendChild(aiMsgDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    // Fetch from Gemini API
+    // Fetch API Response
     const rawAiResponse = await getGeminiResponse(text);
     
-    // Replace placeholder with parsed Markdown response
+    // Update Bubble with Parsed Response
     const bubbleContent = aiMsgDiv.querySelector('#loadingBubble');
-    bubbleContent.style.color = 'var(--text-primary, #202124)';
-    bubbleContent.style.lineHeight = '1.6';
     bubbleContent.innerHTML = parseMarkdown(rawAiResponse);
-    
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
-  // Input listeners
+  // Event Listeners
   if (messageInput && sendButton) {
     messageInput.addEventListener('input', () => {
       messageInput.style.height = 'auto';
@@ -211,18 +188,14 @@ document.addEventListener('DOMContentLoaded', () => {
     messageInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        if (!sendButton.disabled) {
-          sendMessage();
-        }
+        if (!sendButton.disabled) sendMessage();
       }
     });
 
-    sendButton.addEventListener('click', () => {
-      sendMessage();
-    });
+    sendButton.addEventListener('click', sendMessage);
   }
 
-  // Clear & New Chat Buttons
+  // New & Clear Chat Buttons
   if (newChatButton) {
     newChatButton.addEventListener('click', () => {
       messagesContainer.innerHTML = '';
@@ -242,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Suggestion Cards Handling
+  // Prompt Suggestion Cards
   document.querySelectorAll('.suggestion-card').forEach(card => {
     card.addEventListener('click', () => {
       const promptText = card.getAttribute('data-prompt');
@@ -251,33 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInput.style.height = 'auto';
         messageInput.style.height = `${messageInput.scrollHeight}px`;
         if (sendButton) sendButton.disabled = false;
-        messageInput.focus();
         sendMessage();
       }
     });
-  });
-
-  // History Actions (Rename/Delete)
-  document.querySelectorAll('.history-item').forEach(item => {
-    const editBtn = item.querySelector('[title="Rename"]');
-    const deleteBtn = item.querySelector('[title="Delete"]');
-
-    if (editBtn) {
-      editBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const titleSpan = item.querySelector('.history-item-left span:last-child');
-        const newTitle = prompt('Rename chat:', titleSpan.textContent);
-        if (newTitle) titleSpan.textContent = newTitle;
-      });
-    }
-
-    if (deleteBtn) {
-      deleteBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (confirm('Are you sure you want to delete this chat?')) {
-          item.remove();
-        }
-      });
-    }
   });
 });

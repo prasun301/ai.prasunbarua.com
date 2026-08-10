@@ -1,46 +1,65 @@
+// functions/api/chat.js
+
+// Handle CORS Preflight requests for local development or cross-origin calls
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    },
+  });
+}
+
 export async function onRequestPost(context) {
+  const corsHeaders = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
+
   try {
-    const { request, env } = context;
-    const { message } = await request.json();
+    const body = await context.request.json();
+    
+    // Support either single message or array of past messages
+    const userMessage = body.message || body.prompt;
+    const history = body.history || []; // Pass array of [{role: 'user', content: '...'}, ...] from frontend if available
 
-    if (!message) {
-      return new Response(JSON.stringify({ error: "Message is required" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
+    if (!userMessage && history.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "Message content is required." }), 
+        { status: 400, headers: corsHeaders }
+      );
     }
 
-    // Call Gemini API securely from Cloudflare's server
-    const model = env.GEMINI_MODEL || "gemini-2.5-flash";
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`;
+    // Prepare message payload
+    const systemPrompt = { 
+      role: "system", 
+      content: "You are Prasun AI, a helpful, precise, and friendly AI assistant." 
+    };
 
-    const apiResponse = await fetch(geminiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: message }] }]
-      })
-    });
+    let messages = [systemPrompt];
 
-    const data = await apiResponse.json();
-
-    if (!apiResponse.ok) {
-      return new Response(JSON.stringify({ error: data.error?.message || "Gemini API error" }), {
-        status: apiResponse.status,
-        headers: { "Content-Type": "application/json" }
-      });
+    if (history.length > 0) {
+      messages = messages.concat(history);
+    } else if (userMessage) {
+      messages.push({ role: "user", content: userMessage });
     }
 
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response generated.";
-
-    return new Response(JSON.stringify({ reply }), {
-      headers: { "Content-Type": "application/json" }
+    // Call Cloudflare Workers AI model
+    const aiResult = await context.env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
+      messages: messages
     });
+
+    return new Response(
+      JSON.stringify({ response: aiResult.response || aiResult }), 
+      { status: 200, headers: corsHeaders }
+    );
 
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
+    return new Response(
+      JSON.stringify({ error: err.message || "Internal Server Error" }), 
+      { status: 500, headers: corsHeaders }
+    );
   }
 }

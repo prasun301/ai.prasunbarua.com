@@ -1,221 +1,91 @@
-// functions/api/chat.js
-
-function headers() {
-  return {
-    "Content-Type": "application/json; charset=utf-8",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type"
-  };
-}
-
 export async function onRequestOptions() {
+  // Handle CORS preflight requests
   return new Response(null, {
     status: 204,
-    headers: headers()
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    },
   });
 }
 
 export async function onRequestPost(context) {
-  const responseHeaders = headers();
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  };
 
   try {
-    // --------------------------------------------------
-    // TEST 1 — Is the AI binding available?
-    // --------------------------------------------------
-
-    if (!context.env) {
+    // 1. Verify the AI binding exists
+    if (!context.env || !context.env.AI) {
       return new Response(
         JSON.stringify({
-          ok: false,
-          step: "environment",
-          error: "context.env is missing"
+          success: false,
+          error: "Workers AI binding is missing. Please set variable name 'AI' under Settings > Functions in Cloudflare Pages."
         }),
-        {
-          status: 500,
-          headers: responseHeaders
-        }
+        { status: 500, headers }
       );
     }
 
-    if (!context.env.AI) {
+    // 2. Parse the request body safely
+    const body = await context.request.json().catch(() => ({}));
+
+    // 3. Validate conversation memory payload
+    if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
       return new Response(
         JSON.stringify({
-          ok: false,
-          step: "binding",
-          error:
-            "Workers AI binding 'AI' was not found. Check Cloudflare Pages > Settings > Functions > Bindings."
+          success: false,
+          error: "Invalid request format. A 'messages' array is required."
         }),
-        {
-          status: 500,
-          headers: responseHeaders
-        }
+        { status: 400, headers }
       );
     }
 
-    // --------------------------------------------------
-    // TEST 2 — Read request
-    // --------------------------------------------------
-
-    let body;
-
-    try {
-      body = await context.request.json();
-    } catch (error) {
-      return new Response(
-        JSON.stringify({
-          ok: false,
-          step: "json",
-          error: "Request body is not valid JSON.",
-          details: error.message
-        }),
-        {
-          status: 400,
-          headers: responseHeaders
-        }
-      );
-    }
-
-    // --------------------------------------------------
-    // TEST 3 — Get user message
-    // --------------------------------------------------
-
-    let userMessage = "";
-
-    if (
-      Array.isArray(body?.messages) &&
-      body.messages.length > 0
-    ) {
-      const lastMessage =
-        body.messages[body.messages.length - 1];
-
-      if (
-        lastMessage &&
-        typeof lastMessage.content === "string"
-      ) {
-        userMessage =
-          lastMessage.content.trim();
-      }
-    }
-
-    if (
-      !userMessage &&
-      typeof body?.message === "string"
-    ) {
-      userMessage =
-        body.message.trim();
-    }
-
-    if (
-      !userMessage &&
-      typeof body?.prompt === "string"
-    ) {
-      userMessage =
-        body.prompt.trim();
-    }
-
-    if (!userMessage) {
-      return new Response(
-        JSON.stringify({
-          ok: false,
-          step: "message",
-          error: "No user message was received.",
-          received: body
-        }),
-        {
-          status: 400,
-          headers: responseHeaders
-        }
-      );
-    }
-
-    // --------------------------------------------------
-    // TEST 4 — Call Gemini
-    // --------------------------------------------------
-
-    let result;
-
-    try {
-      result = await context.env.AI.run(
-        "google/gemini-3-flash",
-        {
-          contents: [
-            {
-              role: "user",
-              parts: [
-                {
-                  text: userMessage
-                }
-              ]
-            }
-          ]
-        }
-      );
-    } catch (error) {
-      console.error(
-        "AI.run ERROR:",
-        error
-      );
-
-      return new Response(
-        JSON.stringify({
-          ok: false,
-          step: "AI.run",
-          error:
-            error?.message ||
-            "AI.run failed.",
-          name:
-            error?.name || null,
-          stack:
-            error?.stack || null
-        }),
-        {
-          status: 502,
-          headers: responseHeaders
-        }
-      );
-    }
-
-    // --------------------------------------------------
-    // TEST 5 — Return RAW Gemini result
-    // --------------------------------------------------
-
-    return new Response(
-      JSON.stringify({
-        ok: true,
-        step: "complete",
-        model: "google/gemini-3-flash",
-        result: result
-      }),
+    // 4. Prepend system instructions
+    const payloadMessages = [
       {
-        status: 200,
-        headers: responseHeaders
-      }
+        role: "system",
+        content: "You are Prasun AI, an intelligent, helpful, precise, and friendly AI assistant. Format your responses in clean Markdown."
+      },
+      ...body.messages
+    ];
+
+    // 5. Call the Google Gemma 3 model via Cloudflare Workers AI
+    const aiResult = await context.env.AI.run(
+      "@cf/google/gemma-3-12b-it",
+      { messages: payloadMessages }
     );
 
-  } catch (error) {
+    // 6. Parse the AI response safely
+    let generatedText = "";
+    if (typeof aiResult === "string") {
+      generatedText = aiResult;
+    } else if (aiResult && typeof aiResult === "object") {
+      generatedText = aiResult.response || aiResult.result || "";
+    }
 
-    console.error(
-      "CHAT FUNCTION ERROR:",
-      error
-    );
+    if (!generatedText) {
+      throw new Error("Model returned an empty response.");
+    }
 
+    // 7. Return strict, clean JSON payload
     return new Response(
       JSON.stringify({
-        ok: false,
-        step: "unknown",
-        error:
-          error?.message ||
-          "Unknown server error.",
-        name:
-          error?.name || null,
-        stack:
-          error?.stack || null
+        success: true,
+        response: generatedText
       }),
-      {
-        status: 500,
-        headers: responseHeaders
-      }
+      { status: 200, headers }
+    );
+
+  } catch (err) {
+    console.error("AI API Error:", err);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: err.message || "Internal Server Error"
+      }),
+      { status: 500, headers }
     );
   }
 }

@@ -446,6 +446,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Auto-Save Settings Logic
+const userNameInput = document.getElementById('userNameInput');
+const systemPromptInput = document.getElementById('systemPromptInput');
+const userNameBadge = document.querySelector('.user-name');
+
+// Load saved settings when the page opens
+window.addEventListener('DOMContentLoaded', () => {
+  const savedName = localStorage.getItem('prasun_username');
+  const savedPrompt = localStorage.getItem('prasun_system_prompt');
+  
+  if (savedName && userNameInput) {
+    userNameInput.value = savedName;
+    if (userNameBadge) userNameBadge.textContent = savedName;
+  }
+  if (savedPrompt && systemPromptInput) {
+    systemPromptInput.value = savedPrompt;
+  }
+});
+
+// Auto-save Display Name as user types
+if (userNameInput) {
+  userNameInput.addEventListener('input', () => {
+    const newName = userNameInput.value.trim() || 'Guest';
+    localStorage.setItem('prasun_username', newName);
+    if (userNameBadge) {
+      userNameBadge.textContent = newName;
+    }
+  });
+}
+
+// Auto-save Custom Instructions as user types
+if (systemPromptInput) {
+  systemPromptInput.addEventListener('input', () => {
+    localStorage.setItem('prasun_system_prompt', systemPromptInput.value.trim());
+  });
+}
+
   // ==========================================
   // 8. INPUT LISTENERS
   // ==========================================
@@ -503,3 +540,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+

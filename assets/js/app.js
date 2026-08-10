@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 4. FILE ATTACHMENTS
+  // 4. FILE ATTACHMENTS & SEARCH TOGGLE
   // ==========================================
 
   let filePreviewBadge = document.getElementById('filePreviewBadge');
@@ -213,8 +213,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-if (searchButton) {
-    // Default to active state on load
+
+  if (searchButton) {
     searchButton.style.color = '#1a73e8';
     searchButton.style.backgroundColor = 'rgba(26,115,232,0.08)';
 
@@ -229,6 +229,7 @@ if (searchButton) {
       }
     });
   }
+
   function clearFileAttachment() {
     selectedFilePart = null;
     selectedFileName = '';
@@ -279,12 +280,10 @@ if (searchButton) {
     if (filePart) parts.push(filePart);
     if (query) parts.push({ text: query });
 
-    // Build payload dynamically
     const requestPayload = {
       contents: [{ parts: parts }]
     };
 
-    // Only include Google Search tool if the toggle is turned ON
     if (useGoogleSearch) {
       requestPayload.tools = [{ googleSearch: {} }];
     }
@@ -309,7 +308,6 @@ if (searchButton) {
         let sources = [];
         const metadata = candidate.groundingMetadata;
         if (metadata) {
-          // Check standard grounding chunks
           if (metadata.groundingChunks) {
             sources = metadata.groundingChunks
               .filter(chunk => chunk.web && (chunk.web.uri || chunk.web.url))
@@ -317,13 +315,13 @@ if (searchButton) {
                 title: chunk.web.title || chunk.web.uri || chunk.web.url,
                 url: chunk.web.uri || chunk.web.url
               }));
-          }
-          // Fallback check for search entry point / web search queries if chunks are formatted differently
-          else if (metadata.webSearchQueries && metadata.webSearchQueries.length > 0 && metadata.searchEntryPoint) {
-            // If search was executed, display a generic search indicator or snippet if available
+          } else if (metadata.webSearchQueries && metadata.webSearchQueries.length > 0 && metadata.searchEntryPoint) {
             sources = [{ title: `Searched: "${metadata.webSearchQueries[0]}"`, url: "#" }];
           }
         }
+
+        return { text: textOutput, sources: sources };
+      }
 
       return { text: "Received an unexpected response format from server.", sources: [] };
     } catch (error) {
@@ -350,7 +348,6 @@ if (searchButton) {
     clearFileAttachment();
 
     if (messagesContainer) {
-      // User Message
       const userMsgDiv = document.createElement('div');
       userMsgDiv.className = 'user-message-wrapper';
       userMsgDiv.style.cssText = 'margin-bottom: 16px; display: flex; justify-content: flex-end; width: 100%;';
@@ -372,7 +369,6 @@ if (searchButton) {
       `;
       messagesContainer.appendChild(userMsgDiv);
 
-      // Loading Indicator
       const aiMsgDiv = document.createElement('div');
       aiMsgDiv.className = 'ai-message-wrapper';
       aiMsgDiv.style.cssText = 'margin-bottom: 24px; display: flex; justify-content: flex-start; gap: 12px; width: 100%;';
@@ -387,10 +383,8 @@ if (searchButton) {
       messagesContainer.appendChild(aiMsgDiv);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-      // API Call
       const responseData = await getGeminiResponse(text, currentFilePart);
 
-      // Format Sources
       let sourcesHTML = '';
       if (responseData.sources && responseData.sources.length > 0) {
         const links = responseData.sources.slice(0, 5).map(s => 
@@ -437,7 +431,6 @@ if (searchButton) {
     sendButton.addEventListener('click', sendMessage);
   }
 
-  // New & Clear Chat
   if (newChatButton) {
     newChatButton.addEventListener('click', () => {
       if (messagesContainer) messagesContainer.innerHTML = '';
@@ -458,7 +451,6 @@ if (searchButton) {
     });
   }
 
-  // Suggestion Cards
   document.querySelectorAll('.suggestion-card').forEach(card => {
     card.addEventListener('click', () => {
       const promptText = card.getAttribute('data-prompt');

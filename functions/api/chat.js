@@ -1,5 +1,17 @@
 // functions/api/chat.js
 
+// Handle CORS Preflight requests
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    },
+  });
+}
+
 export async function onRequestPost(context) {
   const headers = {
     "Content-Type": "application/json",
@@ -7,11 +19,11 @@ export async function onRequestPost(context) {
   };
 
   try {
-    // 1. Guard against missing Workers AI binding
+    // 1. Check for Workers AI binding
     if (!context.env || !context.env.AI) {
       return new Response(
         JSON.stringify({ 
-          error: "Workers AI binding is missing. Set variable name 'AI' under Settings > Functions." 
+          error: "Workers AI binding is missing. Please set variable name 'AI' under Settings > Functions in Cloudflare Pages." 
         }), 
         { status: 500, headers }
       );
@@ -19,7 +31,7 @@ export async function onRequestPost(context) {
 
     const body = await context.request.json().catch(() => ({}));
     
-    // 2. Extract input text from various possible frontend request formats
+    // 2. Extract user input flexible to different request formats
     let promptText = "";
     if (typeof body === "string") {
       promptText = body;
@@ -36,20 +48,20 @@ export async function onRequestPost(context) {
 
     if (!promptText) {
       return new Response(
-        JSON.stringify({ error: "No message content was found in the request." }), 
+        JSON.stringify({ error: "Message content is required." }), 
         { status: 400, headers }
       );
     }
 
-    // 3. Call Cloudflare Workers AI
+    // 3. Call Cloudflare Workers AI with active model
     const aiResult = await context.env.AI.run("@cf/meta/llama-3.2-3b-instruct", {
       messages: [
-        { role: "system", content: "You are Prasun AI, a helpful, friendly, and precise assistant." },
+        { role: "system", content: "You are Prasun AI, an intelligent, helpful, precise, and friendly AI assistant." },
         { role: "user", content: promptText }
       ]
     });
 
-    // 4. Safely extract generated text from Workers AI output
+    // 4. Safely extract generated output string
     let generatedText = "";
     if (typeof aiResult === "string") {
       generatedText = aiResult;
@@ -61,10 +73,10 @@ export async function onRequestPost(context) {
     }
 
     if (!generatedText) {
-      generatedText = "I received your prompt, but no response text was generated. Please try again.";
+      generatedText = "I received your message, but no output text was generated.";
     }
 
-    // 5. Payload containing all standard JSON keys so app.js parses it smoothly
+    // 5. Flexible JSON payload ensuring frontend app.js reads response smoothly
     const payload = {
       response: generatedText,
       reply: generatedText,

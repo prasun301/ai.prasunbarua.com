@@ -162,20 +162,28 @@
     </main>
   </div>
 
-  <dialog class="modal" id="settingsModal">
-    <div class="modal-header">
-      <h3>Settings</h3>
-      <button class="icon-btn" id="closeSettingsModal">
-        <span class="material-symbols-outlined">close</span>
-      </button>
+ <dialog class="modal" id="settingsModal">
+  <div class="modal-header">
+    <h3>Settings</h3>
+    <button class="icon-btn" id="closeSettingsModal">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+  <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
+    <div class="input-group">
+      <label for="userNameInput">Display Name</label>
+      <input type="text" id="userNameInput" value="Guest">
     </div>
-    <div class="modal-body">
-      <div class="input-group">
-        <label for="userNameInput">Display Name</label>
-        <input type="text" id="userNameInput" value="Guest">
-      </div>
+    <div class="input-group">
+      <label for="apiKeyInput">Gemini API Key (Optional)</label>
+      <input type="password" id="apiKeyInput" placeholder="Enter custom API key...">
     </div>
-  </dialog>
+    <div class="input-group">
+      <label for="systemPromptInput">Custom Instructions</label>
+      <textarea id="systemPromptInput" class="message-textarea" style="border: 1px solid var(--border-color); border-radius: 8px; padding: 8px;" placeholder="How would you like the AI to respond?"></textarea>
+    </div>
+  </div>
+</dialog>
 
   <script src="assets/js/app.js"></script>
 </body>

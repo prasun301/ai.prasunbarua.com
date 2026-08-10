@@ -5,21 +5,26 @@
    Frontend Application
    ========================================================= */
 
-/*
- * Cloudflare Worker API
- *
- * IMPORTANT:
- * Do not use Markdown here.
- */
-const API_URL = "https://prasun-ai-api.prasun301.workers.dev";
+/* =========================================================
+   API CONFIGURATION
+   ========================================================= */
+
+const API_URL = "https://ai.prasunbarua.com";
+
+const DEFAULT_MODEL = "gemini-3.6-flash";
+
+let selectedModel = DEFAULT_MODEL;
 
 
 /* =========================================================
    ELEMENTS
    ========================================================= */
 
-const sidebar = document.getElementById("sidebar");
-const sidebarOverlay = document.getElementById("sidebarOverlay");
+const sidebar =
+    document.getElementById("sidebar");
+
+const sidebarOverlay =
+    document.getElementById("sidebarOverlay");
 
 const openSidebarButton =
     document.getElementById("openSidebar");
@@ -81,8 +86,122 @@ const historyItems =
    ========================================================= */
 
 let conversationHistory = [];
+
 let selectedFile = null;
+
 let isSending = false;
+
+
+/* =========================================================
+   LOAD AVAILABLE MODELS
+   ========================================================= */
+
+async function loadModels() {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/api/models`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Accept":
+                            "application/json"
+                    }
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            console.warn(
+                "Could not load models:",
+                data
+            );
+
+            selectedModel =
+                DEFAULT_MODEL;
+
+            return;
+
+        }
+
+        /*
+         * Use the Worker-provided default model.
+         */
+
+        if (
+            typeof data.defaultModel === "string" &&
+            data.defaultModel.trim()
+        ) {
+
+            selectedModel =
+                data.defaultModel.trim();
+
+        } else {
+
+            selectedModel =
+                DEFAULT_MODEL;
+
+        }
+
+        /*
+         * Make sure the selected model
+         * is actually available.
+         */
+
+        if (
+            Array.isArray(data.chatModels)
+        ) {
+
+            const available =
+                data.chatModels.some(
+                    function (model) {
+
+                        return (
+                            model.modelId ===
+                            selectedModel
+                        );
+
+                    }
+                );
+
+            if (!available) {
+
+                console.warn(
+                    "Default model is not in available model list."
+                );
+
+                selectedModel =
+                    DEFAULT_MODEL;
+
+            }
+
+        }
+
+        console.log(
+            "Prasun AI model:",
+            selectedModel
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "Model loading failed:",
+            error
+        );
+
+        /*
+         * Safe fallback.
+         */
+
+        selectedModel =
+            DEFAULT_MODEL;
+    }
+}
 
 
 /* =========================================================
@@ -98,7 +217,11 @@ function openSidebar() {
     sidebar.classList.add("open");
 
     if (sidebarOverlay) {
-        sidebarOverlay.classList.add("active");
+
+        sidebarOverlay.classList.add(
+            "active"
+        );
+
     }
 }
 
@@ -112,7 +235,11 @@ function closeSidebar() {
     sidebar.classList.remove("open");
 
     if (sidebarOverlay) {
-        sidebarOverlay.classList.remove("active");
+
+        sidebarOverlay.classList.remove(
+            "active"
+        );
+
     }
 }
 
@@ -157,12 +284,14 @@ function resizeTextarea() {
         return;
     }
 
-    messageInput.style.height = "auto";
+    messageInput.style.height =
+        "auto";
 
-    const newHeight = Math.min(
-        messageInput.scrollHeight,
-        180
-    );
+    const newHeight =
+        Math.min(
+            messageInput.scrollHeight,
+            180
+        );
 
     messageInput.style.height =
         `${newHeight}px`;
@@ -195,6 +324,7 @@ if (messageInput) {
         function () {
 
             resizeTextarea();
+
             updateSendButton();
 
         }
@@ -210,28 +340,49 @@ if (messageInput) {
 function formatFileSize(bytes) {
 
     if (bytes < 1024) {
+
         return `${bytes} B`;
+
     }
 
     if (bytes < 1024 * 1024) {
-        return `${(bytes / 1024).toFixed(1)} KB`;
+
+        return `${(
+            bytes / 1024
+        ).toFixed(1)} KB`;
+
     }
 
-    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    return `${(
+        bytes /
+        (1024 * 1024)
+    ).toFixed(2)} MB`;
 }
 
 
 function getFileIcon(file) {
 
     const type =
-        (file.type || "").toLowerCase();
+        (file.type || "")
+            .toLowerCase();
 
-    if (type.startsWith("image/")) {
+    if (
+        type.startsWith(
+            "image/"
+        )
+    ) {
+
         return "🖼️";
+
     }
 
-    if (type === "application/pdf") {
+    if (
+        type ===
+        "application/pdf"
+    ) {
+
         return "📄";
+
     }
 
     if (
@@ -240,7 +391,9 @@ function getFileIcon(file) {
         type.includes("json") ||
         type.includes("html")
     ) {
+
         return "💻";
+
     }
 
     return "📎";
@@ -252,22 +405,33 @@ function showAttachment(file) {
     selectedFile = file;
 
     if (attachmentName) {
+
         attachmentName.textContent =
             file.name;
+
     }
 
     if (attachmentSize) {
+
         attachmentSize.textContent =
-            formatFileSize(file.size);
+            formatFileSize(
+                file.size
+            );
+
     }
 
     if (attachmentIcon) {
+
         attachmentIcon.textContent =
             getFileIcon(file);
+
     }
 
     if (attachmentPreview) {
-        attachmentPreview.hidden = false;
+
+        attachmentPreview.hidden =
+            false;
+
     }
 
     updateSendButton();
@@ -279,11 +443,17 @@ function clearAttachment() {
     selectedFile = null;
 
     if (fileInput) {
-        fileInput.value = "";
+
+        fileInput.value =
+            "";
+
     }
 
     if (attachmentPreview) {
-        attachmentPreview.hidden = true;
+
+        attachmentPreview.hidden =
+            true;
+
     }
 
     updateSendButton();
@@ -292,7 +462,10 @@ function clearAttachment() {
 
 /* Open file picker */
 
-if (attachButton && fileInput) {
+if (
+    attachButton &&
+    fileInput
+) {
 
     attachButton.addEventListener(
         "click",
@@ -324,13 +497,13 @@ if (fileInput) {
                 return;
             }
 
-            /*
-             * Frontend file limit.
-             */
             const maxSize =
                 10 * 1024 * 1024;
 
-            if (file.size > maxSize) {
+            if (
+                file.size >
+                maxSize
+            ) {
 
                 alert(
                     "Please choose a file smaller than 10 MB."
@@ -407,6 +580,7 @@ function createUserMessage(
         content.appendChild(
             fileLabel
         );
+
     }
 
 
@@ -423,6 +597,7 @@ function createUserMessage(
         content.appendChild(
             textElement
         );
+
     }
 
 
@@ -555,7 +730,8 @@ function fileToBase64(file) {
                         reader.result;
 
                     if (
-                        typeof result !== "string"
+                        typeof result !==
+                        "string"
                     ) {
 
                         reject(
@@ -570,7 +746,9 @@ function fileToBase64(file) {
                     const commaIndex =
                         result.indexOf(",");
 
-                    if (commaIndex === -1) {
+                    if (
+                        commaIndex === -1
+                    ) {
 
                         reject(
                             new Error(
@@ -618,7 +796,8 @@ async function getAIResponse(
     file
 ) {
 
-    let fileData = null;
+    let fileData =
+        null;
 
 
     /* Convert file */
@@ -643,55 +822,110 @@ async function getAIResponse(
                 base64
 
         };
+
     }
 
 
-    /* Request */
+    /*
+     * IMPORTANT
+     *
+     * We explicitly send:
+     *
+     * gemini-3.6-flash
+     *
+     * This prevents an old frontend
+     * model from being used.
+     */
+
+    const requestBody = {
+
+        message:
+            userText,
+
+        model:
+            selectedModel,
+
+        history:
+            conversationHistory,
+
+        file:
+            fileData
+
+    };
+
+
+    console.log(
+        "Sending request:",
+        requestBody
+    );
+
 
     const response =
         await fetch(
-            API_URL,
+            `${API_URL}/api/chat`,
             {
-                method: "POST",
+
+                method:
+                    "POST",
 
                 headers: {
+
                     "Content-Type":
+                        "application/json",
+
+                    "Accept":
                         "application/json"
+
                 },
 
                 body:
-                    JSON.stringify({
+                    JSON.stringify(
+                        requestBody
+                    )
 
-                        message:
-                            userText,
-
-                        history:
-                            conversationHistory,
-
-                        file:
-                            fileData
-
-                    })
             }
         );
 
 
     /* Read response */
 
+    const rawText =
+        await response.text();
+
     let data;
 
     try {
 
         data =
-            await response.json();
+            rawText
+                ? JSON.parse(
+                    rawText
+                )
+                : {};
 
     } catch (error) {
+
+        console.error(
+            "Invalid JSON:",
+            rawText
+        );
 
         throw new Error(
             "The AI server returned an invalid response."
         );
 
     }
+
+
+    console.log(
+        "AI HTTP status:",
+        response.status
+    );
+
+    console.log(
+        "AI response:",
+        data
+    );
 
 
     /* Server error */
@@ -702,27 +936,44 @@ async function getAIResponse(
             data &&
             data.error
                 ? data.error
-                : "AI request failed."
+                : `AI request failed (${response.status}).`
         );
 
     }
 
 
-    /* Validate answer */
+    /*
+     * Your Worker returns:
+     *
+     * response: "..."
+     *
+     * Older Worker versions may return:
+     *
+     * answer: "..."
+     *
+     * Support both.
+     */
 
-    if (
-        !data ||
-        typeof data.answer !== "string"
-    ) {
+    const answer =
+        typeof data.response ===
+            "string"
+            ? data.response
+            : typeof data.answer ===
+                "string"
+                ? data.answer
+                : "";
+
+
+    if (!answer) {
 
         throw new Error(
-            "The AI returned an invalid answer."
+            "The AI returned an empty or invalid answer."
         );
 
     }
 
 
-    return data.answer.trim();
+    return answer.trim();
 }
 
 
@@ -747,7 +998,9 @@ async function sendMessage() {
         !text &&
         !selectedFile
     ) {
+
         return;
+
     }
 
     const file =
@@ -756,7 +1009,8 @@ async function sendMessage() {
 
     /* Disable duplicate sending */
 
-    isSending = true;
+    isSending =
+        true;
 
     updateSendButton();
 
@@ -781,7 +1035,8 @@ async function sendMessage() {
 
     /* Clear composer */
 
-    messageInput.value = "";
+    messageInput.value =
+        "";
 
     messageInput.style.height =
         "auto";
@@ -810,7 +1065,9 @@ async function sendMessage() {
         /* Remove thinking */
 
         if (thinkingMessage) {
+
             thinkingMessage.remove();
+
         }
 
 
@@ -825,18 +1082,24 @@ async function sendMessage() {
 
         conversationHistory.push({
 
-            role: "user",
+            role:
+                "user",
 
             text:
                 text ||
-                `[Uploaded file: ${file.name}]`
+                (
+                    file
+                        ? `[Uploaded file: ${file.name}]`
+                        : ""
+                )
 
         });
 
 
         conversationHistory.push({
 
-            role: "model",
+            role:
+                "assistant",
 
             text:
                 answer
@@ -847,7 +1110,8 @@ async function sendMessage() {
         /* Keep latest 40 messages */
 
         if (
-            conversationHistory.length > 40
+            conversationHistory.length >
+            40
         ) {
 
             conversationHistory =
@@ -866,7 +1130,9 @@ async function sendMessage() {
 
 
         if (thinkingMessage) {
+
             thinkingMessage.remove();
+
         }
 
 
@@ -878,7 +1144,8 @@ async function sendMessage() {
     }
 
 
-    isSending = false;
+    isSending =
+        false;
 
     updateSendButton();
 
@@ -1007,14 +1274,17 @@ if (newChatButton) {
 
             clearAttachment();
 
-            isSending = false;
+            isSending =
+                false;
 
             updateSendButton();
 
             closeSidebar();
 
             if (messageInput) {
+
                 messageInput.focus();
+
             }
 
         }
@@ -1143,7 +1413,9 @@ if (chatSearch) {
 
                     if (
                         !search ||
-                        text.includes(search)
+                        text.includes(
+                            search
+                        )
                     ) {
 
                         item.style.display =
@@ -1208,15 +1480,20 @@ document.addEventListener(
     function (event) {
 
         if (
-            (event.metaKey ||
-             event.ctrlKey) &&
-            event.key.toLowerCase() === "k"
+            (
+                event.metaKey ||
+                event.ctrlKey
+            ) &&
+            event.key.toLowerCase() ===
+                "k"
         ) {
 
             event.preventDefault();
 
             if (chatSearch) {
+
                 chatSearch.focus();
+
             }
 
         }
@@ -1229,8 +1506,30 @@ document.addEventListener(
    INITIALIZE
    ========================================================= */
 
-updateSendButton();
+async function initializePrasunAI() {
 
-console.log(
-    "Prasun AI frontend initialized successfully."
-);
+    updateSendButton();
+
+    /*
+     * Load model from Worker.
+     */
+
+    await loadModels();
+
+    console.log(
+        "Prasun AI frontend initialized successfully."
+    );
+
+    console.log(
+        "API:",
+        API_URL
+    );
+
+    console.log(
+        "Model:",
+        selectedModel
+    );
+}
+
+
+initializePrasunAI();

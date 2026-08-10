@@ -124,6 +124,19 @@
 
             <!-- COMPOSER -->
             <div class="composer-wrapper">
+                <!-- ATTACHMENT PREVIEW CONTAINER -->
+                <div class="attachment-preview" id="attachmentPreview" hidden>
+                    <span id="attachmentIcon"></span>
+                    <div class="attachment-info">
+                        <span id="attachmentName"></span>
+                        <span id="attachmentSize"></span>
+                    </div>
+                    <button class="remove-attachment" id="removeAttachment" aria-label="Remove attachment">×</button>
+                </div>
+                
+                <!-- HIDDEN FILE INPUT -->
+                <input type="file" id="fileInput" hidden>
+
                 <div class="composer">
                     <div class="composer-toolbar">
                         <button class="composer-tool" id="attachButton" title="Attach file">

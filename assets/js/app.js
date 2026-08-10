@@ -812,11 +812,21 @@ document.addEventListener("DOMContentLoaded", () => {
       // ------------------------------------------------------
 
       if (!response.ok) {
-        throw new Error(
-          data?.error ||
-          `AI request failed (${response.status}).`
-        );
-      }
+  console.error(
+    "PRASUN AI SERVER RESPONSE:",
+    data
+  );
+
+  const serverError =
+    data?.error ||
+    data?.message ||
+    data?.response ||
+    `Server returned HTTP ${response.status}`;
+
+  throw new Error(
+    `${serverError} [HTTP ${response.status}]`
+  );
+}
 
       // ------------------------------------------------------
       // Extract response
@@ -868,32 +878,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
       saveCurrentConversation();
 
-    } catch (error) {
-      // ------------------------------------------------------
-      // Abort is not a server error
-      // ------------------------------------------------------
+} catch (error) {
+  if (error?.name === "AbortError") {
+    updateAssistantMessage(
+      aiMessageEl,
+      "Generation stopped."
+    );
 
-      if (
-        error?.name ===
-        "AbortError"
-      ) {
-        updateAssistantMessage(
-          aiMessageEl,
-          "Generation stopped."
-        );
+    return;
+  }
 
-        return;
-      }
+  console.error(
+    "PRASUN AI ERROR:",
+    error
+  );
 
-      console.error(
-        "Prasun AI request error:",
-        error
-      );
+  let errorMessage =
+    error?.message ||
+    "Unknown error";
 
-      updateAssistantMessage(
-        aiMessageEl,
-        "Sorry, I couldn't generate a response right now. Please try again."
-      );
+  updateAssistantMessage(
+    aiMessageEl,
+    `### Prasun AI Error
+
+**${errorMessage}**
+
+Please check the browser console for the technical details.`
+  );
+}
 
     } finally {
       if (

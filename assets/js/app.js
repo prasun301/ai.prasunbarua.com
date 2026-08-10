@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Gemini API Request
   async function getGeminiResponse(query) {
     const API_KEY = 'AIzaSyCbhcI0F5R3vmQByBZVozcwgBSJe-TDCFI'; // Paste your AI Studio API key here
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${API_KEY}`;
 
     try {
       const response = await fetch(url, {

@@ -1,65 +1,41 @@
-// functions/api/chat.js
-
-// Handle CORS Preflight requests for local development or cross-origin calls
-export async function onRequestOptions() {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
-  });
-}
-
 export async function onRequestPost(context) {
-  const corsHeaders = {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-  };
-
   try {
-    const body = await context.request.json();
-    
-    // Support either single message or array of past messages
-    const userMessage = body.message || body.prompt;
-    const history = body.history || []; // Pass array of [{role: 'user', content: '...'}, ...] from frontend if available
-
-    if (!userMessage && history.length === 0) {
+    if (!context.env || !context.env.AI) {
       return new Response(
-        JSON.stringify({ error: "Message content is required." }), 
-        { status: 400, headers: corsHeaders }
+        JSON.stringify({ 
+          error: "Workers AI binding is missing. Please add variable name 'AI' under Settings > Functions in Cloudflare Pages." 
+        }), 
+        { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // Prepare message payload
-    const systemPrompt = { 
-      role: "system", 
-      content: "You are Prasun AI, a helpful, precise, and friendly AI assistant." 
-    };
+    const body = await context.request.json();
+    const userMessage = body.message || body.prompt || "";
 
-    let messages = [systemPrompt];
-
-    if (history.length > 0) {
-      messages = messages.concat(history);
-    } else if (userMessage) {
-      messages.push({ role: "user", content: userMessage });
+    if (!userMessage) {
+      return new Response(
+        JSON.stringify({ error: "Message content is required." }), 
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
     }
 
-    // Call Cloudflare Workers AI model
-    const aiResult = await context.env.AI.run("@cf/meta/llama-3.1-8b-instruct", {
-      messages: messages
+    // Using active model identifier
+    const aiResult = await context.env.AI.run("@cf/meta/llama-3.2-3b-instruct", {
+      messages: [
+        { role: "system", content: "You are Prasun AI, an intelligent and helpful assistant." },
+        { role: "user", content: userMessage }
+      ]
     });
 
     return new Response(
       JSON.stringify({ response: aiResult.response || aiResult }), 
-      { status: 200, headers: corsHeaders }
+      { headers: { "Content-Type": "application/json" } }
     );
 
   } catch (err) {
     return new Response(
       JSON.stringify({ error: err.message || "Internal Server Error" }), 
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }

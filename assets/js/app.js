@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Close modal when clicking outside of it
   if (settingsModal) {
     settingsModal.addEventListener('click', (event) => {
       const rect = settingsModal.getBoundingClientRect();
@@ -75,15 +74,107 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Textarea Auto-resize & Send Button State
+  // Chat Functionality (Send, Enter key, New Chat, Welcome screen toggle)
   const messageInput = document.getElementById('messageInput');
   const sendButton = document.getElementById('sendButton');
+  const messagesContainer = document.getElementById('messages');
+  const welcomeScreen = document.getElementById('welcomeScreen');
+  const newChatButton = document.getElementById('newChatButton');
+  const clearChatButton = document.getElementById('clearChatButton');
+
+  function sendMessage() {
+    const text = messageInput.value.trim();
+    if (!text) return;
+
+    // Hide welcome screen if visible
+    if (welcomeScreen) {
+      welcomeScreen.style.display = 'none';
+    }
+
+    // Append user message
+    const userMsgDiv = document.createElement('div');
+    userMsgDiv.style.cssText = 'margin-bottom: 16px; display: flex; justify-content: flex-end; width: 100%;';
+    userMsgDiv.innerHTML = `
+      <div style="background-color: var(--hover-bg); padding: 12px 16px; border-radius: 16px; max-width: 75%; word-break: break-word; font-size: 0.95rem; color: var(--text-primary);">
+        ${escapeHTML(text)}
+      </div>
+    `;
+    messagesContainer.appendChild(userMsgDiv);
+
+    // Clear input
+    messageInput.value = '';
+    messageInput.style.height = 'auto';
+    sendButton.disabled = true;
+
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    // Simulate AI response after a short delay
+    setTimeout(() => {
+      const aiMsgDiv = document.createElement('div');
+      aiMsgDiv.style.cssText = 'margin-bottom: 16px; display: flex; justify-content: flex-start; gap: 12px; width: 100%;';
+      aiMsgDiv.innerHTML = `
+        <div style="font-weight: bold; color: var(--accent-color); padding-top: 2px;">
+          <span class="material-symbols-outlined" style="font-size: 20px;">sparkles</span>
+        </div>
+        <div style="background-color: var(--card-bg); border: 1px solid var(--border-color); padding: 12px 16px; border-radius: 16px; max-width: 75%; word-break: break-word; font-size: 0.95rem; color: var(--text-primary);">
+          This is a simulated response from Prasun AI to: "${escapeHTML(text)}"
+        </div>
+      `;
+      messagesContainer.appendChild(aiMsgDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 600);
+  }
+
+  function escapeHTML(str) {
+    return str.replace(/[&<>'"]/g, 
+      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+    );
+  }
 
   if (messageInput && sendButton) {
     messageInput.addEventListener('input', () => {
       messageInput.style.height = 'auto';
       messageInput.style.height = `${messageInput.scrollHeight}px`;
       sendButton.disabled = messageInput.value.trim() === '';
+    });
+
+    // Send message on pressing Enter (without Shift)
+    messageInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (!sendButton.disabled) {
+          sendMessage();
+        }
+      }
+    });
+
+    sendButton.addEventListener('click', () => {
+      sendMessage();
+    });
+  }
+
+  // New Chat Button Logic
+  if (newChatButton) {
+    newChatButton.addEventListener('click', () => {
+      messagesContainer.innerHTML = '';
+      if (welcomeScreen) {
+        welcomeScreen.style.display = 'flex';
+      }
+      if (messageInput) {
+        messageInput.value = '';
+        messageInput.style.height = 'auto';
+        if (sendButton) sendButton.disabled = true;
+      }
+    });
+  }
+
+  if (clearChatButton) {
+    clearChatButton.addEventListener('click', () => {
+      messagesContainer.innerHTML = '';
+      if (welcomeScreen) {
+        welcomeScreen.style.display = 'flex';
+      }
     });
   }
 
@@ -97,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInput.style.height = `${messageInput.scrollHeight}px`;
         if (sendButton) sendButton.disabled = false;
         messageInput.focus();
+        sendMessage();
       }
     });
   });

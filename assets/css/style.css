@@ -42,6 +42,7 @@ body, html {
 .app {
   display: flex;
   height: 100vh;
+  width: 100vw;
   overflow: hidden;
 }
 
@@ -53,13 +54,13 @@ body, html {
   display: flex;
   flex-direction: column;
   height: 100%;
-  transition: transform 0.3s ease, margin-left 0.3s ease;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
   flex-shrink: 0;
 }
 
-/* When collapsed on desktop */
-#sidebar.closed {
+/* Desktop Collapse Rule (Toggled via JS) */
+#sidebar.collapsed {
   margin-left: -280px;
 }
 
@@ -269,6 +270,7 @@ body, html {
 /* Main Workspace */
 .main-wrapper {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -512,17 +514,13 @@ body, html {
   color: var(--text-muted);
 }
 
-/* Overlay Styling */
+/* Backdrop Overlay Settings */
 .overlay {
   display: none;
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
   z-index: 90;
-}
-
-.overlay.active {
-  display: block;
 }
 
 /* Modal Dialog */
@@ -591,11 +589,16 @@ body, html {
     position: fixed;
     top: 0;
     left: 0;
+    margin-left: 0 !important; /* Overrides desktop collapsed margin */
     transform: translateX(-100%);
-    margin-left: 0 !important;
   }
   
   #sidebar.open {
     transform: translateX(0);
+  }
+
+  /* Overlay only triggers on mobile when .active is added */
+  .overlay.active {
+    display: block;
   }
 }

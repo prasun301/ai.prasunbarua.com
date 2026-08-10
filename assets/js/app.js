@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   let selectedFilePart = null;
   let selectedFileName = '';
+  let useGoogleSearch = true;
 
   // ==========================================
   // 2. SAFE DOM SELECTORS (Prevents Script Crashes)
@@ -34,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendButton = getEl('sendButton') || getEl('submitBtn');
   const attachButton = getEl('attachButton');
   const fileInput = getEl('fileInput');
+  const searchButton = getEl('searchButton');
   const messagesContainer = getEl('messages') || getEl('chatContainer');
   const welcomeScreen = getEl('welcomeScreen');
   const newChatButton = getEl('newChatButton');
@@ -178,7 +180,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+if (searchButton) {
+    // Default to active state on load
+    searchButton.style.color = '#1a73e8';
+    searchButton.style.backgroundColor = 'rgba(26,115,232,0.08)';
 
+    searchButton.addEventListener('click', () => {
+      useGoogleSearch = !useGoogleSearch;
+      if (useGoogleSearch) {
+        searchButton.style.color = '#1a73e8';
+        searchButton.style.backgroundColor = 'rgba(26,115,232,0.08)';
+      } else {
+        searchButton.style.color = '';
+        searchButton.style.backgroundColor = '';
+      }
+    });
+  }
   function clearFileAttachment() {
     selectedFilePart = null;
     selectedFileName = '';
@@ -229,14 +246,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filePart) parts.push(filePart);
     if (query) parts.push({ text: query });
 
+    // Build payload dynamically
+    const requestPayload = {
+      contents: [{ parts: parts }]
+    };
+
+    // Only include Google Search tool if the toggle is turned ON
+    if (useGoogleSearch) {
+      requestPayload.tools = [{ googleSearch: {} }];
+    }
+
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: parts }],
-          tools: [{ googleSearch: {} }]
-        })
+        body: JSON.stringify(requestPayload)
       });
 
       const data = await response.json();

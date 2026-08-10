@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff" id="themeColor">
   <title>Prasun AI</title>
+  
+  <!-- Google Fonts & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
   <link rel="stylesheet" href="assets/css/style.css">
   <script src="assets/js/app.js" defer></script>
 </head>
@@ -47,8 +54,8 @@
             <span style="overflow: hidden; text-overflow: ellipsis;">Welcome to Prasun AI</span>
           </div>
           <div class="history-actions">
-            <button class="action-icon-btn">✏️</button>
-            <button class="action-icon-btn">🗑️</button>
+            <button class="action-icon-btn" title="Rename">✏️</button>
+            <button class="action-icon-btn" title="Delete">🗑️</button>
           </div>
         </a>
 
@@ -59,8 +66,8 @@
             <span style="overflow: hidden; text-overflow: ellipsis;">Solar energy discussion</span>
           </div>
           <div class="history-actions">
-            <button class="action-icon-btn">✏️</button>
-            <button class="action-icon-btn">🗑️</button>
+            <button class="action-icon-btn" title="Rename">✏️</button>
+            <button class="action-icon-btn" title="Delete">🗑️</button>
           </div>
         </a>
         <a class="history-item">
@@ -69,8 +76,8 @@
             <span style="overflow: hidden; text-overflow: ellipsis;">Website development</span>
           </div>
           <div class="history-actions">
-            <button class="action-icon-btn">✏️</button>
-            <button class="action-icon-btn">🗑️</button>
+            <button class="action-icon-btn" title="Rename">✏️</button>
+            <button class="action-icon-btn" title="Delete">🗑️</button>
           </div>
         </a>
       </div>
@@ -173,7 +180,7 @@
         <div class="attachment-preview" id="attachmentPreview" hidden>
           <span id="attachmentName">file.pdf</span>
           <span id="attachmentSize" style="color: var(--text-muted); margin-left: 6px;">0 KB</span>
-          <button id="removeAttachment" style="margin-left: 8px; cursor: pointer;">✕</button>
+          <button id="removeAttachment" style="margin-left: 8px; cursor: pointer; background:none; border:none; color:inherit;">✕</button>
         </div>
 
         <div class="composer-box">

@@ -98,14 +98,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
 
   // --- Sidebar Drawer ---
-  function toggleSidebar() {
-    if (sidebar) sidebar.classList.toggle('open');
-    if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-  }
+// --- Sidebar Drawer ---
+function toggleSidebar() {
+  if (sidebar) sidebar.classList.toggle('open');
+  if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+}
 
-  if (openSidebarBtn) openSidebarBtn.addEventListener('click', toggleSidebar);
-  if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
-  if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+// Selects all buttons with open/close IDs or toggle classes
+document.querySelectorAll('#closeSidebar, #openSidebar, .sidebar-toggle, [title="Collapse sidebar"]').forEach(btn => {
+  btn.addEventListener('click', toggleSidebar);
+});
+
+if (sidebarOverlay) {
+  sidebarOverlay.addEventListener('click', toggleSidebar);
+}
 
   // --- Theme Toggle ---
   if (themeButton) {

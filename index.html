@@ -133,11 +133,12 @@
         <div class="composer-box">
           <textarea id="messageInput" class="message-textarea" placeholder="Message Prasun AI..." rows="1"></textarea>
           
-          <!-- Hidden file input required for file selection -->
-          <input type="file" id="fileInput" style="display: none;" />
+          <!-- ADD THE HIDDEN FILE INPUT HERE -->
+          <input type="file" id="fileInput" style="display: none;" accept="image/*,.pdf,.txt" />
 
           <div class="composer-toolbar">
             <div class="toolbar-left">
+              <!-- ADD id="attachButton" HERE -->
               <button class="toolbar-btn" id="attachButton" type="button">
                 <span class="material-symbols-outlined" style="font-size: 18px;">attach_file</span>
                 <span>Attach</span>

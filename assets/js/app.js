@@ -69,11 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return el;
   };
 
+  // Declared ONCE here to prevent duplicate declaration crashes
   const sidebar = getEl('sidebar');
-  const openSidebarBtn = getEl('openSidebar');
-  const closeSidebarBtn = getEl('closeSidebar');
   const sidebarOverlay = getEl('sidebarOverlay');
-
+  
   const themeButton = getEl('themeButton');
   const settingsBtn = getEl('settingsButton');
   const settingsModal = getEl('settingsModal');
@@ -97,37 +96,36 @@ document.addEventListener('DOMContentLoaded', () => {
   // 3. UI CONTROLLERS
   // ==========================================
 
-// --- Sidebar Drawer ---
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebarOverlay');
-  const isMobile = window.innerWidth <= 768;
+  // --- Sidebar Drawer ---
+  function toggleSidebar() {
+    const isMobile = window.innerWidth <= 768;
 
-  if (!sidebar) return;
+    if (!sidebar) return;
 
-  if (isMobile) {
-    // Mobile behavior: slide in/out over content with overlay
-    sidebar.classList.toggle('open');
-    if (overlay) overlay.classList.toggle('active');
-  } else {
-    // Desktop behavior: push sidebar off-screen
-    sidebar.classList.toggle('collapsed');
+    if (isMobile) {
+      // Mobile behavior: slide in/out over content with overlay
+      sidebar.classList.toggle('open');
+      if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+    } else {
+      // Desktop behavior: push sidebar off-screen
+      sidebar.classList.toggle('collapsed');
+    }
   }
-}
 
-// Event Listeners
-document.addEventListener('click', (e) => {
-  const toggleBtn = e.target.closest('#openSidebar, #closeSidebar, .sidebar-toggle');
-  if (toggleBtn) {
-    e.stopPropagation();
-    toggleSidebar();
+  // Event Listener (Ultra-robust selector to catch all menu/close buttons)
+  document.addEventListener('click', (e) => {
+    const toggleBtn = e.target.closest('#openSidebar, #closeSidebar, .sidebar-toggle, [title*="sidebar" i], [title*="Collapse" i]');
+    if (toggleBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleSidebar();
+    }
+  });
+
+  // Mobile overlay click-to-close
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', toggleSidebar);
   }
-});
-
-const sidebarOverlay = document.getElementById('sidebarOverlay');
-if (sidebarOverlay) {
-  sidebarOverlay.addEventListener('click', toggleSidebar);
-}
 
   // --- Theme Toggle ---
   if (themeButton) {

@@ -8,14 +8,14 @@
 /*
  * Cloudflare Worker API
  *
- * IMPORTANT:
- * The Worker custom domain is:
- * https://ai.prasunbarua.com
+ * The frontend sends requests to this Worker.
  *
- * The chat endpoint is:
- * https://ai.prasunbarua.com/api/chat
+ * IMPORTANT:
+ * The Gemini model itself is configured inside the Worker.
+ * If the Worker still uses an unavailable model, the Worker
+ * must also be updated.
  */
-const API_URL = "https://ai.prasunbarua.com/api/chat";
+const API_URL = "https://prasun-ai-api.prasun301.workers.dev/api/chat";
 
 
 /* =========================================================
@@ -78,15 +78,6 @@ const suggestionCards =
 
 const historyItems =
     document.querySelectorAll(".history-item");
-
-const modelSelector =
-    document.getElementById("modelSelector");
-
-const shareButton =
-    document.getElementById("shareButton");
-
-const toolsButton =
-    document.getElementById("toolsButton");
 
 
 /* =========================================================
@@ -395,7 +386,6 @@ function createUserMessage(
     content.className =
         "message-content";
 
-
     if (file) {
 
         const fileLabel =
@@ -412,7 +402,6 @@ function createUserMessage(
         );
     }
 
-
     if (text) {
 
         const textElement =
@@ -425,7 +414,6 @@ function createUserMessage(
             textElement
         );
     }
-
 
     message.appendChild(
         content
@@ -514,17 +502,10 @@ function createThinkingMessage() {
         document.createElement("div");
 
     content.className =
-        "message-content thinking-content";
+        "message-content";
 
-    content.innerHTML =
-        `
-        <span>Thinking</span>
-        <span class="thinking-dots">
-            <i></i>
-            <i></i>
-            <i></i>
-        </span>
-        `;
+    content.textContent =
+        "Thinking...";
 
     message.appendChild(
         avatar
@@ -618,7 +599,7 @@ function fileToBase64(file) {
 
 
 /* =========================================================
-   SEND REQUEST TO CLOUDFLARE WORKER
+   SEND REQUEST TO WORKER
    ========================================================= */
 
 async function getAIResponse(
@@ -628,33 +609,24 @@ async function getAIResponse(
 
     let fileData = null;
 
-
-    /* Convert attachment */
-
     if (file) {
 
         const base64 =
-            await fileToBase64(
-                file
-            );
+            await fileToBase64(file);
 
         fileData = {
 
-            name:
-                file.name,
+            name: file.name,
 
             type:
                 file.type ||
                 "application/octet-stream",
 
-            data:
-                base64
+            data: base64
 
         };
     }
 
-
-    /* Request */
 
     const response =
         await fetch(
@@ -665,7 +637,6 @@ async function getAIResponse(
                 headers: {
                     "Content-Type":
                         "application/json",
-
                     "Accept":
                         "application/json"
                 },
@@ -687,8 +658,6 @@ async function getAIResponse(
         );
 
 
-    /* Read response */
-
     let data;
 
     try {
@@ -699,27 +668,26 @@ async function getAIResponse(
     } catch (error) {
 
         throw new Error(
-            `AI server returned an invalid response (HTTP ${response.status}).`
+            `The AI server returned an invalid response (HTTP ${response.status}).`
         );
 
     }
 
-
-    /* Server error */
 
     if (!response.ok) {
 
-        throw new Error(
+        const serverError =
             data &&
-            data.error
+            typeof data.error === "string"
                 ? data.error
-                : `AI request failed with HTTP ${response.status}.`
+                : `AI request failed with HTTP ${response.status}.`;
+
+        throw new Error(
+            serverError
         );
 
     }
 
-
-    /* Validate answer */
 
     if (
         !data ||
@@ -764,7 +732,6 @@ async function sendMessage() {
     const file =
         selectedFile;
 
-
     isSending = true;
 
     updateSendButton();
@@ -788,7 +755,6 @@ async function sendMessage() {
 
     messageInput.style.height =
         "auto";
-
 
     clearAttachment();
 
@@ -824,11 +790,7 @@ async function sendMessage() {
 
             text:
                 text ||
-                (
-                    file
-                        ? `[Uploaded file: ${file.name}]`
-                        : ""
-                )
+                `[Uploaded file: ${file.name}]`
 
         });
 
@@ -848,9 +810,7 @@ async function sendMessage() {
         ) {
 
             conversationHistory =
-                conversationHistory.slice(
-                    -40
-                );
+                conversationHistory.slice(-40);
 
         }
 
@@ -1133,20 +1093,13 @@ if (chatSearch) {
                         item.textContent
                             .toLowerCase();
 
-                    if (
-                        !search ||
-                        text.includes(search)
-                    ) {
-
-                        item.style.display =
-                            "";
-
-                    } else {
-
-                        item.style.display =
-                            "none";
-
-                    }
+                    item.style.display =
+                        (
+                            !search ||
+                            text.includes(search)
+                        )
+                            ? ""
+                            : "none";
 
                 }
             );
@@ -1192,108 +1145,6 @@ historyItems.forEach(
 
 
 /* =========================================================
-   MODEL SELECTOR
-   ========================================================= */
-
-if (modelSelector) {
-
-    modelSelector.addEventListener(
-        "click",
-        function () {
-
-            alert(
-                "Prasun AI is powered by Gemini 3.6 Flash."
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   SHARE
-   ========================================================= */
-
-if (shareButton) {
-
-    shareButton.addEventListener(
-        "click",
-        async function () {
-
-            const shareData = {
-
-                title:
-                    "Prasun AI",
-
-                text:
-                    "Chat with Prasun AI",
-
-                url:
-                    window.location.href
-
-            };
-
-
-            try {
-
-                if (
-                    navigator.share
-                ) {
-
-                    await navigator.share(
-                        shareData
-                    );
-
-                } else if (
-                    navigator.clipboard
-                ) {
-
-                    await navigator.clipboard.writeText(
-                        window.location.href
-                    );
-
-                    alert(
-                        "Prasun AI link copied."
-                    );
-
-                }
-
-            } catch (error) {
-
-                console.log(
-                    "Share cancelled."
-                );
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   TOOLS
-   ========================================================= */
-
-if (toolsButton) {
-
-    toolsButton.addEventListener(
-        "click",
-        function () {
-
-            alert(
-                "Tools will be available in a future update."
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
    KEYBOARD SHORTCUT
    ========================================================= */
 
@@ -1327,14 +1178,4 @@ updateSendButton();
 
 console.log(
     "Prasun AI frontend initialized successfully."
-);
-
-console.log(
-    "API:",
-    API_URL
-);
-
-console.log(
-    "Model:",
-    "gemini-3.6-flash"
 );

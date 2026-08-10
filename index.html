@@ -25,21 +25,24 @@
     <aside id="sidebar">
       <div class="sidebar-header">
         <div class="brand-title">
-          <span>✦</span>
+          <span class="material-symbols-outlined" style="font-size: 20px; color: var(--accent-color);">sparkles</span>
           <span>Prasun AI</span>
         </div>
-        <button class="icon-btn" id="closeSidebar" aria-label="Close Sidebar">✕</button>
+        <button class="icon-btn" id="closeSidebar" aria-label="Close Sidebar">
+          <span class="material-symbols-outlined">close</span>
+        </button>
       </div>
 
       <div style="padding: 0 14px 12px 14px;">
         <button class="new-chat-btn" id="newChatButton">
-          <span>+</span>
+          <span class="material-symbols-outlined">add</span>
           <span>New chat</span>
         </button>
       </div>
 
       <div class="search-box">
         <div class="search-input-wrapper">
+          <span class="material-symbols-outlined search-icon">search</span>
           <input type="text" id="chatSearch" placeholder="Search chats...">
           <span class="keyboard-shortcut">⌘K</span>
         </div>
@@ -50,34 +53,34 @@
         <div class="history-section-title">Today</div>
         <a class="history-item active">
           <div class="history-item-left">
-            <span>💬</span>
+            <span class="material-symbols-outlined">chat_bubble_outline</span>
             <span style="overflow: hidden; text-overflow: ellipsis;">Welcome to Prasun AI</span>
           </div>
           <div class="history-actions">
-            <button class="action-icon-btn" title="Rename">✏️</button>
-            <button class="action-icon-btn" title="Delete">🗑️</button>
+            <button class="action-icon-btn" title="Rename"><span class="material-symbols-outlined">edit</span></button>
+            <button class="action-icon-btn" title="Delete"><span class="material-symbols-outlined">delete</span></button>
           </div>
         </a>
 
         <div class="history-section-title">Yesterday</div>
         <a class="history-item">
           <div class="history-item-left">
-            <span>💬</span>
+            <span class="material-symbols-outlined">chat_bubble_outline</span>
             <span style="overflow: hidden; text-overflow: ellipsis;">Solar energy discussion</span>
           </div>
           <div class="history-actions">
-            <button class="action-icon-btn" title="Rename">✏️</button>
-            <button class="action-icon-btn" title="Delete">🗑️</button>
+            <button class="action-icon-btn" title="Rename"><span class="material-symbols-outlined">edit</span></button>
+            <button class="action-icon-btn" title="Delete"><span class="material-symbols-outlined">delete</span></button>
           </div>
         </a>
         <a class="history-item">
           <div class="history-item-left">
-            <span>💬</span>
+            <span class="material-symbols-outlined">chat_bubble_outline</span>
             <span style="overflow: hidden; text-overflow: ellipsis;">Website development</span>
           </div>
           <div class="history-actions">
-            <button class="action-icon-btn" title="Rename">✏️</button>
-            <button class="action-icon-btn" title="Delete">🗑️</button>
+            <button class="action-icon-btn" title="Rename"><span class="material-symbols-outlined">edit</span></button>
+            <button class="action-icon-btn" title="Delete"><span class="material-symbols-outlined">delete</span></button>
           </div>
         </a>
       </div>
@@ -85,11 +88,11 @@
       <!-- Sidebar Footer Controls -->
       <div class="sidebar-footer">
         <button class="footer-nav-btn" id="themeButton">
-          <span>☀️</span>
+          <span class="material-symbols-outlined">light_mode</span>
           <span>Appearance</span>
         </button>
         <button class="footer-nav-btn" id="settingsButton">
-          <span>⚙️</span>
+          <span class="material-symbols-outlined">settings</span>
           <span>Settings</span>
         </button>
 
@@ -109,12 +112,14 @@
       <!-- Top Navigation Bar -->
       <header class="topbar">
         <div class="topbar-left">
-          <button class="topbar-icon-btn" id="openSidebar" aria-label="Open Sidebar">☰</button>
+          <button class="topbar-icon-btn" id="openSidebar" aria-label="Open Sidebar">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
           
           <div class="model-selector-wrapper">
             <button class="model-selector-btn" id="modelSelector" aria-expanded="false">
               <span class="model-name">Prasun AI 4.0 PRO</span>
-              <span style="font-size: 0.75rem;">▼</span>
+              <span class="material-symbols-outlined" style="font-size: 16px;">arrow_drop_down</span>
             </button>
             
             <div class="model-dropdown" id="modelDropdown" hidden>
@@ -131,8 +136,12 @@
         </div>
 
         <div class="topbar-right">
-          <button class="topbar-icon-btn" id="clearChatButton" title="Clear Chat">🗑️</button>
-          <button class="topbar-icon-btn" id="shareButton" title="Share Chat">🔗</button>
+          <button class="topbar-icon-btn" id="clearChatButton" title="Clear Chat">
+            <span class="material-symbols-outlined">delete_sweep</span>
+          </button>
+          <button class="topbar-icon-btn" id="shareButton" title="Share Chat">
+            <span class="material-symbols-outlined">share</span>
+          </button>
         </div>
       </header>
 
@@ -141,7 +150,9 @@
         
         <!-- Welcome Screen (Visible on empty chat) -->
         <div class="welcome-screen" id="welcomeScreen">
-          <div style="font-size: 2.5rem; color: var(--accent-color);">✦</div>
+          <div style="font-size: 2.5rem; color: var(--accent-color);">
+            <span class="material-symbols-outlined" style="font-size: 48px;">sparkles</span>
+          </div>
           <div>
             <h1 class="welcome-title">How can I help you today?</h1>
             <p style="color: var(--text-secondary); margin-top: 8px;">
@@ -180,7 +191,9 @@
         <div class="attachment-preview" id="attachmentPreview" hidden>
           <span id="attachmentName">file.pdf</span>
           <span id="attachmentSize" style="color: var(--text-muted); margin-left: 6px;">0 KB</span>
-          <button id="removeAttachment" style="margin-left: 8px; cursor: pointer; background:none; border:none; color:inherit;">✕</button>
+          <button id="removeAttachment" style="margin-left: 8px; cursor: pointer; background:none; border:none; color:inherit;">
+            <span class="material-symbols-outlined" style="font-size: 16px;">close</span>
+          </button>
         </div>
 
         <div class="composer-box">
@@ -193,15 +206,25 @@
           
           <div class="composer-toolbar">
             <div class="toolbar-left">
-              <button class="toolbar-btn" id="attachButton" title="Attach File">📎</button>
+              <button class="toolbar-btn" id="attachButton" title="Attach File">
+                <span class="material-symbols-outlined" style="font-size: 18px;">attach_file</span>
+              </button>
               <input type="file" id="fileInput" hidden>
-              <button class="toolbar-btn" id="toolsButton" title="Web Search">🌐 Search</button>
-              <button class="toolbar-btn" id="voiceButton" title="Voice Input">🎙️</button>
+              <button class="toolbar-btn" id="toolsButton" title="Web Search">
+                <span class="material-symbols-outlined" style="font-size: 18px;">globe</span> Search
+              </button>
+              <button class="toolbar-btn" id="voiceButton" title="Voice Input">
+                <span class="material-symbols-outlined" style="font-size: 18px;">mic</span>
+              </button>
             </div>
 
             <div class="toolbar-right">
-              <button class="send-btn" id="sendButton" disabled title="Send Message">⬆</button>
-              <button class="stop-btn" id="stopButton" hidden title="Stop Generation">■</button>
+              <button class="send-btn" id="sendButton" disabled title="Send Message">
+                <span class="material-symbols-outlined" style="font-size: 18px;">arrow_upward</span>
+              </button>
+              <button class="stop-btn" id="stopButton" hidden title="Stop Generation">
+                <span class="material-symbols-outlined" style="font-size: 18px;">stop</span>
+              </button>
             </div>
           </div>
         </div>
@@ -218,7 +241,9 @@
   <dialog class="modal" id="settingsModal">
     <div class="modal-header">
       <h3>Settings</h3>
-      <button class="icon-btn" id="closeSettingsModal">✕</button>
+      <button class="icon-btn" id="closeSettingsModal">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
     <div class="modal-body">
       <div class="input-group">

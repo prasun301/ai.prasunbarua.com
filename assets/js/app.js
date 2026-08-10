@@ -1,37 +1,46 @@
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('🚀 app.js initialized');
+
   // ==========================================
   // 1. STATE MANAGEMENT
   // ==========================================
-  let selectedFilePart = null; // Stores { inlineData: { mimeType, data } }
-  let selectedFileName = '';   // Stores attached file name for UI preview
+  let selectedFilePart = null;
+  let selectedFileName = '';
 
   // ==========================================
-  // 2. DOM ELEMENTS
+  // 2. SAFE DOM SELECTORS (Prevents Script Crashes)
   // ==========================================
-  const sidebar = document.getElementById('sidebar');
-  const openSidebarBtn = document.getElementById('openSidebar');
-  const closeSidebarBtn = document.getElementById('closeSidebar');
-  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  const getEl = (id) => {
+    const el = document.getElementById(id);
+    if (!el) console.warn(`⚠️ Warning: Element with ID '${id}' not found in index.html`);
+    return el;
+  };
 
-  const themeButton = document.getElementById('themeButton');
-  const settingsBtn = document.getElementById('settingsButton');
-  const settingsModal = document.getElementById('settingsModal');
-  const closeSettingsModal = document.getElementById('closeSettingsModal');
+  const sidebar = getEl('sidebar');
+  const openSidebarBtn = getEl('openSidebar');
+  const closeSidebarBtn = getEl('closeSidebar');
+  const sidebarOverlay = getEl('sidebarOverlay');
 
-  const modelSelectorBtn = document.getElementById('modelSelector');
-  const modelDropdown = document.getElementById('modelDropdown');
+  const themeButton = getEl('themeButton');
+  const settingsBtn = getEl('settingsButton');
+  const settingsModal = getEl('settingsModal');
+  const closeSettingsModal = getEl('closeSettingsModal');
 
-  const messageInput = document.getElementById('messageInput');
-  const sendButton = document.getElementById('sendButton');
-  const attachButton = document.getElementById('attachButton');
-  const fileInput = document.getElementById('fileInput');
-  const messagesContainer = document.getElementById('messages');
-  const welcomeScreen = document.getElementById('welcomeScreen');
-  const newChatButton = document.getElementById('newChatButton');
-  const clearChatButton = document.getElementById('clearChatButton');
+  const modelSelectorBtn = getEl('modelSelector');
+  const modelDropdown = getEl('modelDropdown');
+
+  // Core Chat Elements (Crucial)
+  const messageInput = getEl('messageInput') || getEl('userInput') || getEl('promptInput');
+  const sendButton = getEl('sendButton') || getEl('submitBtn');
+  const attachButton = getEl('attachButton');
+  const fileInput = getEl('fileInput');
+  const messagesContainer = getEl('messages') || getEl('chatContainer');
+  const welcomeScreen = getEl('welcomeScreen');
+  const newChatButton = getEl('newChatButton');
+  const clearChatButton = getEl('clearChatButton');
 
   // ==========================================
-  // 3. UI CONTROLLERS & EVENT LISTENERS
+  // 3. UI CONTROLLERS
   // ==========================================
 
   // --- Sidebar Drawer ---
@@ -44,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
   if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
-  // --- Dark / Light Theme Toggle ---
+  // --- Theme Toggle ---
   if (themeButton) {
     themeButton.addEventListener('click', () => {
       document.body.classList.toggle('dark-theme');
@@ -59,21 +68,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Settings Modal ---
   if (settingsBtn && settingsModal) {
-    settingsBtn.addEventListener('click', () => settingsModal.showModal());
+    settingsBtn.addEventListener('click', () => {
+      if (typeof settingsModal.showModal === 'function') {
+        settingsModal.showModal();
+      } else {
+        settingsModal.style.display = 'block';
+      }
+    });
   }
 
   if (closeSettingsModal && settingsModal) {
-    closeSettingsModal.addEventListener('click', () => settingsModal.close());
-  }
-
-  if (settingsModal) {
-    settingsModal.addEventListener('click', (e) => {
-      const rect = settingsModal.getBoundingClientRect();
-      if (
-        e.clientX < rect.left || e.clientX > rect.right ||
-        e.clientY < rect.top || e.clientY > rect.bottom
-      ) {
+    closeSettingsModal.addEventListener('click', () => {
+      if (typeof settingsModal.close === 'function') {
         settingsModal.close();
+      } else {
+        settingsModal.style.display = 'none';
       }
     });
   }
@@ -105,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 4. FILE ATTACHMENT HANDLERS
+  // 4. FILE ATTACHMENTS
   // ==========================================
 
   let filePreviewBadge = document.getElementById('filePreviewBadge');
@@ -179,16 +188,17 @@ document.addEventListener('DOMContentLoaded', () => {
       filePreviewBadge.style.display = 'none';
       filePreviewBadge.innerHTML = '';
     }
-    if (sendButton) sendButton.disabled = messageInput.value.trim() === '';
+    if (sendButton && messageInput) {
+      sendButton.disabled = messageInput.value.trim() === '';
+    }
   }
 
   // ==========================================
-  // 5. PARSER: MARKDOWN & LATEX MATH
+  // 5. PARSER: MARKDOWN & LATEX
   // ==========================================
   function parseMarkdown(text) {
     if (!text) return '';
 
-    // Clean up LaTeX math formulas (e.g., $30\frac{3}{4}$ -> 30 3/4)
     let cleaned = text.replace(/\$([^$]+)\$/g, (match, formula) => {
       let cleanMath = formula
         .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$1/$2')
@@ -197,12 +207,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return `<strong style="background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace;">${cleanMath}</strong>`;
     });
 
-    // Use Marked.js if present
     if (typeof marked !== 'undefined') {
       return marked.parse(cleaned);
     }
 
-    // Fallback Regex Parser
     return cleaned
       .replace(/^### (.*$)/gim, '<h3>$1</h3>')
       .replace(/^## (.*$)/gim, '<h2>$1</h2>')
@@ -213,20 +221,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 6. CLOUDFLARE BACKEND PROXY CALL
+  // 6. BACKEND API PROXY
   // ==========================================
   async function getGeminiResponse(query, filePart = null) {
     const parts = [];
 
-    if (filePart) {
-      parts.push(filePart);
-    }
-    if (query) {
-      parts.push({ text: query });
-    }
+    if (filePart) parts.push(filePart);
+    if (query) parts.push({ text: query });
 
     try {
-      // Calls Cloudflare Pages Function at /api/chat securely without exposing API key
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -244,10 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (data.candidates && data.candidates[0].content) {
         const candidate = data.candidates[0];
-        
-        let textOutput = candidate.content.parts
-          .map(part => part.text || '')
-          .join('\n');
+        let textOutput = candidate.content.parts.map(part => part.text || '').join('\n');
 
         let sources = [];
         const metadata = candidate.groundingMetadata;
@@ -273,6 +273,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // 7. CHAT & MESSAGE DELIVERY
   // ==========================================
   async function sendMessage() {
+    if (!messageInput) return;
+
     const text = messageInput.value.trim();
     if (!text && !selectedFilePart) return;
 
@@ -285,92 +287,98 @@ document.addEventListener('DOMContentLoaded', () => {
     messageInput.style.height = 'auto';
     clearFileAttachment();
 
-    // Render User Message
-    const userMsgDiv = document.createElement('div');
-    userMsgDiv.className = 'user-message-wrapper';
-    userMsgDiv.style.cssText = 'margin-bottom: 16px; display: flex; justify-content: flex-end; width: 100%;';
-    
-    let userAttachmentHTML = '';
-    if (currentFilePart) {
-      userAttachmentHTML = `
-        <div style="font-size: 0.8rem; font-weight: 600; opacity: 0.8; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
-          <span class="material-symbols-outlined" style="font-size: 14px;">attach_file</span> ${currentFileName}
+    if (messagesContainer) {
+      // User Message
+      const userMsgDiv = document.createElement('div');
+      userMsgDiv.className = 'user-message-wrapper';
+      userMsgDiv.style.cssText = 'margin-bottom: 16px; display: flex; justify-content: flex-end; width: 100%;';
+      
+      let userAttachmentHTML = '';
+      if (currentFilePart) {
+        userAttachmentHTML = `
+          <div style="font-size: 0.8rem; font-weight: 600; opacity: 0.8; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+            <span class="material-symbols-outlined" style="font-size: 14px;">attach_file</span> ${currentFileName}
+          </div>
+        `;
+      }
+
+      userMsgDiv.innerHTML = `
+        <div style="background-color: var(--hover-bg, #f1f3f4); padding: 12px 16px; border-radius: 16px; max-width: 75%; word-break: break-word;">
+          ${userAttachmentHTML}
+          ${parseMarkdown(text)}
         </div>
       `;
-    }
+      messagesContainer.appendChild(userMsgDiv);
 
-    userMsgDiv.innerHTML = `
-      <div style="background-color: var(--hover-bg, #f1f3f4); padding: 12px 16px; border-radius: 16px; max-width: 75%; word-break: break-word;">
-        ${userAttachmentHTML}
-        ${parseMarkdown(text)}
-      </div>
-    `;
-    messagesContainer.appendChild(userMsgDiv);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-    // Render Thinking Bubble
-    const aiMsgDiv = document.createElement('div');
-    aiMsgDiv.className = 'ai-message-wrapper';
-    aiMsgDiv.style.cssText = 'margin-bottom: 24px; display: flex; justify-content: flex-start; gap: 12px; width: 100%;';
-    aiMsgDiv.innerHTML = `
-      <div style="width: 32px; height: 32px; background-color: #1a73e8; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-        <span class="material-symbols-outlined" style="font-size: 18px;">smart_toy</span>
-      </div>
-      <div id="loadingBubble" style="background-color: var(--card-bg, #ffffff); border: 1px solid var(--border-color, #e0e0e0); padding: 14px 18px; border-radius: 16px; max-width: 85%; line-height: 1.6;">
-        Thinking...
-      </div>
-    `;
-    messagesContainer.appendChild(aiMsgDiv);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-    // Call Cloudflare Proxy Function
-    const responseData = await getGeminiResponse(text, currentFilePart);
-
-    // Format Sources HTML
-    let sourcesHTML = '';
-    if (responseData.sources && responseData.sources.length > 0) {
-      const links = responseData.sources.slice(0, 5).map(s => 
-        `<a href="${s.url}" target="_blank" rel="noopener" style="color: #1a73e8; text-decoration: none; background: rgba(26,115,232,0.08); padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; display: inline-block;">${s.title}</a>`
-      ).join(' ');
-
-      sourcesHTML = `
-        <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border-color, #eee); font-size: 0.85rem;">
-          <strong style="display: block; margin-bottom: 4px; color: var(--text-muted, #666);">Sources:</strong>
-          <div style="display: flex; flex-wrap: wrap; gap: 6px;">${links}</div>
+      // Loading Indicator
+      const aiMsgDiv = document.createElement('div');
+      aiMsgDiv.className = 'ai-message-wrapper';
+      aiMsgDiv.style.cssText = 'margin-bottom: 24px; display: flex; justify-content: flex-start; gap: 12px; width: 100%;';
+      aiMsgDiv.innerHTML = `
+        <div style="width: 32px; height: 32px; background-color: #1a73e8; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <span class="material-symbols-outlined" style="font-size: 18px;">smart_toy</span>
+        </div>
+        <div id="loadingBubble" style="background-color: var(--card-bg, #ffffff); border: 1px solid var(--border-color, #e0e0e0); padding: 14px 18px; border-radius: 16px; max-width: 85%; line-height: 1.6;">
+          Thinking...
         </div>
       `;
-    }
+      messagesContainer.appendChild(aiMsgDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    // Update Bubble Content
-    const bubbleContent = aiMsgDiv.querySelector('#loadingBubble');
-    bubbleContent.innerHTML = parseMarkdown(responseData.text) + sourcesHTML;
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      // API Call
+      const responseData = await getGeminiResponse(text, currentFilePart);
+
+      // Format Sources
+      let sourcesHTML = '';
+      if (responseData.sources && responseData.sources.length > 0) {
+        const links = responseData.sources.slice(0, 5).map(s => 
+          `<a href="${s.url}" target="_blank" rel="noopener" style="color: #1a73e8; text-decoration: none; background: rgba(26,115,232,0.08); padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; display: inline-block;">${s.title}</a>`
+        ).join(' ');
+
+        sourcesHTML = `
+          <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border-color, #eee); font-size: 0.85rem;">
+            <strong style="display: block; margin-bottom: 4px; color: var(--text-muted, #666);">Sources:</strong>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">${links}</div>
+          </div>
+        `;
+      }
+
+      const bubbleContent = aiMsgDiv.querySelector('#loadingBubble');
+      if (bubbleContent) {
+        bubbleContent.innerHTML = parseMarkdown(responseData.text) + sourcesHTML;
+      }
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
   }
 
   // ==========================================
-  // 8. INPUT LISTENERS & BUTTON HANDLERS
+  // 8. INPUT LISTENERS
   // ==========================================
-  if (messageInput && sendButton) {
+  if (messageInput) {
     messageInput.addEventListener('input', () => {
       messageInput.style.height = 'auto';
       messageInput.style.height = `${messageInput.scrollHeight}px`;
-      sendButton.disabled = messageInput.value.trim() === '' && !selectedFilePart;
+      if (sendButton) {
+        sendButton.disabled = messageInput.value.trim() === '' && !selectedFilePart;
+      }
     });
 
     messageInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        if (!sendButton.disabled) sendMessage();
+        sendMessage();
       }
     });
+  }
 
+  if (sendButton) {
     sendButton.addEventListener('click', sendMessage);
   }
 
-  // New Chat
+  // New & Clear Chat
   if (newChatButton) {
     newChatButton.addEventListener('click', () => {
-      messagesContainer.innerHTML = '';
+      if (messagesContainer) messagesContainer.innerHTML = '';
       if (welcomeScreen) welcomeScreen.style.display = 'flex';
       if (messageInput) {
         messageInput.value = '';
@@ -380,10 +388,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Clear Chat
   if (clearChatButton) {
     clearChatButton.addEventListener('click', () => {
-      messagesContainer.innerHTML = '';
+      if (messagesContainer) messagesContainer.innerHTML = '';
       if (welcomeScreen) welcomeScreen.style.display = 'flex';
       clearFileAttachment();
     });
@@ -401,31 +408,5 @@ document.addEventListener('DOMContentLoaded', () => {
         sendMessage();
       }
     });
-  });
-
-  // History Item Rename/Delete
-  document.querySelectorAll('.history-item').forEach(item => {
-    const editBtn = item.querySelector('[title="Rename"]');
-    const deleteBtn = item.querySelector('[title="Delete"]');
-
-    if (editBtn) {
-      editBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const titleSpan = item.querySelector('.history-item-left span:last-child');
-        if (titleSpan) {
-          const newTitle = prompt('Rename chat:', titleSpan.textContent);
-          if (newTitle) titleSpan.textContent = newTitle;
-        }
-      });
-    }
-
-    if (deleteBtn) {
-      deleteBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (confirm('Are you sure you want to delete this chat?')) {
-          item.remove();
-        }
-      });
-    }
   });
 });

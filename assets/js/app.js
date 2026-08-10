@@ -3,13 +3,20 @@
 /* =========================================================
    PRASUN AI
    Frontend Application
-========================================================= */
+   ========================================================= */
 
-const API_URL = "https://prasun-ai-api.prasun301.workers.dev/";
+/*
+ * Cloudflare Worker API
+ *
+ * IMPORTANT:
+ * Do not use Markdown here.
+ */
+const API_URL = "https://prasun-ai-api.prasun301.workers.dev";
+
 
 /* =========================================================
    ELEMENTS
-========================================================= */
+   ========================================================= */
 
 const sidebar = document.getElementById("sidebar");
 const sidebarOverlay = document.getElementById("sidebarOverlay");
@@ -71,7 +78,7 @@ const historyItems =
 
 /* =========================================================
    STATE
-========================================================= */
+   ========================================================= */
 
 let conversationHistory = [];
 let selectedFile = null;
@@ -80,7 +87,7 @@ let isSending = false;
 
 /* =========================================================
    SIDEBAR
-========================================================= */
+   ========================================================= */
 
 function openSidebar() {
 
@@ -142,7 +149,7 @@ if (sidebarOverlay) {
 
 /* =========================================================
    TEXTAREA
-========================================================= */
+   ========================================================= */
 
 function resizeTextarea() {
 
@@ -198,20 +205,16 @@ if (messageInput) {
 
 /* =========================================================
    FILE UPLOAD
-========================================================= */
+   ========================================================= */
 
 function formatFileSize(bytes) {
 
     if (bytes < 1024) {
-
         return `${bytes} B`;
-
     }
 
     if (bytes < 1024 * 1024) {
-
         return `${(bytes / 1024).toFixed(1)} KB`;
-
     }
 
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
@@ -224,15 +227,11 @@ function getFileIcon(file) {
         (file.type || "").toLowerCase();
 
     if (type.startsWith("image/")) {
-
         return "🖼️";
-
     }
 
     if (type === "application/pdf") {
-
         return "📄";
-
     }
 
     if (
@@ -241,9 +240,7 @@ function getFileIcon(file) {
         type.includes("json") ||
         type.includes("html")
     ) {
-
         return "💻";
-
     }
 
     return "📎";
@@ -255,30 +252,22 @@ function showAttachment(file) {
     selectedFile = file;
 
     if (attachmentName) {
-
         attachmentName.textContent =
             file.name;
-
     }
 
     if (attachmentSize) {
-
         attachmentSize.textContent =
             formatFileSize(file.size);
-
     }
 
     if (attachmentIcon) {
-
         attachmentIcon.textContent =
             getFileIcon(file);
-
     }
 
     if (attachmentPreview) {
-
         attachmentPreview.hidden = false;
-
     }
 
     updateSendButton();
@@ -290,15 +279,11 @@ function clearAttachment() {
     selectedFile = null;
 
     if (fileInput) {
-
         fileInput.value = "";
-
     }
 
     if (attachmentPreview) {
-
         attachmentPreview.hidden = true;
-
     }
 
     updateSendButton();
@@ -339,17 +324,11 @@ if (fileInput) {
                 return;
             }
 
-
             /*
-             * Frontend limit.
-             *
-             * We keep this at 10 MB for now.
-             * The Worker will also validate the size.
+             * Frontend file limit.
              */
-
             const maxSize =
                 10 * 1024 * 1024;
-
 
             if (file.size > maxSize) {
 
@@ -361,7 +340,6 @@ if (fileInput) {
 
                 return;
             }
-
 
             showAttachment(file);
 
@@ -389,7 +367,7 @@ if (removeAttachment) {
 
 /* =========================================================
    CREATE USER MESSAGE
-========================================================= */
+   ========================================================= */
 
 function createUserMessage(
     text,
@@ -400,13 +378,11 @@ function createUserMessage(
         return;
     }
 
-
     const message =
         document.createElement("div");
 
     message.className =
         "message user";
-
 
     const content =
         document.createElement("div");
@@ -431,7 +407,6 @@ function createUserMessage(
         content.appendChild(
             fileLabel
         );
-
     }
 
 
@@ -448,7 +423,6 @@ function createUserMessage(
         content.appendChild(
             textElement
         );
-
     }
 
 
@@ -464,7 +438,7 @@ function createUserMessage(
 
 /* =========================================================
    CREATE AI MESSAGE
-========================================================= */
+   ========================================================= */
 
 function createAIMessage(text) {
 
@@ -472,13 +446,11 @@ function createAIMessage(text) {
         return;
     }
 
-
     const message =
         document.createElement("div");
 
     message.className =
         "message ai";
-
 
     const avatar =
         document.createElement("div");
@@ -489,7 +461,6 @@ function createAIMessage(text) {
     avatar.textContent =
         "✦";
 
-
     const content =
         document.createElement("div");
 
@@ -498,7 +469,6 @@ function createAIMessage(text) {
 
     content.textContent =
         text;
-
 
     message.appendChild(
         avatar
@@ -516,7 +486,7 @@ function createAIMessage(text) {
 
 /* =========================================================
    THINKING MESSAGE
-========================================================= */
+   ========================================================= */
 
 function createThinkingMessage() {
 
@@ -524,13 +494,11 @@ function createThinkingMessage() {
         return null;
     }
 
-
     const message =
         document.createElement("div");
 
     message.className =
         "message ai thinking-message";
-
 
     const avatar =
         document.createElement("div");
@@ -541,7 +509,6 @@ function createThinkingMessage() {
     avatar.textContent =
         "✦";
 
-
     const content =
         document.createElement("div");
 
@@ -551,7 +518,6 @@ function createThinkingMessage() {
     content.textContent =
         "Thinking...";
 
-
     message.appendChild(
         avatar
     );
@@ -560,14 +526,11 @@ function createThinkingMessage() {
         content
     );
 
-
     messagesContainer.appendChild(
         message
     );
 
-
     scrollToBottom();
-
 
     return message;
 }
@@ -575,7 +538,7 @@ function createThinkingMessage() {
 
 /* =========================================================
    FILE TO BASE64
-========================================================= */
+   ========================================================= */
 
 function fileToBase64(file) {
 
@@ -585,13 +548,11 @@ function fileToBase64(file) {
             const reader =
                 new FileReader();
 
-
             reader.onload =
                 function () {
 
                     const result =
                         reader.result;
-
 
                     if (
                         typeof result !== "string"
@@ -606,10 +567,8 @@ function fileToBase64(file) {
                         return;
                     }
 
-
                     const commaIndex =
                         result.indexOf(",");
-
 
                     if (commaIndex === -1) {
 
@@ -622,7 +581,6 @@ function fileToBase64(file) {
                         return;
                     }
 
-
                     resolve(
                         result.substring(
                             commaIndex + 1
@@ -630,7 +588,6 @@ function fileToBase64(file) {
                     );
 
                 };
-
 
             reader.onerror =
                 function () {
@@ -643,7 +600,6 @@ function fileToBase64(file) {
 
                 };
 
-
             reader.readAsDataURL(
                 file
             );
@@ -655,7 +611,7 @@ function fileToBase64(file) {
 
 /* =========================================================
    SEND REQUEST TO WORKER
-========================================================= */
+   ========================================================= */
 
 async function getAIResponse(
     userText,
@@ -674,7 +630,6 @@ async function getAIResponse(
                 file
             );
 
-
         fileData = {
 
             name:
@@ -688,7 +643,6 @@ async function getAIResponse(
                 base64
 
         };
-
     }
 
 
@@ -725,7 +679,6 @@ async function getAIResponse(
     /* Read response */
 
     let data;
-
 
     try {
 
@@ -775,7 +728,7 @@ async function getAIResponse(
 
 /* =========================================================
    SEND MESSAGE
-========================================================= */
+   ========================================================= */
 
 async function sendMessage() {
 
@@ -783,24 +736,19 @@ async function sendMessage() {
         return;
     }
 
-
     if (isSending) {
         return;
     }
 
-
     const text =
         messageInput.value.trim();
-
 
     if (
         !text &&
         !selectedFile
     ) {
-
         return;
     }
-
 
     const file =
         selectedFile;
@@ -862,9 +810,7 @@ async function sendMessage() {
         /* Remove thinking */
 
         if (thinkingMessage) {
-
             thinkingMessage.remove();
-
         }
 
 
@@ -911,7 +857,6 @@ async function sendMessage() {
 
         }
 
-
     } catch (error) {
 
         console.error(
@@ -921,9 +866,7 @@ async function sendMessage() {
 
 
         if (thinkingMessage) {
-
             thinkingMessage.remove();
-
         }
 
 
@@ -945,7 +888,7 @@ async function sendMessage() {
 
 /* =========================================================
    SEND BUTTON
-========================================================= */
+   ========================================================= */
 
 if (sendButton) {
 
@@ -965,7 +908,7 @@ if (sendButton) {
 
 /* =========================================================
    ENTER TO SEND
-========================================================= */
+   ========================================================= */
 
 if (messageInput) {
 
@@ -975,7 +918,6 @@ if (messageInput) {
 
             /*
              * Enter = send
-             *
              * Shift + Enter = new line
              */
 
@@ -999,14 +941,13 @@ if (messageInput) {
 
 /* =========================================================
    SCROLL
-========================================================= */
+   ========================================================= */
 
 function scrollToBottom() {
 
     if (!messagesContainer) {
         return;
     }
-
 
     setTimeout(
         function () {
@@ -1029,7 +970,7 @@ function scrollToBottom() {
 
 /* =========================================================
    NEW CHAT
-========================================================= */
+   ========================================================= */
 
 if (newChatButton) {
 
@@ -1044,14 +985,12 @@ if (newChatButton) {
 
             }
 
-
             if (welcomeScreen) {
 
                 welcomeScreen.style.display =
                     "flex";
 
             }
-
 
             if (messageInput) {
 
@@ -1063,26 +1002,19 @@ if (newChatButton) {
 
             }
 
-
             conversationHistory =
                 [];
 
-
             clearAttachment();
-
 
             isSending = false;
 
             updateSendButton();
 
-
             closeSidebar();
 
-
             if (messageInput) {
-
                 messageInput.focus();
-
             }
 
         }
@@ -1093,7 +1025,7 @@ if (newChatButton) {
 
 /* =========================================================
    SUGGESTIONS
-========================================================= */
+   ========================================================= */
 
 suggestionCards.forEach(
     function (card) {
@@ -1106,19 +1038,15 @@ suggestionCards.forEach(
                     return;
                 }
 
-
                 const prompt =
                     card.dataset.prompt;
-
 
                 if (!prompt) {
                     return;
                 }
 
-
                 messageInput.value =
                     prompt;
-
 
                 resizeTextarea();
 
@@ -1135,7 +1063,7 @@ suggestionCards.forEach(
 
 /* =========================================================
    DARK / LIGHT MODE
-========================================================= */
+   ========================================================= */
 
 function applySavedTheme() {
 
@@ -1143,7 +1071,6 @@ function applySavedTheme() {
         localStorage.getItem(
             "prasun-ai-theme"
         );
-
 
     if (
         savedTheme === "dark"
@@ -1164,12 +1091,10 @@ function toggleTheme() {
         "dark"
     );
 
-
     const isDark =
         document.body.classList.contains(
             "dark"
         );
-
 
     localStorage.setItem(
         "prasun-ai-theme",
@@ -1196,7 +1121,7 @@ applySavedTheme();
 
 /* =========================================================
    CHAT SEARCH
-========================================================= */
+   ========================================================= */
 
 if (chatSearch) {
 
@@ -1209,14 +1134,12 @@ if (chatSearch) {
                     .trim()
                     .toLowerCase();
 
-
             historyItems.forEach(
                 function (item) {
 
                     const text =
                         item.textContent
                             .toLowerCase();
-
 
                     if (
                         !search ||
@@ -1244,7 +1167,7 @@ if (chatSearch) {
 
 /* =========================================================
    HISTORY ITEMS
-========================================================= */
+   ========================================================= */
 
 historyItems.forEach(
     function (item) {
@@ -1263,11 +1186,9 @@ historyItems.forEach(
                     }
                 );
 
-
                 item.classList.add(
                     "active"
                 );
-
 
                 closeSidebar();
 
@@ -1280,7 +1201,7 @@ historyItems.forEach(
 
 /* =========================================================
    KEYBOARD SHORTCUT
-========================================================= */
+   ========================================================= */
 
 document.addEventListener(
     "keydown",
@@ -1294,11 +1215,8 @@ document.addEventListener(
 
             event.preventDefault();
 
-
             if (chatSearch) {
-
                 chatSearch.focus();
-
             }
 
         }
@@ -1309,7 +1227,7 @@ document.addEventListener(
 
 /* =========================================================
    INITIALIZE
-========================================================= */
+   ========================================================= */
 
 updateSendButton();
 

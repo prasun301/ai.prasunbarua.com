@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
 
@@ -10,7 +11,7 @@
 
     <meta
         name="description"
-        content="Prasun AI — AI assistant for learning, coding, writing, research and more."
+        content="Prasun AI — an intelligent AI assistant for learning, coding, writing, research and more."
     >
 
     <meta
@@ -20,24 +21,22 @@
 
     <title>Prasun AI</title>
 
-    <!-- Favicon -->
     <link
         rel="icon"
-        href="assets/images/favicon.ico"
+        href="favicon.ico"
     >
 
-    <!-- Main stylesheet -->
     <link
         rel="stylesheet"
         href="assets/css/style.css"
     >
 
-    <!-- Responsive stylesheet -->
     <link
         rel="stylesheet"
         href="assets/css/responsive.css"
     >
 </head>
+
 
 <body>
 
@@ -52,32 +51,23 @@
         id="sidebar"
     >
 
-        <!-- BRAND -->
-
         <div class="sidebar-header">
 
-            <a
-                href="/"
-                class="brand"
-                aria-label="Prasun AI Home"
-            >
+            <div class="brand">
 
                 <div class="brand-icon">
                     ✦
                 </div>
 
-                <div class="brand-text">
-                    <strong>Prasun AI</strong>
-                    <span>AI Assistant</span>
-                </div>
+                <span>
+                    Prasun AI
+                </span>
 
-            </a>
-
+            </div>
 
             <button
-                class="icon-button sidebar-close"
+                class="icon-button mobile-close"
                 id="closeSidebar"
-                type="button"
                 aria-label="Close sidebar"
                 title="Close sidebar"
             >
@@ -87,158 +77,103 @@
         </div>
 
 
-        <!-- NEW CHAT -->
+        <!-- New Chat -->
 
-        <div class="sidebar-main">
+        <button
+            class="new-chat-button"
+            id="newChatButton"
+            type="button"
+        >
 
-            <button
-                class="new-chat-button"
-                id="newChatButton"
-                type="button"
+            <span class="new-chat-icon">
+                ＋
+            </span>
+
+            <span>
+                New chat
+            </span>
+
+        </button>
+
+
+        <!-- Chat Search -->
+
+        <div class="chat-search">
+
+            <span
+                class="search-icon"
+                aria-hidden="true"
+            >
+                ⌕
+            </span>
+
+            <input
+                type="search"
+                id="chatSearch"
+                placeholder="Search chats"
+                autocomplete="off"
+                aria-label="Search chats"
             >
 
-                <span class="new-chat-icon">
-                    ＋
-                </span>
+            <span class="search-shortcut">
+                ⌘ K
+            </span>
 
-                <span>
-                    New chat
-                </span>
-
-            </button>
+        </div>
 
 
-            <!-- SEARCH -->
+        <!-- Chat History -->
 
-            <div class="chat-search">
+        <div class="history-container">
 
-                <span
-                    class="search-icon"
-                    aria-hidden="true"
+            <div class="history-section">
+
+                <div class="history-title">
+                    Today
+                </div>
+
+                <button
+                    class="history-item active"
+                    type="button"
                 >
-                    ⌕
-                </span>
-
-                <input
-                    type="search"
-                    id="chatSearch"
-                    placeholder="Search chats"
-                    autocomplete="off"
-                    aria-label="Search chats"
-                >
-
-                <span
-                    class="search-shortcut"
-                    aria-hidden="true"
-                >
-                    ⌘ K
-                </span>
+                    <span>
+                        Welcome to Prasun AI
+                    </span>
+                </button>
 
             </div>
 
 
-            <!-- CHAT HISTORY -->
+            <div class="history-section">
 
-            <div
-                class="history-container"
-                id="historyContainer"
-            >
-
-                <!-- TODAY -->
-
-                <div class="history-section">
-
-                    <div class="history-title">
-                        Today
-                    </div>
-
-                    <button
-                        class="history-item active"
-                        type="button"
-                    >
-
-                        <span>
-                            Welcome to Prasun AI
-                        </span>
-
-                    </button>
-
+                <div class="history-title">
+                    Yesterday
                 </div>
 
+                <button
+                    class="history-item"
+                    type="button"
+                >
+                    <span>
+                        Solar energy discussion
+                    </span>
+                </button>
 
-                <!-- YESTERDAY -->
-
-                <div class="history-section">
-
-                    <div class="history-title">
-                        Yesterday
-                    </div>
-
-                    <button
-                        class="history-item"
-                        type="button"
-                    >
-
-                        <span>
-                            Solar energy discussion
-                        </span>
-
-                    </button>
-
-
-                    <button
-                        class="history-item"
-                        type="button"
-                    >
-
-                        <span>
-                            Website development
-                        </span>
-
-                    </button>
-
-                </div>
-
-
-                <!-- PREVIOUS -->
-
-                <div class="history-section">
-
-                    <div class="history-title">
-                        Previous
-                    </div>
-
-                    <button
-                        class="history-item"
-                        type="button"
-                    >
-
-                        <span>
-                            JavaScript learning
-                        </span>
-
-                    </button>
-
-
-                    <button
-                        class="history-item"
-                        type="button"
-                    >
-
-                        <span>
-                            Science questions
-                        </span>
-
-                    </button>
-
-                </div>
+                <button
+                    class="history-item"
+                    type="button"
+                >
+                    <span>
+                        Website development
+                    </span>
+                </button>
 
             </div>
 
         </div>
 
 
-        <!-- SIDEBAR BOTTOM -->
+        <!-- Sidebar Bottom -->
 
         <div class="sidebar-bottom">
 
@@ -276,8 +211,6 @@
             </button>
 
 
-            <!-- USER -->
-
             <div class="user-profile">
 
                 <div class="user-avatar">
@@ -296,14 +229,9 @@
 
                 </div>
 
-                <button
-                    class="profile-more"
-                    type="button"
-                    aria-label="More profile options"
-                    title="More options"
-                >
+                <span class="profile-more">
                     ⋯
-                </button>
+                </span>
 
             </div>
 
@@ -312,7 +240,7 @@
     </aside>
 
 
-    <!-- SIDEBAR OVERLAY -->
+    <!-- Mobile Sidebar Overlay -->
 
     <div
         class="sidebar-overlay"
@@ -326,13 +254,10 @@
 
     <main class="main">
 
-        <!-- =================================================
-             TOPBAR
-             ================================================= -->
+
+        <!-- Topbar -->
 
         <header class="topbar">
-
-            <!-- MOBILE MENU -->
 
             <button
                 class="icon-button menu-button"
@@ -345,14 +270,11 @@
             </button>
 
 
-            <!-- MODEL SELECTOR -->
-
             <button
                 class="model-selector"
                 id="modelSelector"
                 type="button"
-                aria-label="Current AI model"
-                title="AI model"
+                aria-label="AI model"
             >
 
                 <span>
@@ -363,17 +285,12 @@
                     AI
                 </span>
 
-                <span
-                    class="chevron"
-                    aria-hidden="true"
-                >
+                <span class="chevron">
                     ▾
                 </span>
 
             </button>
 
-
-            <!-- TOPBAR ACTIONS -->
 
             <div class="topbar-actions">
 
@@ -381,7 +298,7 @@
                     class="icon-button"
                     id="shareButton"
                     type="button"
-                    aria-label="Share chat"
+                    aria-label="Share"
                     title="Share"
                 >
                     ↗
@@ -401,7 +318,8 @@
             id="chatArea"
         >
 
-            <!-- WELCOME -->
+
+            <!-- Welcome -->
 
             <div
                 class="welcome-screen"
@@ -412,24 +330,22 @@
                     ✦
                 </div>
 
-
                 <h1>
                     How can I help you today?
                 </h1>
 
-
                 <p>
-                    Ask Prasun AI anything. Get help with
-                    learning, coding, writing, research and more.
+                    Ask Prasun AI anything.
+                    Get help with learning,
+                    coding, writing, research
+                    and more.
                 </p>
 
 
-                <!-- SUGGESTIONS -->
+                <!-- Suggestions -->
 
                 <div class="suggestions">
 
-
-                    <!-- CARD 1 -->
 
                     <button
                         class="suggestion-card"
@@ -437,10 +353,7 @@
                         data-prompt="Explain how solar panels generate electricity."
                     >
 
-                        <span
-                            class="suggestion-icon"
-                            aria-hidden="true"
-                        >
+                        <span class="suggestion-icon">
                             ⚡
                         </span>
 
@@ -451,18 +364,13 @@
                     </button>
 
 
-                    <!-- CARD 2 -->
-
                     <button
                         class="suggestion-card"
                         type="button"
                         data-prompt="Help me write a professional website."
                     >
 
-                        <span
-                            class="suggestion-icon"
-                            aria-hidden="true"
-                        >
+                        <span class="suggestion-icon">
                             ◇
                         </span>
 
@@ -473,18 +381,13 @@
                     </button>
 
 
-                    <!-- CARD 3 -->
-
                     <button
                         class="suggestion-card"
                         type="button"
                         data-prompt="Teach me JavaScript from beginner level."
                     >
 
-                        <span
-                            class="suggestion-icon"
-                            aria-hidden="true"
-                        >
+                        <span class="suggestion-icon">
                             &lt;/&gt;
                         </span>
 
@@ -495,18 +398,13 @@
                     </button>
 
 
-                    <!-- CARD 4 -->
-
                     <button
                         class="suggestion-card"
                         type="button"
                         data-prompt="Give me five interesting science facts."
                     >
 
-                        <span
-                            class="suggestion-icon"
-                            aria-hidden="true"
-                        >
+                        <span class="suggestion-icon">
                             ✨
                         </span>
 
@@ -516,19 +414,21 @@
 
                     </button>
 
+
                 </div>
 
             </div>
 
 
-            <!-- MESSAGES -->
+            <!-- Messages -->
 
             <div
                 class="messages"
                 id="messages"
                 aria-live="polite"
-                aria-label="Chat messages"
+                aria-atomic="false"
             ></div>
+
 
         </section>
 
@@ -540,7 +440,7 @@
         <div class="composer-wrapper">
 
 
-            <!-- ATTACHMENT PREVIEW -->
+            <!-- Attachment Preview -->
 
             <div
                 class="attachment-preview"
@@ -548,27 +448,17 @@
                 hidden
             >
 
-                <div class="attachment-info">
-
-                    <span
-                        id="attachmentIcon"
-                        class="attachment-icon"
-                        aria-hidden="true"
-                    >
+                <div class="attachment-icon">
+                    <span id="attachmentIcon">
                         📎
                     </span>
+                </div>
 
-                    <div class="attachment-details">
+                <div class="attachment-info">
 
-                        <span
-                            id="attachmentName"
-                        ></span>
+                    <span id="attachmentName"></span>
 
-                        <span
-                            id="attachmentSize"
-                        ></span>
-
-                    </div>
+                    <span id="attachmentSize"></span>
 
                 </div>
 
@@ -586,22 +476,21 @@
             </div>
 
 
-            <!-- FILE INPUT -->
+            <!-- Hidden File Input -->
 
             <input
                 type="file"
                 id="fileInput"
                 hidden
-                accept="image/*,.pdf,.txt,.md,.csv,.json,.js,.html,.css"
             >
 
 
-            <!-- COMPOSER -->
+            <!-- Composer -->
 
             <div class="composer">
 
 
-                <!-- TOOLBAR -->
+                <!-- Attachment Button -->
 
                 <div class="composer-toolbar">
 
@@ -618,23 +507,22 @@
                 </div>
 
 
-                <!-- MESSAGE INPUT -->
+                <!-- Message Input -->
 
                 <textarea
                     id="messageInput"
                     rows="1"
                     placeholder="Message Prasun AI..."
                     autocomplete="off"
+                    spellcheck="true"
                     aria-label="Message Prasun AI"
                 ></textarea>
 
 
-                <!-- COMPOSER BOTTOM -->
+                <!-- Composer Bottom -->
 
                 <div class="composer-bottom">
 
-
-                    <!-- OPTIONS -->
 
                     <div class="composer-options">
 
@@ -645,7 +533,7 @@
                             title="Tools"
                         >
 
-                            <span aria-hidden="true">
+                            <span>
                                 ✨
                             </span>
 
@@ -658,8 +546,6 @@
                     </div>
 
 
-                    <!-- SEND -->
-
                     <button
                         class="send-button"
                         id="sendButton"
@@ -671,17 +557,19 @@
                         ↑
                     </button>
 
+
                 </div>
 
             </div>
 
 
-            <!-- DISCLAIMER -->
+            <!-- Disclaimer -->
 
             <div class="composer-disclaimer">
                 Prasun AI can make mistakes.
                 Check important information.
             </div>
+
 
         </div>
 
@@ -690,9 +578,9 @@
 </div>
 
 
-<!-- =====================================================
+<!-- =========================================================
      JAVASCRIPT
-     ===================================================== -->
+     ========================================================= -->
 
 <script
     src="assets/js/app.js"
@@ -700,4 +588,5 @@
 ></script>
 
 </body>
+
 </html>

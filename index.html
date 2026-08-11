@@ -21,8 +21,8 @@
           <span>Prasun AI</span>
         </div>
         <button class="icon-btn sidebar-toggle" id="closeSidebar" title="Close Sidebar">
-        <span class="material-symbols-outlined">menu_open</span>
-       </button>
+          <span class="material-symbols-outlined">menu_open</span>
+        </button>
       </div>
 
       <div style="padding: 0 14px 12px 14px;">
@@ -133,19 +133,13 @@
         <div class="composer-box">
           <textarea id="messageInput" class="message-textarea" placeholder="Message Prasun AI..." rows="1"></textarea>
           
-          <!-- ADD THE HIDDEN FILE INPUT HERE -->
           <input type="file" id="fileInput" style="display: none;" accept="image/*,.pdf,.txt" />
 
           <div class="composer-toolbar">
             <div class="toolbar-left">
-              <!-- ADD id="attachButton" HERE -->
               <button class="toolbar-btn" id="attachButton" type="button">
                 <span class="material-symbols-outlined" style="font-size: 18px;">attach_file</span>
                 <span>Attach</span>
-              </button>
-              <button class="toolbar-btn" id="searchButton" type="button">
-                <span class="material-symbols-outlined" style="font-size: 18px;">globe</span>
-                <span>Search</span>
               </button>
             </div>
             <div class="toolbar-right">
@@ -162,20 +156,20 @@
     </main>
   </div>
 
-<dialog class="modal" id="settingsModal">
-  <div class="modal-header">
-    <h3>Settings</h3>
-    <button class="icon-btn" id="closeSettingsModal">
-      <span class="material-symbols-outlined">close</span>
-    </button>
-  </div>
-  <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
-    <div class="input-group">
-      <label for="userNameInput">Display Name</label>
-      <input type="text" id="userNameInput" value="Guest">
+  <dialog class="modal" id="settingsModal">
+    <div class="modal-header">
+      <h3>Settings</h3>
+      <button class="icon-btn" id="closeSettingsModal">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
-  </div>
-</dialog>
+    <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
+      <div class="input-group">
+        <label for="userNameInput">Display Name</label>
+        <input type="text" id="userNameInput" value="Guest">
+      </div>
+    </div>
+  </dialog>
 
   <script src="assets/js/app.js"></script>
 </body>

@@ -71,8 +71,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let userName = "Guest";
 
   // =========================================================
-  // MODEL CONFIGURATION
-  // =========================================================
+// MODEL CONFIGURATION
+// =========================================================
 
 const MODELS = {
   "gemini-3.6-flash": {
@@ -91,20 +91,26 @@ const MODELS = {
   }
 };
 
-// ==========================================================
-// OLD MODEL MIGRATIONS
-// ==========================================================
-// Automatically convert old saved model names to the
-// current supported models.
-//
-// Gemini 3.6 Flash is the default.
-const MODEL_MIGRATIONS = {
-  "gemini-2.0-flash": "gemini-3.6-flash",
-  "gemini-2.0-flash-001": "gemini-3.6-flash",
-  "gemini-2.0-flash-exp": "gemini-3.6-flash",
-  "gemini-1.5-pro": "gemini-3.6-flash",
+// =========================================================
+// DEFAULT MODEL
+// =========================================================
 
-  // Remove/convert the old unsupported model name.
+const DEFAULT_MODEL = "gemini-3.6-flash";
+
+// =========================================================
+// OLD MODEL MIGRATIONS
+// =========================================================
+//
+// These are only for users who already have an older
+// Prasun AI version saved in localStorage.
+//
+
+const MODEL_MIGRATIONS = {
+  "gemini-2.0-flash": DEFAULT_MODEL,
+  "gemini-2.0-flash-001": DEFAULT_MODEL,
+  "gemini-2.0-flash-exp": DEFAULT_MODEL,
+  "gemini-1.5-pro": DEFAULT_MODEL,
+  "gemini-1.5-flash": DEFAULT_MODEL,
   "gemini-3.5-flash": "gemini-3.5-flash-lite"
 };
 

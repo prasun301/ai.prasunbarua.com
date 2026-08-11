@@ -5,11 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Contact | Prasun AI</title>
+  <title>Contact</title>
 
   <meta
     name="description"
-    content="Contact Prasun AI for questions, feedback, suggestions or inquiries."
+    content="Contact Prasun AI for questions, feedback, suggestions, or inquiries."
   >
 
   <!-- Google Material Symbols -->
@@ -106,90 +106,91 @@
     h1 {
       font-size: 36px;
       margin: 0 0 10px;
+      color: #202124;
     }
 
     .intro {
       color: #5f6368;
       font-size: 17px;
-      margin: 0 0 32px;
+      margin-top: 0;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      color: #0b57d0;
+      margin-top: 35px;
+      font-size: 21px;
+    }
+
+    p {
+      color: #4b5563;
+      font-size: 15px;
     }
 
     /* =========================================
        CONTACT FORM
        ========================================= */
 
-    .contact-form {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
     .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
+      margin-bottom: 20px;
     }
 
-    .form-group label {
+    label {
+      display: block;
+      margin-bottom: 7px;
       color: #202124;
       font-size: 14px;
       font-weight: 600;
     }
 
-    .form-group input,
-    .form-group textarea {
+    input,
+    textarea {
       width: 100%;
-      border: 1px solid #dadce0;
-      border-radius: 10px;
       padding: 13px 14px;
+
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+
+      background: #fff;
+      color: #202124;
+
       font-family: Arial, Helvetica, sans-serif;
       font-size: 15px;
-      color: #202124;
-      background: #fff;
+
       outline: none;
+
       transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease;
     }
 
-    .form-group input {
-      height: 48px;
-    }
-
-    .form-group textarea {
-      min-height: 160px;
-      resize: vertical;
-      line-height: 1.6;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus {
+    input:focus,
+    textarea:focus {
       border-color: #0b57d0;
-      box-shadow: 0 0 0 3px rgba(11, 87, 208, 0.12);
+      box-shadow: 0 0 0 3px rgba(11, 87, 208, 0.10);
     }
 
-    .form-group input::placeholder,
-    .form-group textarea::placeholder {
-      color: #9aa0a6;
+    textarea {
+      min-height: 150px;
+      resize: vertical;
     }
-
-    /* =========================================
-       SUBMIT BUTTON
-       ========================================= */
 
     .submit-btn {
-      width: fit-content;
-      min-width: 130px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+
+      padding: 12px 20px;
+
       border: none;
-      border-radius: 24px;
-      padding: 12px 22px;
+      border-radius: 10px;
 
       background: #0b57d0;
       color: #fff;
 
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
-      font-family: Arial, Helvetica, sans-serif;
 
       cursor: pointer;
 
@@ -199,34 +200,34 @@
     }
 
     .submit-btn:hover {
-      background: #0842a0;
+      background: #0846a8;
     }
 
     .submit-btn:active {
-      transform: scale(0.98);
+      transform: translateY(1px);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .form-status {
+      margin-top: 14px;
+      font-size: 14px;
+      font-weight: 500;
+      min-height: 22px;
+    }
+
+    /* Honeypot */
+
+    .honeypot {
+      display: none !important;
     }
 
     /* =========================================
-       SUCCESS MESSAGE
+       FOOTER
        ========================================= */
-
-    .success-message {
-      display: none;
-      margin-top: 20px;
-      padding: 12px 15px;
-
-      border: 1px solid #c6e7c9;
-      border-radius: 10px;
-
-      background: #f1f8f2;
-      color: #237a35;
-
-      font-size: 14px;
-    }
-
-    /* =========================================================
-       PRASUN AI — SITE FOOTER
-       ========================================================= */
 
     .site-footer {
       width: 100%;
@@ -253,6 +254,7 @@
     .copyright a {
       color: #6b7280;
       text-decoration: none;
+
       transition:
         color 0.2s ease,
         opacity 0.2s ease;
@@ -285,6 +287,10 @@
         margin-right: 14px;
       }
 
+      main {
+        margin: 30px auto;
+      }
+
       .content {
         padding: 25px;
       }
@@ -300,15 +306,10 @@
       .brand .material-symbols-outlined {
         font-size: 30px;
       }
-
-      .submit-btn {
-        width: 100%;
-      }
     }
 
-    /* Mobile footer */
-
     @media (max-width: 600px) {
+
       .site-footer {
         padding: 12px 14px 16px;
         font-size: 11px;
@@ -319,9 +320,12 @@
       }
     }
   </style>
+
 </head>
 
+
 <body>
+
 
   <!-- =========================================
        HEADER
@@ -334,6 +338,7 @@
       <a class="brand" href="index.html">
 
         <!-- EXACT SAME PRASUN AI ROBOT ICON -->
+
         <span
           class="material-symbols-outlined"
           aria-hidden="true"
@@ -343,16 +348,23 @@
 
       </a>
 
+
       <nav>
+
         <a href="about.html">About</a>
+
         <a href="privacy-policy.html">Privacy</a>
+
         <a href="terms.html">Terms</a>
+
         <a href="contact.html">Contact</a>
+
       </nav>
 
     </div>
 
   </header>
+
 
 
   <!-- =========================================
@@ -362,6 +374,8 @@
   <main>
 
     <article class="content">
+
+      <!-- ONLY TITLE — NO EXTRA ICON -->
 
       <h1>Contact</h1>
 
@@ -374,10 +388,18 @@
            CONTACT FORM
            ===================================== -->
 
-      <form
-        class="contact-form"
-        id="contactForm"
-      >
+      <form id="contactForm">
+
+        <!-- Hidden Spam Protection Honeypot -->
+
+        <input
+          type="text"
+          name="_gotcha"
+          class="honeypot"
+          tabindex="-1"
+          autocomplete="off"
+        >
+
 
         <!-- NAME -->
 
@@ -391,9 +413,28 @@
             type="text"
             id="name"
             name="name"
-            placeholder="Enter your name"
-            maxlength="100"
+            placeholder="Your name"
             autocomplete="name"
+            required
+          >
+
+        </div>
+
+
+        <!-- EMAIL -->
+
+        <div class="form-group">
+
+          <label for="email">
+            Email
+          </label>
+
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="your@email.com"
+            autocomplete="email"
             required
           >
 
@@ -412,8 +453,7 @@
             type="text"
             id="subject"
             name="subject"
-            placeholder="What would you like to contact us about?"
-            maxlength="150"
+            placeholder="Message subject"
             required
           >
 
@@ -431,8 +471,8 @@
           <textarea
             id="message"
             name="message"
-            placeholder="Write your message..."
-            maxlength="5000"
+            rows="6"
+            placeholder="Write your message here..."
             required
           ></textarea>
 
@@ -443,27 +483,33 @@
 
         <button
           type="submit"
+          id="submitBtn"
           class="submit-btn"
         >
-          Send Message
+
+          <span
+            class="material-symbols-outlined"
+            style="font-size: 18px;"
+            aria-hidden="true"
+          >send</span>
+
+          <span>Send Message</span>
+
         </button>
 
+
+        <p
+          id="formStatus"
+          class="form-status"
+          aria-live="polite"
+        ></p>
+
       </form>
-
-
-      <!-- SUCCESS MESSAGE -->
-
-      <div
-        class="success-message"
-        id="successMessage"
-        role="status"
-      >
-        Thank you for your message. Your submission has been received.
-      </div>
 
     </article>
 
   </main>
+
 
 
   <!-- =========================================
@@ -473,14 +519,30 @@
   <footer class="site-footer">
 
     <div class="footer-links">
-      <a href="privacy-policy.html">Privacy Policy</a>
-      <a href="terms.html">Terms of Service</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
+
+      <a href="privacy-policy.html">
+        Privacy Policy
+      </a>
+
+      <a href="terms.html">
+        Terms of Service
+      </a>
+
+      <a href="about.html">
+        About
+      </a>
+
+      <a href="contact.html">
+        Contact
+      </a>
+
     </div>
 
+
     <div class="copyright">
+
       © 2026 Prasun AI by
+
       <a
         href="https://www.prasunbarua.com"
         target="_blank"
@@ -488,10 +550,13 @@
       >
         Prasun Barua
       </a>
+
       . All rights reserved.
+
     </div>
 
   </footer>
+
 
 
   <!-- =========================================
@@ -499,22 +564,132 @@
        ========================================= -->
 
   <script>
-    const contactForm = document.getElementById("contactForm");
-    const successMessage = document.getElementById("successMessage");
 
-    contactForm.addEventListener("submit", function (event) {
-      event.preventDefault();
+    document
+      .getElementById('contactForm')
+      .addEventListener('submit', async function(e) {
 
-      successMessage.style.display = "block";
+        e.preventDefault();
 
-      contactForm.reset();
 
-      successMessage.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest"
+        const form = document.getElementById('contactForm');
+
+        const btn = document.getElementById('submitBtn');
+
+        const status = document.getElementById('formStatus');
+
+
+        /* Honeypot spam check */
+
+        const honeypot =
+          form.querySelector('input[name="_gotcha"]').value;
+
+        if (honeypot) {
+          return;
+        }
+
+
+        btn.disabled = true;
+
+        btn.querySelector('span:last-child').textContent =
+          'Sending...';
+
+        status.textContent = '';
+
+        status.style.color = '';
+
+
+        const payload = {
+
+          name:
+            document.getElementById('name').value.trim(),
+
+          email:
+            document.getElementById('email').value.trim(),
+
+          siteName:
+            'Prasun AI',
+
+          message:
+            `Subject: ${document.getElementById('subject').value.trim()}
+
+${document.getElementById('message').value.trim()}`
+
+        };
+
+
+        try {
+
+          const workerUrl =
+            'https://multi-site-contact-backend.prasun301.workers.dev';
+
+
+          const response = await fetch(
+            workerUrl,
+            {
+              method: 'POST',
+
+              headers: {
+                'Content-Type': 'application/json'
+              },
+
+              body: JSON.stringify(payload)
+            }
+          );
+
+
+          const result =
+            await response.json();
+
+
+          if (
+            response.ok &&
+            result.success
+          ) {
+
+            status.style.color = '#16a34a';
+
+            status.textContent =
+              '✓ Message sent successfully! We will get back to you soon.';
+
+            form.reset();
+
+          } else {
+
+            throw new Error(
+              result.error || 'Submission failed'
+            );
+
+          }
+
+
+        } catch (err) {
+
+          console.error(
+            'Contact form error:',
+            err
+          );
+
+
+          status.style.color = '#dc2626';
+
+          status.textContent =
+            '✕ Failed to send message. Please try again later.';
+
+        } finally {
+
+          btn.disabled = false;
+
+          btn.querySelector('span:last-child').textContent =
+            'Send Message';
+
+        }
+
       });
-    });
+
   </script>
 
+
 </body>
+
 </html>

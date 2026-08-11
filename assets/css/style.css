@@ -1235,3 +1235,36 @@ body.dark-theme .model-option.active:hover {
     padding: 11px 12px;
   }
 }
+
+/* =========================================================
+   PRASUN AI — AI MESSAGE AVATAR
+   ========================================================= */
+
+.message-avatar.ai-avatar {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+  color: #0b57d0;
+
+  border: 1px solid #e2e6eb;
+
+  box-sizing: border-box;
+}
+
+.message-avatar.ai-avatar .material-symbols-outlined {
+  font-size: 24px;
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 500,
+    "GRAD" 0,
+    "opsz" 24;
+}

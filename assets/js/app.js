@@ -1196,17 +1196,24 @@ const MODEL_MIGRATIONS = {
     }
 
     msgDiv.innerHTML = `
-      <div class="message-avatar">
-        ${
-          sender === "user"
-            ? escapeHtml(
-                userName
-                  .charAt(0)
-                  .toUpperCase()
-              )
-            : "🤖"
-        }
-      </div>
+      <div class="message-avatar ${
+  sender === "ai" ? "ai-avatar" : "user-avatar-message"
+}">
+  ${
+    sender === "user"
+      ? escapeHtml(
+          userName
+            .charAt(0)
+            .toUpperCase()
+        )
+      : `
+        <span
+          class="material-symbols-outlined"
+          aria-hidden="true"
+        >smart_toy</span>
+      `
+  }
+</div>
 
       <div class="message-content">
         <div class="message-bubble">
@@ -1241,9 +1248,12 @@ const MODEL_MIGRATIONS = {
       "message ai-message";
 
     div.innerHTML = `
-      <div class="message-avatar">
-        🤖
-      </div>
+      <div class="message-avatar ai-avatar">
+  <span
+    class="material-symbols-outlined"
+    aria-hidden="true"
+  >smart_toy</span>
+</div>
 
       <div class="message-content">
         <div class="thinking-indicator">

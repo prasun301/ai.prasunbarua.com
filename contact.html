@@ -6,8 +6,19 @@
 
   <title>Contact | Prasun AI</title>
 
-  <meta name="description"
-        content="Contact Prasun AI for questions, feedback, suggestions, or other inquiries.">
+  <meta
+    name="description"
+    content="Contact Prasun AI for questions, feedback, technical issues, or other inquiries."
+  >
+
+  <!-- =====================================================
+       FAVICON — SAME PRASUN AI ICON AS INDEX.HTML
+  ====================================================== -->
+  <link
+    rel="icon"
+    type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230b57d0' d='M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.1 0-2 1.1-2 2v4c0 1.1.9 2 2 2v1c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-1c1.1 0 2-.9 2-2v-4c0-1.1-.9-2-2-2zM8 8h8v2H8V8zm8 10H8v-2h8v2zm2-4H6v-2h12v2z'/%3E%3C/svg%3E"
+  >
 
   <style>
     * {
@@ -22,8 +33,12 @@
       line-height: 1.7;
     }
 
+    /* =====================================================
+       HEADER
+    ====================================================== */
+
     header {
-      background: #fff;
+      background: #ffffff;
       border-bottom: 1px solid #e5e7eb;
       padding: 18px 24px;
     }
@@ -34,6 +49,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 20px;
     }
 
     .brand {
@@ -41,6 +57,10 @@
       text-decoration: none;
       font-size: 21px;
       font-weight: 700;
+    }
+
+    .brand:hover {
+      color: #0842a0;
     }
 
     nav a {
@@ -54,93 +74,155 @@
       color: #0b57d0;
     }
 
+    /* =====================================================
+       MAIN
+    ====================================================== */
+
     main {
-      max-width: 760px;
+      max-width: 900px;
       margin: 45px auto;
       padding: 0 24px;
     }
 
+    .hero,
     .content {
-      background: #fff;
+      background: #ffffff;
       border: 1px solid #e5e7eb;
       border-radius: 18px;
       padding: 42px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    /* =====================================================
+       LOGO
+    ====================================================== */
+
+    .logo {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto;
+      border-radius: 20px;
+      background: #e8f0fe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0b57d0;
+      font-size: 36px;
+      font-weight: 700;
+    }
+
+    /* =====================================================
+       TYPOGRAPHY
+    ====================================================== */
 
     h1 {
-      margin-top: 0;
-      font-size: 34px;
+      font-size: 36px;
+      margin: 20px 0 10px;
     }
 
-    .intro {
+    .tagline {
       color: #5f6368;
-      margin-bottom: 30px;
+      font-size: 17px;
+      margin: 0;
     }
 
-    .form-group {
-      margin-bottom: 20px;
+    h2 {
+      color: #0b57d0;
+      margin-top: 35px;
+      font-size: 21px;
     }
 
-    label {
+    p {
+      color: #4b5563;
+      font-size: 15px;
+    }
+
+    /* =====================================================
+       CONTACT OPTIONS
+    ====================================================== */
+
+    .contact-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 25px;
+    }
+
+    .contact-card {
       display: block;
-      margin-bottom: 7px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #374151;
+      background: #f8fafd;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 22px;
+      text-decoration: none;
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
     }
 
-    input,
-    textarea {
-      width: 100%;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
-      padding: 13px 14px;
-      font-family: inherit;
-      font-size: 15px;
-      outline: none;
-      background: #fff;
+    .contact-card:hover {
+      border-color: #c4d7f7;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.06);
+      transform: translateY(-2px);
+    }
+
+    .contact-card h3 {
+      margin: 0 0 7px;
       color: #202124;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      font-size: 17px;
     }
 
-    input:focus,
-    textarea:focus {
-      border-color: #0b57d0;
-      box-shadow: 0 0 0 3px rgba(11,87,208,0.12);
+    .contact-card p {
+      margin: 0;
+      color: #5f6368;
+      font-size: 14px;
     }
 
-    textarea {
-      min-height: 160px;
-      resize: vertical;
-    }
-
-    button {
-      border: 0;
-      border-radius: 10px;
-      background: #0b57d0;
-      color: #fff;
-      padding: 13px 24px;
-      font-size: 15px;
+    .contact-card .email {
+      color: #0b57d0;
       font-weight: 600;
-      cursor: pointer;
+      word-break: break-word;
     }
 
-    button:hover {
-      background: #0849b3;
+    /* =====================================================
+       CONTACT INFORMATION
+    ====================================================== */
+
+    .contact-note {
+      margin-top: 28px;
+      padding: 18px 20px;
+      background: #f8fafd;
+      border-left: 4px solid #0b57d0;
+      border-radius: 8px;
     }
 
-    .note {
-      margin-top: 20px;
-      color: #6b7280;
-      font-size: 13px;
+    .contact-note p {
+      margin: 0;
     }
+
+    a {
+      color: #0b57d0;
+    }
+
+    /* =====================================================
+       FOOTER — SAME FORMAT AS INDEX.HTML
+    ====================================================== */
 
     footer {
       text-align: center;
-      padding: 30px;
+      padding: 30px 20px;
       color: #6b7280;
       font-size: 13px;
+    }
+
+    .footer-links {
+      margin-bottom: 12px;
     }
 
     footer a {
@@ -149,18 +231,51 @@
       margin: 0 8px;
     }
 
+    footer a:hover {
+      color: #0b57d0;
+    }
+
+    .copyright {
+      color: #6b7280;
+    }
+
+    .copyright a {
+      color: #5f6368;
+      font-weight: 500;
+    }
+
+    .copyright a:hover {
+      color: #0b57d0;
+    }
+
+    /* =====================================================
+       MOBILE
+    ====================================================== */
+
     @media (max-width: 650px) {
+
       .header-inner {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
       }
 
-      nav a {
-        margin-left: 0;
-        margin-right: 14px;
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
       }
 
+      nav a {
+        margin-left: 0;
+        margin-right: 2px;
+      }
+
+      main {
+        margin: 30px auto;
+      }
+
+      .hero,
       .content {
         padding: 25px;
       }
@@ -168,136 +283,228 @@
       h1 {
         font-size: 29px;
       }
+
+      .logo {
+        width: 64px;
+        height: 64px;
+        font-size: 32px;
+      }
+
+      .contact-options {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 
 <body>
 
-<header>
-  <div class="header-inner">
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
 
-    <a class="brand" href="/">
-      Prasun AI
-    </a>
+  <header>
 
-    <nav>
-      <a href="about.html">About</a>
-      <a href="privacy-policy.html">Privacy</a>
-      <a href="terms.html">Terms</a>
-    </nav>
+    <div class="header-inner">
 
-  </div>
-</header>
+      <a class="brand" href="/">
+        Prasun AI
+      </a>
 
-<main>
+      <nav>
+        <a href="about.html">About</a>
+        <a href="privacy-policy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+      </nav>
 
-  <section class="content">
+    </div>
 
-    <h1>Contact Prasun AI</h1>
+  </header>
 
-    <p class="intro">
-      Have a question, suggestion, feedback, or encountered a problem?
-      Use the form below to get in touch with us.
-    </p>
 
-    <form
-      action="/api/contact"
-      method="POST"
-    >
+  <!-- =====================================================
+       MAIN CONTENT
+  ====================================================== -->
 
-      <div class="form-group">
+  <main>
 
-        <label for="name">
-          Name
-        </label>
+    <!-- ===================================================
+         HERO
+    ==================================================== -->
 
-        <input
-          type="text"
-          id="name"
-          name="name"
-          placeholder="Your name"
-          maxlength="100"
-          required
-          autocomplete="name"
+    <section class="hero">
+
+      <div class="logo">
+        AI
+      </div>
+
+      <h1>
+        Contact Prasun AI
+      </h1>
+
+      <p class="tagline">
+        Have a question, suggestion, or issue? We'd like to hear from you.
+      </p>
+
+    </section>
+
+
+    <!-- ===================================================
+         CONTACT CONTENT
+    ==================================================== -->
+
+    <article class="content">
+
+      <h2>
+        Get in Touch
+      </h2>
+
+      <p>
+        If you have questions about Prasun AI, would like to report a
+        technical issue, or have feedback about the service, you can contact
+        us using the information below.
+      </p>
+
+
+      <!-- =================================================
+           CONTACT OPTIONS
+      ================================================== -->
+
+      <div class="contact-options">
+
+        <a
+          class="contact-card"
+          href="mailto:contact@prasunbarua.com"
         >
 
-      </div>
+          <h3>
+            General Inquiries
+          </h3>
 
-      <div class="form-group">
+          <p class="email">
+            contact@prasunbarua.com
+          </p>
 
-        <label for="email">
-          Email Address
-        </label>
+        </a>
 
-        <input
-          type="email"
-          id="email"
-          name="email"
-          placeholder="Your email address"
-          maxlength="200"
-          required
-          autocomplete="email"
+
+        <a
+          class="contact-card"
+          href="mailto:contact@prasunbarua.com?subject=Prasun%20AI%20Technical%20Issue"
         >
 
-      </div>
+          <h3>
+            Technical Support
+          </h3>
 
-      <div class="form-group">
+          <p class="email">
+            Contact us about a technical issue
+          </p>
 
-        <label for="subject">
-          Subject
-        </label>
-
-        <input
-          type="text"
-          id="subject"
-          name="subject"
-          placeholder="How can we help?"
-          maxlength="200"
-          required
-        >
+        </a>
 
       </div>
 
-      <div class="form-group">
 
-        <label for="message">
-          Message
-        </label>
+      <h2>
+        Feedback
+      </h2>
 
-        <textarea
-          id="message"
-          name="message"
-          placeholder="Write your message here..."
-          maxlength="5000"
-          required
-        ></textarea>
+      <p>
+        Your feedback can help us improve Prasun AI. If you notice a problem,
+        experience an unexpected result, or have an idea that could improve
+        the service, please let us know.
+      </p>
+
+
+      <h2>
+        Before Contacting Us
+      </h2>
+
+      <p>
+        When reporting a technical problem, please include as much useful
+        information as possible, such as the page where the issue occurred,
+        what you were trying to do, and a description of what happened.
+      </p>
+
+      <p>
+        Please do not include passwords, payment information, confidential
+        information, or other sensitive personal information in your message.
+      </p>
+
+
+      <div class="contact-note">
+
+        <p>
+          <strong>Note:</strong>
+          Prasun AI is an AI-powered service. For important matters,
+          information generated by the service should be independently
+          verified.
+        </p>
 
       </div>
 
-      <button type="submit">
-        Send Message
-      </button>
 
-    </form>
+      <h2>
+        Other Information
+      </h2>
 
-    <p class="note">
-      Please do not include passwords, payment information, API keys, or
-      other sensitive information in your message.
-    </p>
+      <p>
+        You can learn more about Prasun AI through our
+        <a href="about.html">About</a> page, or review our
+        <a href="privacy-policy.html">Privacy Policy</a> and
+        <a href="terms.html">Terms of Service</a>.
+      </p>
 
-  </section>
+    </article>
 
-</main>
+  </main>
 
-<footer>
-  © 2026 Prasun AI
-  <br><br>
-  <a href="about.html">About</a>
-  <a href="privacy-policy.html">Privacy Policy</a>
-  <a href="terms.html">Terms</a>
-  <a href="contact.html">Contact</a>
-</footer>
+
+  <!-- =====================================================
+       SITE FOOTER — SAME FORMAT AS INDEX.HTML
+  ====================================================== -->
+
+  <footer class="site-footer">
+
+    <div class="footer-links">
+
+      <a href="privacy-policy.html">
+        Privacy Policy
+      </a>
+
+      <a href="terms.html">
+        Terms of Service
+      </a>
+
+      <a href="about.html">
+        About
+      </a>
+
+      <a href="contact.html">
+        Contact
+      </a>
+
+    </div>
+
+    <div class="copyright">
+
+      © 2026 Prasun AI by
+
+      <a
+        href="https://www.prasunbarua.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Prasun Barua
+      </a>
+
+      . All rights reserved.
+
+    </div>
+
+  </footer>
 
 </body>
 </html>

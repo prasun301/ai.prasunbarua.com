@@ -1,85 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
   console.log('🚀 app.js initialized');
 
-  // ==========================================
-  // 1. STATE MANAGEMENT
-  // ==========================================
   let selectedFilePart = null;
   let selectedFileName = '';
 
-  // ==========================================
-  // SIDEBAR HISTORY EDIT, DELETE & SEARCH HANDLERS
-  // ==========================================
-  const historyContainer = document.getElementById('historyContainer');
-  const sidebarSearchInput = document.querySelector('#sidebar input, .sidebar input, input[type="text"]');
-
-  if (historyContainer) {
-    historyContainer.addEventListener('click', (e) => {
-      const deleteBtn = e.target.closest('[title="Delete"]');
-      const editBtn = e.target.closest('[title="Rename"]');
-      const historyItem = e.target.closest('.history-item');
-
-      if (!historyItem) return;
-
-      if (deleteBtn) {
-        e.stopPropagation();
-        if (confirm('Delete this chat history item?')) {
-          historyItem.remove();
-        }
-      }
-
-      if (editBtn) {
-        e.stopPropagation();
-        const textSpan = historyItem.querySelector('.history-item-left span:last-child');
-        if (textSpan) {
-          const currentName = textSpan.textContent;
-          const newName = prompt('Rename chat:', currentName);
-          if (newName && newName.trim() !== '') {
-            textSpan.textContent = newName.trim();
-          }
-        }
-      }
-    });
-  }
-
-  // Sidebar Search / Filter functionality
-  if (sidebarSearchInput && historyContainer) {
-    sidebarSearchInput.addEventListener('input', (e) => {
-      const query = e.target.value.toLowerCase().trim();
-      const historyItems = historyContainer.querySelectorAll('.history-item');
-      
-      historyItems.forEach(item => {
-        const text = item.textContent.toLowerCase();
-        if (text.includes(query)) {
-          item.style.display = '';
-        } else {
-          item.style.display = 'none';
-        }
-      });
-    });
-  }
-
-  // ==========================================
-  // 2. SAFE DOM SELECTORS (Prevents Script Crashes)
-  // ==========================================
-  const getEl = (id) => {
-    const el = document.getElementById(id);
-    if (!el) console.warn(`⚠️ Warning: Element with ID '${id}' not found in index.html`);
-    return el;
-  };
+  const getEl = (id) => document.getElementById(id);
 
   const sidebar = getEl('sidebar');
   const sidebarOverlay = getEl('sidebarOverlay');
-  
   const themeButton = getEl('themeButton');
-  const settingsBtn = getEl('settingsButton');
-  const settingsModal = getEl('settingsModal');
-  const closeSettingsModal = getEl('closeSettingsModal');
-
-  const modelSelectorBtn = getEl('modelSelector');
-  const modelDropdown = getEl('modelDropdown');
-
-  // Core Chat Elements
   const messageInput = getEl('messageInput') || getEl('userInput') || getEl('promptInput');
   const sendButton = getEl('sendButton') || getEl('submitBtn');
   const attachButton = getEl('attachButton');
@@ -89,37 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const newChatButton = getEl('newChatButton');
   const clearChatButton = getEl('clearChatButton');
 
-  // ==========================================
-  // 3. UI CONTROLLERS
-  // ==========================================
-
-  // --- Sidebar Drawer ---
-  function toggleSidebar() {
-    const isMobile = window.innerWidth <= 768;
-
-    if (!sidebar) return;
-
-    if (isMobile) {
-      sidebar.classList.toggle('open');
-      if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-    } else {
-      sidebar.classList.toggle('collapsed');
-    }
-  }
-
-  document.addEventListener('click', (e) => {
-    const toggleBtn = e.target.closest('#openSidebar, #closeSidebar, .sidebar-toggle, [title*="sidebar" i], [title*="Collapse" i]');
-    if (toggleBtn) {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleSidebar();
-    }
-  });
-
-  if (sidebarOverlay) {
-    sidebarOverlay.addEventListener('click', toggleSidebar);
-  }
-
   // --- Theme Toggle ---
   if (themeButton) {
     themeButton.addEventListener('click', () => {
@@ -127,93 +25,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const isDark = document.body.classList.contains('dark-theme');
       const iconSpan = themeButton.querySelector('.material-symbols-outlined');
       const textSpan = themeButton.querySelector('span:last-child');
-      
       if (iconSpan) iconSpan.textContent = isDark ? 'light_mode' : 'dark_mode';
       if (textSpan) textSpan.textContent = isDark ? 'Light mode' : 'Appearance';
     });
   }
 
-  // --- Settings Modal ---
-  if (settingsBtn && settingsModal) {
-    settingsBtn.addEventListener('click', () => {
-      if (typeof settingsModal.showModal === 'function') {
-        settingsModal.showModal();
-      } else {
-        settingsModal.style.display = 'block';
-      }
-    });
+  // --- UI Input Lock Utility ---
+  function setInputsEnabled(enabled) {
+    if (sendButton) sendButton.disabled = !enabled;
+    if (messageInput) messageInput.disabled = !enabled;
+    if (enabled && messageInput) messageInput.focus();
   }
 
-  if (closeSettingsModal && settingsModal) {
-    closeSettingsModal.addEventListener('click', () => {
-      if (typeof settingsModal.close === 'function') {
-        settingsModal.close();
-      } else {
-        settingsModal.style.display = 'none';
-      }
-    });
-  }
-
-  // --- Model Selector Dropdown ---
-  if (modelSelectorBtn && modelDropdown) {
-    modelSelectorBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isHidden = modelDropdown.hidden;
-      modelDropdown.hidden = !isHidden;
-      modelSelectorBtn.setAttribute('aria-expanded', !isHidden);
-    });
-
-    document.addEventListener('click', () => {
-      modelDropdown.hidden = true;
-      modelSelectorBtn.setAttribute('aria-expanded', 'false');
-    });
-
-    modelDropdown.querySelectorAll('.model-option').forEach(option => {
-      option.addEventListener('click', () => {
-        modelDropdown.querySelectorAll('.model-option').forEach(opt => opt.classList.remove('active'));
-        option.classList.add('active');
-        const modelName = option.querySelector('strong')?.textContent || 'Gemini 3.6 Flash';
-        const modelBtnText = modelSelectorBtn.querySelector('.model-name');
-        if (modelBtnText) modelBtnText.textContent = modelName;
-        modelDropdown.hidden = true;
-      });
-    });
-  }
-
-  // ==========================================
-  // 4. FILE ATTACHMENTS
-  // ==========================================
-
-  let filePreviewBadge = document.getElementById('filePreviewBadge');
-  if (!filePreviewBadge && messageInput && messageInput.parentElement) {
-    filePreviewBadge = document.createElement('div');
-    filePreviewBadge.id = 'filePreviewBadge';
-    filePreviewBadge.style.cssText = `
-      display: none;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      margin-bottom: 8px;
-      background: var(--hover-bg, #f0f4f9);
-      border-radius: 8px;
-      font-size: 0.85rem;
-      color: var(--text-primary, #1f1f1f);
-      width: fit-content;
-    `;
-    messageInput.parentElement.insertBefore(filePreviewBadge, messageInput);
-  }
-
+  // --- File Conversion Helper ---
   function fileToGenerativePart(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64Data = reader.result.split(',')[1];
-        resolve({
-          inlineData: {
-            data: base64Data,
-            mimeType: file.type
-          }
-        });
+        resolve({ inlineData: { data: base64Data, mimeType: file.type } });
       };
       reader.onerror = reject;
       reader.readAsDataURL(file);
@@ -222,24 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (attachButton && fileInput) {
     attachButton.addEventListener('click', () => fileInput.click());
-
     fileInput.addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (file) {
         selectedFileName = file.name;
         selectedFilePart = await fileToGenerativePart(file);
-
-        if (filePreviewBadge) {
-          filePreviewBadge.innerHTML = `
-            <span class="material-symbols-outlined" style="font-size: 16px;">attach_file</span>
-            <span style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${selectedFileName}</span>
-            <span class="material-symbols-outlined" id="removeFileBtn" style="font-size: 16px; cursor: pointer; margin-left: 4px;">close</span>
-          `;
-          filePreviewBadge.style.display = 'inline-flex';
-
-          document.getElementById('removeFileBtn')?.addEventListener('click', clearFileAttachment);
-        }
-
         if (attachButton) attachButton.style.color = '#1a73e8';
         if (sendButton) sendButton.disabled = false;
       }
@@ -251,34 +68,15 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedFileName = '';
     if (fileInput) fileInput.value = '';
     if (attachButton) attachButton.style.color = '';
-    if (filePreviewBadge) {
-      filePreviewBadge.style.display = 'none';
-      filePreviewBadge.innerHTML = '';
-    }
-    if (sendButton && messageInput) {
-      sendButton.disabled = messageInput.value.trim() === '';
-    }
   }
 
-  // ==========================================
-  // 5. PARSER: MARKDOWN & LATEX
-  // ==========================================
+  // --- Basic Markdown Formatter ---
   function parseMarkdown(text) {
     if (!text) return '';
-
-    let cleaned = text.replace(/\$([^$]+)\$/g, (match, formula) => {
-      let cleanMath = formula
-        .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$1/$2')
-        .replace(/\\/g, '')
-        .trim();
-      return `<strong style="background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px; font-family: monospace;">${cleanMath}</strong>`;
-    });
-
     if (typeof marked !== 'undefined') {
-      return marked.parse(cleaned);
+      return marked.parse(text);
     }
-
-    return cleaned
+    return text
       .replace(/^### (.*$)/gim, '<h3>$1</h3>')
       .replace(/^## (.*$)/gim, '<h2>$1</h2>')
       .replace(/^# (.*$)/gim, '<h1>$1</h1>')
@@ -287,21 +85,16 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/\n/g, '<br>');
   }
 
-  // ==========================================
-  // 6. BACKEND API PROXY
-  // ==========================================
+  // --- Backend API Function ---
   async function getGeminiResponse(query, filePart = null) {
     const parts = [];
-
     if (filePart) parts.push(filePart);
     if (query) parts.push({ text: query });
 
-    const requestPayload = {
-      contents: [{ parts: parts }]
-    };
+    const requestPayload = { contents: [{ parts }] };
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await fetch('/functions/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestPayload)
@@ -309,26 +102,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const data = await response.json();
 
+      if (response.status === 429) {
+        return { text: '⚠️ Rate limit reached. Waiting for server cooldown...', isError: true };
+      }
+
       if (data.error) {
-        return { text: `API Error: ${data.error.message || data.error}`, sources: [] };
+        return { text: `API Error: ${data.error.message || data.error}`, isError: true };
       }
 
       if (data.candidates && data.candidates[0].content) {
-        const candidate = data.candidates[0];
-        let textOutput = candidate.content.parts.map(part => part.text || '').join('\n');
-
-        return { text: textOutput, sources: [] };
+        const textOutput = data.candidates[0].content.parts.map(p => p.text || '').join('\n');
+        return { text: textOutput, isError: false };
       }
 
-      return { text: "Received an unexpected response format from server.", sources: [] };
+      return { text: 'Unexpected server response format.', isError: true };
     } catch (error) {
-      return { text: "Network error: Unable to connect to server.", sources: [] };
+      return { text: 'Network error: Unable to connect to server.', isError: true };
     }
   }
 
-  // ==========================================
-  // 7. CHAT & MESSAGE DELIVERY
-  // ==========================================
+  // --- Send Message Action ---
   async function sendMessage() {
     if (!messageInput) return;
 
@@ -343,19 +136,17 @@ document.addEventListener('DOMContentLoaded', () => {
     messageInput.value = '';
     messageInput.style.height = 'auto';
     clearFileAttachment();
+    setInputsEnabled(false);
 
     if (messagesContainer) {
+      // User Message Bubble
       const userMsgDiv = document.createElement('div');
       userMsgDiv.className = 'user-message-wrapper';
       userMsgDiv.style.cssText = 'margin-bottom: 16px; display: flex; justify-content: flex-end; width: 100%;';
       
       let userAttachmentHTML = '';
       if (currentFilePart) {
-        userAttachmentHTML = `
-          <div style="font-size: 0.8rem; font-weight: 600; opacity: 0.8; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
-            <span class="material-symbols-outlined" style="font-size: 14px;">attach_file</span> ${currentFileName}
-          </div>
-        `;
+        userAttachmentHTML = `<div style="font-size: 0.8rem; font-weight: 600; opacity: 0.8; margin-bottom: 6px;"><span class="material-symbols-outlined" style="font-size: 14px;">attach_file</span> ${currentFileName}</div>`;
       }
 
       userMsgDiv.innerHTML = `
@@ -366,6 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
       messagesContainer.appendChild(userMsgDiv);
 
+      // AI Response Wrapper
       const aiMsgDiv = document.createElement('div');
       aiMsgDiv.className = 'ai-message-wrapper';
       aiMsgDiv.style.cssText = 'margin-bottom: 24px; display: flex; justify-content: flex-start; gap: 12px; width: 100%;';
@@ -380,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
       messagesContainer.appendChild(aiMsgDiv);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
+      // Fetch Response
       const responseData = await getGeminiResponse(text, currentFilePart);
 
       const bubbleContent = aiMsgDiv.querySelector('.ai-bubble');
@@ -387,49 +180,13 @@ document.addEventListener('DOMContentLoaded', () => {
         bubbleContent.innerHTML = parseMarkdown(responseData.text);
       }
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+      setInputsEnabled(true);
     }
   }
-  
-  // ==========================================
-  // 8. AUTO-SAVE SETTINGS & USER PREFERENCES
-  // ==========================================
-  const userNameInput = document.getElementById('userNameInput');
-  const systemPromptInput = document.getElementById('systemPromptInput');
-  const userNameBadge = document.querySelector('.user-name');
 
-  const savedName = localStorage.getItem('prasun_username');
-  const savedPrompt = localStorage.getItem('prasun_system_prompt');
-  
-  if (savedName && userNameInput) {
-    userNameInput.value = savedName;
-    if (userNameBadge) userNameBadge.textContent = savedName;
-  }
-  if (savedPrompt && systemPromptInput) {
-    systemPromptInput.value = savedPrompt;
-  }
-
-  if (userNameInput) {
-    userNameInput.addEventListener('input', () => {
-      const newName = userNameInput.value.trim() || 'Guest';
-      localStorage.setItem('prasun_username', newName);
-      if (userNameBadge) {
-        userNameBadge.textContent = newName;
-      }
-    });
-  }
-
-  // ==========================================
-  // 9. INPUT LISTENERS & SEND ACTION
-  // ==========================================
+  // --- Listeners ---
   if (messageInput) {
-    messageInput.addEventListener('input', () => {
-      messageInput.style.height = 'auto';
-      messageInput.style.height = `${messageInput.scrollHeight}px`;
-      if (sendButton) {
-        sendButton.disabled = messageInput.value.trim() === '' && !selectedFilePart;
-      }
-    });
-
     messageInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -446,32 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     newChatButton.addEventListener('click', () => {
       if (messagesContainer) messagesContainer.innerHTML = '';
       if (welcomeScreen) welcomeScreen.style.display = 'flex';
-      if (messageInput) {
-        messageInput.value = '';
-        messageInput.style.height = 'auto';
-      }
       clearFileAttachment();
     });
   }
-
-  if (clearChatButton) {
-    clearChatButton.addEventListener('click', () => {
-      if (messagesContainer) messagesContainer.innerHTML = '';
-      if (welcomeScreen) welcomeScreen.style.display = 'flex';
-      clearFileAttachment();
-    });
-  }
-
-  document.querySelectorAll('.suggestion-card').forEach(card => {
-    card.addEventListener('click', () => {
-      const promptText = card.getAttribute('data-prompt');
-      if (messageInput) {
-        messageInput.value = promptText;
-        messageInput.style.height = 'auto';
-        messageInput.style.height = `${messageInput.scrollHeight}px`;
-        if (sendButton) sendButton.disabled = false;
-        sendMessage();
-      }
-    });
-  });
 });

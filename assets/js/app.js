@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   let selectedFilePart = null;
   let selectedFileName = '';
-  let useGoogleSearch = false;
 
   // ==========================================
   // SIDEBAR HISTORY EDIT, DELETE & SEARCH HANDLERS
@@ -69,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return el;
   };
 
-  // Declared ONCE here to prevent duplicate declaration crashes
   const sidebar = getEl('sidebar');
   const sidebarOverlay = getEl('sidebarOverlay');
   
@@ -81,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modelSelectorBtn = getEl('modelSelector');
   const modelDropdown = getEl('modelDropdown');
 
-  // Core Chat Elements (Crucial)
+  // Core Chat Elements
   const messageInput = getEl('messageInput') || getEl('userInput') || getEl('promptInput');
   const sendButton = getEl('sendButton') || getEl('submitBtn');
   const attachButton = getEl('attachButton');
@@ -102,16 +100,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!sidebar) return;
 
     if (isMobile) {
-      // Mobile behavior: slide in/out over content with overlay
       sidebar.classList.toggle('open');
       if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
     } else {
-      // Desktop behavior: push sidebar off-screen
       sidebar.classList.toggle('collapsed');
     }
   }
 
-  // Event Listener (Ultra-robust selector to catch all menu/close buttons)
   document.addEventListener('click', (e) => {
     const toggleBtn = e.target.closest('#openSidebar, #closeSidebar, .sidebar-toggle, [title*="sidebar" i], [title*="Collapse" i]');
     if (toggleBtn) {
@@ -121,7 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Mobile overlay click-to-close
   if (sidebarOverlay) {
     sidebarOverlay.addEventListener('click', toggleSidebar);
   }
@@ -187,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // 4. FILE ATTACHMENTS & SEARCH TOGGLE
+  // 4. FILE ATTACHMENTS
   // ==========================================
 
   let filePreviewBadge = document.getElementById('filePreviewBadge');
@@ -306,10 +300,6 @@ document.addEventListener('DOMContentLoaded', () => {
       contents: [{ parts: parts }]
     };
 
-    if (useGoogleSearch) {
-      requestPayload.tools = [{ googleSearch: {} }];
-    }
-
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -327,22 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const candidate = data.candidates[0];
         let textOutput = candidate.content.parts.map(part => part.text || '').join('\n');
 
-        let sources = [];
-        const metadata = candidate.groundingMetadata;
-        if (metadata) {
-          if (metadata.groundingChunks) {
-            sources = metadata.groundingChunks
-              .filter(chunk => chunk.web && (chunk.web.uri || chunk.web.url))
-              .map(chunk => ({
-                title: chunk.web.title || chunk.web.uri || chunk.web.url,
-                url: chunk.web.uri || chunk.web.url
-              }));
-          } else if (metadata.webSearchQueries && metadata.webSearchQueries.length > 0 && metadata.searchEntryPoint) {
-            sources = [{ title: `Searched: "${metadata.webSearchQueries[0]}"`, url: "#" }];
-          }
-        }
-
-        return { text: textOutput, sources: sources };
+        return { text: textOutput, sources: [] };
       }
 
       return { text: "Received an unexpected response format from server.", sources: [] };
@@ -398,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div style="width: 32px; height: 32px; background-color: #1a73e8; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
           <span class="material-symbols-outlined" style="font-size: 18px;">smart_toy</span>
         </div>
-        <div id="loadingBubble" style="background-color: var(--card-bg, #ffffff); border: 1px solid var(--border-color, #e0e0e0); padding: 14px 18px; border-radius: 16px; max-width: 85%; line-height: 1.6;">
+        <div class="ai-bubble" style="background-color: var(--card-bg, #ffffff); border: 1px solid var(--border-color, #e0e0e0); padding: 14px 18px; border-radius: 16px; max-width: 85%; line-height: 1.6;">
           Thinking...
         </div>
       `;
@@ -407,35 +382,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const responseData = await getGeminiResponse(text, currentFilePart);
 
-      let sourcesHTML = '';
-      if (responseData.sources && responseData.sources.length > 0) {
-        const links = responseData.sources.slice(0, 5).map(s => 
-          `<a href="${s.url}" target="_blank" rel="noopener" style="color: #1a73e8; text-decoration: none; background: rgba(26,115,232,0.08); padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; display: inline-block;">${s.title}</a>`
-        ).join(' ');
-
-        sourcesHTML = `
-          <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--border-color, #eee); font-size: 0.85rem;">
-            <strong style="display: block; margin-bottom: 4px; color: var(--text-muted, #666);">Sources:</strong>
-            <div style="display: flex; flex-wrap: wrap; gap: 6px;">${links}</div>
-          </div>
-        `;
-      }
-
-      const bubbleContent = aiMsgDiv.querySelector('#loadingBubble');
+      const bubbleContent = aiMsgDiv.querySelector('.ai-bubble');
       if (bubbleContent) {
-        bubbleContent.innerHTML = parseMarkdown(responseData.text) + sourcesHTML;
+        bubbleContent.innerHTML = parseMarkdown(responseData.text);
       }
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
   }
+  
+  // ==========================================
+  // 8. AUTO-SAVE SETTINGS & USER PREFERENCES
+  // ==========================================
+  const userNameInput = document.getElementById('userNameInput');
+  const systemPromptInput = document.getElementById('systemPromptInput');
+  const userNameBadge = document.querySelector('.user-name');
 
-  // Auto-Save Settings Logic
-const userNameInput = document.getElementById('userNameInput');
-const systemPromptInput = document.getElementById('systemPromptInput');
-const userNameBadge = document.querySelector('.user-name');
-
-// Load saved settings when the page opens
-window.addEventListener('DOMContentLoaded', () => {
   const savedName = localStorage.getItem('prasun_username');
   const savedPrompt = localStorage.getItem('prasun_system_prompt');
   
@@ -446,21 +407,19 @@ window.addEventListener('DOMContentLoaded', () => {
   if (savedPrompt && systemPromptInput) {
     systemPromptInput.value = savedPrompt;
   }
-});
 
-// Auto-save Display Name as user types
-if (userNameInput) {
-  userNameInput.addEventListener('input', () => {
-    const newName = userNameInput.value.trim() || 'Guest';
-    localStorage.setItem('prasun_username', newName);
-    if (userNameBadge) {
-      userNameBadge.textContent = newName;
-    }
-  });
-}
+  if (userNameInput) {
+    userNameInput.addEventListener('input', () => {
+      const newName = userNameInput.value.trim() || 'Guest';
+      localStorage.setItem('prasun_username', newName);
+      if (userNameBadge) {
+        userNameBadge.textContent = newName;
+      }
+    });
+  }
 
   // ==========================================
-  // 8. INPUT LISTENERS
+  // 9. INPUT LISTENERS & SEND ACTION
   // ==========================================
   if (messageInput) {
     messageInput.addEventListener('input', () => {
@@ -516,4 +475,3 @@ if (userNameInput) {
     });
   });
 });
-

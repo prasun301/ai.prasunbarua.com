@@ -26,7 +26,7 @@
   >
 
   <!-- =====================================================
-       STYLES
+       MAIN STYLESHEET
   ====================================================== -->
   <link
     rel="stylesheet"
@@ -51,16 +51,20 @@
 
   <!-- =====================================================
        MARKED.JS
-       Used by app.js to render AI Markdown responses.
+       Used to render Markdown AI responses.
   ====================================================== -->
   <script
     src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"
     defer
   ></script>
+
 </head>
 
 <body>
 
+  <!-- =====================================================
+       APPLICATION
+  ====================================================== -->
   <div class="app">
 
     <!-- ===================================================
@@ -81,7 +85,9 @@
       aria-label="Prasun AI sidebar"
     >
 
-      <!-- SIDEBAR HEADER -->
+      <!-- =================================================
+           SIDEBAR HEADER
+      ================================================== -->
       <div class="sidebar-header">
 
         <div class="brand-title">
@@ -97,6 +103,7 @@
           <span>Prasun AI</span>
 
         </div>
+
 
         <button
           class="icon-btn sidebar-toggle"
@@ -117,7 +124,7 @@
 
 
       <!-- =================================================
-           NEW CHAT
+           NEW CHAT BUTTON
       ================================================== -->
       <div style="padding: 0 14px 12px 14px;">
 
@@ -181,13 +188,12 @@
 
       <!-- =================================================
            CHAT HISTORY
-
-           app.js dynamically populates this container.
       ================================================== -->
       <div
         class="history-container"
         id="historyContainer"
       >
+        <!-- Chat history will be inserted by app.js -->
       </div>
 
 
@@ -196,7 +202,9 @@
       ================================================== -->
       <div class="sidebar-footer">
 
-        <!-- APPEARANCE -->
+        <!-- =================================================
+             APPEARANCE
+        ================================================== -->
         <button
           class="footer-nav-btn"
           id="themeButton"
@@ -215,7 +223,9 @@
         </button>
 
 
-        <!-- SETTINGS -->
+        <!-- =================================================
+             SETTINGS
+        ================================================== -->
         <button
           class="footer-nav-btn"
           id="settingsButton"
@@ -234,7 +244,9 @@
         </button>
 
 
-        <!-- USER PROFILE -->
+        <!-- =================================================
+             USER PROFILE
+        ================================================== -->
         <div class="user-profile-badge">
 
           <div
@@ -267,7 +279,7 @@
 
 
     <!-- ===================================================
-         MAIN CONTENT
+         MAIN APPLICATION
     ==================================================== -->
     <main class="main-wrapper">
 
@@ -279,7 +291,9 @@
 
         <div class="topbar-left">
 
-          <!-- MOBILE / DESKTOP SIDEBAR BUTTON -->
+          <!-- =================================================
+               SIDEBAR TOGGLE
+          ================================================== -->
           <button
             class="topbar-icon-btn"
             id="openSidebar"
@@ -298,9 +312,9 @@
           </button>
 
 
-          <!-- =============================================
+          <!-- =================================================
                MODEL SELECTOR
-          ============================================== -->
+          ================================================== -->
           <div class="model-selector-wrapper">
 
             <button
@@ -313,7 +327,7 @@
             >
 
               <span class="model-name">
-                Gemini 3.6 Flash
+                Gemini 3.5 Flash-Lite
               </span>
 
               <span
@@ -327,7 +341,9 @@
             </button>
 
 
-            <!-- MODEL DROPDOWN -->
+            <!-- =================================================
+                 MODEL DROPDOWN
+            ================================================== -->
             <div
               class="model-dropdown"
               id="modelDropdown"
@@ -335,9 +351,32 @@
               role="menu"
             >
 
-              <!-- GEMINI 3.6 FLASH -->
+              <!-- =================================================
+                   GEMINI 3.5 FLASH-LITE
+              ================================================== -->
               <button
                 class="model-option active"
+                data-model="gemini-3.5-flash-lite"
+                type="button"
+                role="menuitem"
+              >
+
+                <strong>
+                  Gemini 3.5 Flash-Lite
+                </strong>
+
+                <small>
+                  Fastest answers
+                </small>
+
+              </button>
+
+
+              <!-- =================================================
+                   GEMINI 3.6 FLASH
+              ================================================== -->
+              <button
+                class="model-option"
                 data-model="gemini-3.6-flash"
                 type="button"
                 role="menuitem"
@@ -354,39 +393,22 @@
               </button>
 
 
-              <!-- GEMINI 3.5 FLASH -->
+              <!-- =================================================
+                   GEMINI 3.1 PRO
+              ================================================== -->
               <button
                 class="model-option"
-                data-model="gemini-3.5-flash"
+                data-model="gemini-3.1-pro"
                 type="button"
                 role="menuitem"
               >
 
                 <strong>
-                  Gemini 3.5 Flash
+                  Gemini 3.1 Pro
                 </strong>
 
                 <small>
-                  Fast &amp; reliable
-                </small>
-
-              </button>
-
-
-              <!-- GEMINI 3.5 FLASH LITE -->
-              <button
-                class="model-option"
-                data-model="gemini-3.5-flash-lite"
-                type="button"
-                role="menuitem"
-              >
-
-                <strong>
-                  Gemini 3.5 Flash-Lite
-                </strong>
-
-                <small>
-                  Fast &amp; efficient
+                  Extended thinking &amp; complex problem solving
                 </small>
 
               </button>
@@ -399,7 +421,7 @@
 
 
         <!-- =================================================
-             TOP RIGHT ACTIONS
+             TOP RIGHT
         ================================================== -->
         <div class="topbar-right">
 
@@ -433,10 +455,9 @@
         id="chatArea"
       >
 
-
-        <!-- ===============================================
+        <!-- =================================================
              WELCOME SCREEN
-        ================================================ -->
+        ================================================== -->
         <div
           class="welcome-screen"
           id="welcomeScreen"
@@ -447,11 +468,10 @@
           </h1>
 
 
-          <!-- =============================================
+          <!-- =================================================
                SUGGESTION CARDS
-          ============================================== -->
+          ================================================== -->
           <div class="suggestion-grid">
-
 
             <!-- SOLAR ENERGY -->
             <div
@@ -533,11 +553,9 @@
         </div>
 
 
-        <!-- ===============================================
+        <!-- =================================================
              MESSAGES
-             
-             app.js inserts user/AI messages here.
-        ================================================ -->
+        ================================================== -->
         <div
           class="messages-list"
           id="messages"
@@ -554,7 +572,6 @@
       <div class="composer-container">
 
         <div class="composer-box">
-
 
           <!-- MESSAGE INPUT -->
           <textarea
@@ -576,11 +593,12 @@
           >
 
 
-          <!-- COMPOSER TOOLBAR -->
+          <!-- =================================================
+               COMPOSER TOOLBAR
+          ================================================== -->
           <div class="composer-toolbar">
 
-
-            <!-- LEFT SIDE -->
+            <!-- LEFT -->
             <div class="toolbar-left">
 
               <button
@@ -607,7 +625,7 @@
             </div>
 
 
-            <!-- RIGHT SIDE -->
+            <!-- RIGHT -->
             <div class="toolbar-right">
 
               <button
@@ -636,7 +654,9 @@
         </div>
 
 
-        <!-- DISCLAIMER -->
+        <!-- =================================================
+             DISCLAIMER
+        ================================================== -->
         <div class="disclaimer-text">
           Prasun AI can make mistakes. Verify important facts and information.
         </div>
@@ -657,6 +677,7 @@
     aria-labelledby="settingsTitle"
   >
 
+    <!-- MODAL HEADER -->
     <div class="modal-header">
 
       <h3 id="settingsTitle">
@@ -683,6 +704,7 @@
     </div>
 
 
+    <!-- MODAL BODY -->
     <div
       class="modal-body"
       style="
@@ -718,9 +740,8 @@
   <!-- =====================================================
        APPLICATION JAVASCRIPT
 
-       IMPORTANT:
-       Keep this as the final script so the HTML elements
-       already exist when app.js initializes.
+       Loaded after the page structure so all required
+       elements are available to app.js.
   ====================================================== -->
   <script
     src="assets/js/app.js"

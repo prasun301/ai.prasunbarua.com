@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>About Prasun AI</title>
 
-  <meta name="description"
-        content="Learn about Prasun AI, an AI-powered assistant designed to provide fast, useful and accessible AI assistance.">
+  <meta
+    name="description"
+    content="Learn about Prasun AI, an AI-powered assistant designed to provide fast, useful and accessible AI assistance."
+  >
+
+  <!-- Google Material Symbols -->
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+  >
 
   <style>
     * {
@@ -21,6 +30,10 @@
       color: #202124;
       line-height: 1.7;
     }
+
+    /* =========================================
+       HEADER
+       ========================================= */
 
     header {
       background: #fff;
@@ -36,11 +49,31 @@
       justify-content: space-between;
     }
 
+    /* Prasun AI brand */
+
     .brand {
-      color: #0b57d0;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+
+      color: #111827;
       text-decoration: none;
+
       font-size: 21px;
       font-weight: 700;
+    }
+
+    /* EXACT SAME ICON USED ON MAIN PRASUN AI PAGE */
+
+    .brand .material-symbols-outlined {
+      color: #0b57d0;
+      font-size: 32px;
+
+      font-variation-settings:
+        "FILL" 1,
+        "wght" 500,
+        "GRAD" 0,
+        "opsz" 24;
     }
 
     nav a {
@@ -54,6 +87,10 @@
       color: #0b57d0;
     }
 
+    /* =========================================
+       MAIN CONTENT
+       ========================================= */
+
     main {
       max-width: 900px;
       margin: 45px auto;
@@ -66,7 +103,7 @@
       border: 1px solid #e5e7eb;
       border-radius: 18px;
       padding: 42px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }
 
     .hero {
@@ -74,18 +111,33 @@
       margin-bottom: 22px;
     }
 
+    /* =========================================
+       ABOUT PAGE ICON
+       ========================================= */
+
     .logo {
       width: 70px;
       height: 70px;
       margin: auto;
+
       border-radius: 20px;
       background: #e8f0fe;
+
       display: flex;
       align-items: center;
       justify-content: center;
+
       color: #0b57d0;
-      font-size: 36px;
-      font-weight: 700;
+    }
+
+    .logo .material-symbols-outlined {
+      font-size: 44px;
+
+      font-variation-settings:
+        "FILL" 1,
+        "wght" 500,
+        "GRAD" 0,
+        "opsz" 24;
     }
 
     h1 {
@@ -111,20 +163,68 @@
       font-size: 15px;
     }
 
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: #6b7280;
-      font-size: 13px;
-    }
+    /* =========================================================
+   PRASUN AI — SITE FOOTER
+   ========================================================= */
 
-    footer a {
-      color: #5f6368;
-      text-decoration: none;
-      margin: 0 8px;
-    }
+.site-footer {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 20px 18px;
+  text-align: center;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 4px;
+}
+
+.footer-links a,
+.copyright a {
+  color: #6b7280;
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.footer-links a:hover,
+.copyright a:hover {
+  color: #0b57d0;
+  text-decoration: underline;
+}
+
+.copyright {
+  color: #6b7280;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .site-footer {
+    padding: 12px 14px 16px;
+    font-size: 11px;
+  }
+
+  .footer-links {
+    gap: 5px;
+  }
+}
+
+    /* =========================================
+       MOBILE
+       ========================================= */
 
     @media (max-width: 650px) {
+
       .header-inner {
         flex-direction: column;
         align-items: flex-start;
@@ -144,109 +244,176 @@
       h1 {
         font-size: 29px;
       }
+
+      .brand {
+        font-size: 21px;
+      }
+
+      .brand .material-symbols-outlined {
+        font-size: 30px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-<header>
-  <div class="header-inner">
-    <a class="brand" href="/">Prasun AI</a>
+  <!-- =========================================
+       HEADER
+       ========================================= -->
 
-    <nav>
-      <a href="about.html">About</a>
-      <a href="privacy-policy.html">Privacy</a>
-      <a href="terms.html">Terms</a>
-      <a href="contact.html">Contact</a>
-    </nav>
+  <header>
+
+    <div class="header-inner">
+
+      <a class="brand" href="index.html">
+
+        <!-- EXACT SAME PRASUN AI ROBOT ICON -->
+        <span
+          class="material-symbols-outlined"
+          aria-hidden="true"
+        >smart_toy</span>
+
+        <span>Prasun AI</span>
+
+      </a>
+
+      <nav>
+        <a href="about.html">About</a>
+        <a href="privacy-policy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+
+    </div>
+
+  </header>
+
+
+  <!-- =========================================
+       MAIN
+       ========================================= -->
+
+  <main>
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+      <div class="logo">
+
+        <!-- SAME ICON -->
+        <span
+          class="material-symbols-outlined"
+          aria-hidden="true"
+        >smart_toy</span>
+
+      </div>
+
+      <h1>About Prasun AI</h1>
+
+      <p class="tagline">
+        Simple, accessible and useful AI assistance.
+      </p>
+
+    </section>
+
+
+    <!-- CONTENT -->
+
+    <article class="content">
+
+      <h2>What is Prasun AI?</h2>
+
+      <p>
+        Prasun AI is an AI-powered assistant created to make artificial
+        intelligence simple and accessible through an easy-to-use web
+        interface.
+      </p>
+
+      <p>
+        The platform allows users to ask questions, explore ideas, learn
+        concepts, generate content, solve problems, and receive AI-assisted
+        explanations.
+      </p>
+
+
+      <h2>Powered by Google Gemini</h2>
+
+      <p>
+        Prasun AI uses Google Gemini technology to generate AI responses.
+        Different available Gemini models may provide different balances of
+        speed, capability, and reasoning performance.
+      </p>
+
+
+      <h2>Our Goal</h2>
+
+      <p>
+        Our goal is to provide a clean and straightforward AI experience
+        without unnecessary complexity. Prasun AI is designed to be useful for
+        everyday questions, learning, writing, brainstorming, programming,
+        technical topics, and general exploration.
+      </p>
+
+
+      <h2>Important Information</h2>
+
+      <p>
+        AI technology can make mistakes. Responses generated by Prasun AI
+        should not automatically be treated as authoritative or professional
+        advice.
+      </p>
+
+      <p>
+        For important decisions, users should verify information using
+        reliable sources and, where appropriate, consult a qualified
+        professional.
+      </p>
+
+
+      <h2>Continuous Improvement</h2>
+
+      <p>
+        We may continue improving the interface, features, performance, and
+        available AI capabilities of Prasun AI over time.
+      </p>
+
+      <p>
+        Features and available models may change as the underlying technology
+        and services evolve.
+      </p>
+
+    </article>
+
+  </main>
+
+
+  <!-- =========================================
+       FOOTER
+       ========================================= -->
+
+  <footer class="site-footer">
+
+  <div class="footer-links">
+    <a href="privacy-policy.html">Privacy Policy</a>
+    <a href="terms.html">Terms of Service</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
   </div>
-</header>
 
-<main>
+  <div class="copyright">
+    © 2026 Prasun AI by
+    <a
+      href="https://www.prasunbarua.com"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Prasun Barua
+    </a>
+    . All rights reserved.
+  </div>
 
-  <section class="hero">
-
-    <div class="logo">AI</div>
-
-    <h1>About Prasun AI</h1>
-
-    <p class="tagline">
-      Simple, accessible and useful AI assistance.
-    </p>
-
-  </section>
-
-  <article class="content">
-
-    <h2>What is Prasun AI?</h2>
-
-    <p>
-      Prasun AI is an AI-powered assistant created to make artificial
-      intelligence simple and accessible through an easy-to-use web
-      interface.
-    </p>
-
-    <p>
-      The platform allows users to ask questions, explore ideas, learn
-      concepts, generate content, solve problems, and receive AI-assisted
-      explanations.
-    </p>
-
-    <h2>Powered by Google Gemini</h2>
-
-    <p>
-      Prasun AI uses Google Gemini technology to generate AI responses.
-      Different available Gemini models may provide different balances of
-      speed, capability, and reasoning performance.
-    </p>
-
-    <h2>Our Goal</h2>
-
-    <p>
-      Our goal is to provide a clean and straightforward AI experience
-      without unnecessary complexity. Prasun AI is designed to be useful for
-      everyday questions, learning, writing, brainstorming, programming,
-      technical topics, and general exploration.
-    </p>
-
-    <h2>Important Information</h2>
-
-    <p>
-      AI technology can make mistakes. Responses generated by Prasun AI
-      should not automatically be treated as authoritative or professional
-      advice.
-    </p>
-
-    <p>
-      For important decisions, users should verify information using
-      reliable sources and, where appropriate, consult a qualified
-      professional.
-    </p>
-
-    <h2>Continuous Improvement</h2>
-
-    <p>
-      We may continue improving the interface, features, performance, and
-      available AI capabilities of Prasun AI over time.
-    </p>
-
-    <p>
-      Features and available models may change as the underlying technology
-      and services evolve.
-    </p>
-
-  </article>
-
-</main>
-
-<footer>
-  © 2026 Prasun AI
-  <br><br>
-  <a href="about.html">About</a>
-  <a href="privacy-policy.html">Privacy Policy</a>
-  <a href="terms.html">Terms</a>
-  <a href="contact.html">Contact</a>
 </footer>
 
 </body>

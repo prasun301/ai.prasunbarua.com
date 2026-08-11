@@ -1,49 +1,73 @@
-// Helper function to call Gemini with exponential backoff on 429 errors
-async function callGeminiWithRetry(apiKey, payload, retries = 3, delay = 2000) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-
-  if (response.status === 429 && retries > 0) {
-    console.warn(`[429 Quota Exceeded] Retrying in ${delay / 1000}s...`);
-    await new Promise((resolve) => setTimeout(resolve, delay));
-    return callGeminiWithRetry(apiKey, payload, retries - 1, delay * 2);
-  }
-
-  return response;
-}
-
 export async function onRequestPost(context) {
   try {
     const { request, env } = context;
     const body = await request.json();
 
-    // Retrieve your API key from environment variables
-    const apiKey = env?.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-
+    const apiKey = env.GEMINI_API_KEY;
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'GEMINI_API_KEY environment variable is missing.' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return new Response(
+        JSON.stringify({ error: { message: "GEMINI_API_KEY environment variable is not configured on the server." } }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
     }
 
-    // Forward the payload from frontend directly to Gemini API
-    const geminiResponse = await callGeminiWithRetry(apiKey, body);
-    const data = await geminiResponse.json();
+    const requestedModel = body.model || "gemini-2.0-flash";
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${requestedModel}:generateContent?key=${apiKey}`;
 
-    return new Response(JSON.stringify(data), {
-      status: geminiResponse.status,
-      headers: { 'Content-Type': 'application/json' }
+    // Transform app chat history into Gemini API contents structure
+    const contents = (body.messages || []).map((msg) => {
+      const parts = [];
+      if (msg.attachment && msg.attachment.data) {
+        parts.push({
+          inline_data: {
+            mime_type: msg.attachment.mimeType,
+            data: msg.attachment.data
+          }
+        });
+      }
+      if (msg.content) {
+        parts.push({ text: msg.content });
+      }
+      return {
+        role: msg.role === "assistant" ? "model" : "user",
+        parts: parts
+      };
     });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: error.message || 'Internal Server Error' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
+
+    const payload = {
+      contents: contents,
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 2048
+      }
+    };
+
+    const apiResponse = await fetch(geminiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
+
+    if (!apiResponse.ok) {
+      const errorData = await apiResponse.json().catch(() => ({}));
+      const errorMessage = errorData?.error?.message || `API error (${apiResponse.status})`;
+      return new Response(
+        JSON.stringify({ error: { message: errorMessage } }),
+        { status: apiResponse.status, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const data = await apiResponse.json();
+    const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received.";
+
+    return new Response(
+      JSON.stringify({ response: replyText }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
+  } catch (err) {
+    return new Response(
+      JSON.stringify({ error: { message: err.message || "Failed to process chat request." } }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
   }
 }

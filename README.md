@@ -26,9 +26,8 @@ The platform provides a clean conversational interface and connects securely to 
 - CSS3
 - JavaScript
 - GitHub
-- Cloudflare
 - Cloudflare Pages
-- Cloudflare Functions
+- Cloudflare Pages Functions
 - AI API integration
 
 ## 🏗️ Architecture
@@ -43,7 +42,7 @@ Prasun AI Web Interface
 Cloudflare Pages
   │
   ▼
-Cloudflare Function
+Cloudflare Pages Function
   │
   ▼
 Secure AI API

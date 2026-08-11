@@ -1268,3 +1268,72 @@ body.dark-theme .model-option.active:hover {
     "GRAD" 0,
     "opsz" 24;
 }
+
+/* =========================================================
+   PRASUN AI — SITE FOOTER
+   ========================================================= */
+
+.site-footer {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 20px 18px;
+  text-align: center;
+  background: var(--bg-primary, #ffffff);
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  color: var(--text-muted, #6b7280);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 4px;
+}
+
+.footer-links a,
+.copyright a {
+  color: var(--text-muted, #6b7280);
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.footer-links a:hover,
+.copyright a:hover {
+  color: var(--accent-color, #0b57d0);
+  text-decoration: underline;
+}
+
+.footer-separator {
+  color: var(--text-muted, #9ca3af);
+  opacity: 0.7;
+}
+
+.copyright {
+  color: var(--text-muted, #6b7280);
+}
+
+/* Dark theme */
+body.dark-theme .site-footer {
+  background: var(--bg-primary, #111827);
+  border-top-color: var(--border-color, #374151);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+  .site-footer {
+    padding: 12px 14px 16px;
+    font-size: 11px;
+  }
+
+  .footer-links {
+    gap: 5px;
+  }
+
+}

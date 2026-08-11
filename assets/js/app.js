@@ -74,30 +74,39 @@ document.addEventListener("DOMContentLoaded", () => {
   // MODEL CONFIGURATION
   // =========================================================
 
-  const MODELS = {
-    "gemini-3.6-flash": {
-      name: "Gemini 3.6 Flash",
-      description: "Fast & powerful"
-    },
+const MODELS = {
+  "gemini-3.6-flash": {
+    name: "Gemini 3.6 Flash",
+    description: "Fast & powerful"
+  },
 
-    "gemini-3.5-flash": {
-      name: "Gemini 3.5 Flash",
-      description: "Fast & reliable"
-    },
+  "gemini-3.5-flash-lite": {
+    name: "Gemini 3.5 Flash-Lite",
+    description: "Fastest answers"
+  },
 
-    "gemini-3.5-flash-lite": {
-      name: "Gemini 3.5 Flash-Lite",
-      description: "Fast & efficient"
-    }
-  };
+  "gemini-3.1-pro": {
+    name: "Gemini 3.1 Pro",
+    description: "Extended thinking & complex problem solving"
+  }
+};
 
-  // Old model names are automatically migrated.
-  const MODEL_MIGRATIONS = {
-    "gemini-2.0-flash": "gemini-3.6-flash",
-    "gemini-2.0-flash-001": "gemini-3.6-flash",
-    "gemini-2.0-flash-exp": "gemini-3.6-flash",
-    "gemini-1.5-pro": "gemini-3.6-flash"
-  };
+// ==========================================================
+// OLD MODEL MIGRATIONS
+// ==========================================================
+// Automatically convert old saved model names to the
+// current supported models.
+//
+// Gemini 3.6 Flash is the default.
+const MODEL_MIGRATIONS = {
+  "gemini-2.0-flash": "gemini-3.6-flash",
+  "gemini-2.0-flash-001": "gemini-3.6-flash",
+  "gemini-2.0-flash-exp": "gemini-3.6-flash",
+  "gemini-1.5-pro": "gemini-3.6-flash",
+
+  // Remove/convert the old unsupported model name.
+  "gemini-3.5-flash": "gemini-3.5-flash-lite"
+};
 
   // =========================================================
   // LOCAL STORAGE

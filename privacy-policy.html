@@ -6,73 +6,118 @@
 
   <title>Privacy Policy | Prasun AI</title>
 
-  <meta
-    name="description"
-    content="Privacy Policy for Prasun AI — learn how we handle information, cookies, advertising, and your privacy."
-  >
+  <meta name="description"
+        content="Privacy Policy for Prasun AI, an AI assistant powered by Google Gemini.">
 
-  <meta name="robots" content="index, follow">
-
-  <link rel="icon" type="image/svg+xml"
-    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230b57d0' d='M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2v1c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-1c1.1 0-2-0.9-2-2v-4c0-1.1-.9-2-2-2zM8 8h8v2H8V8zm8 10H8v-2h8v2zm2-4H6v-2h12v2z'/%3E%3C/svg%3E"
-  >
-
-  <link rel="stylesheet"
-    href="assets/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230b57d0' d='M20 9V7c0-1.1-.9-2-2-2h-3c0-1.66-1.34-3-3-3S9 3.34 9 5H6c-1.1 0-2 .9-2 2v2c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2v1c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-1c1.1 0 2-.9 2-2v-4c0-1.1-.9-2-2-2zM8 8h8v2H8V8zm8 10H8v-2h8v2zm2-4H6v-2h12v2z'/%3E%3C/svg%3E">
 
   <style>
-    .legal-page {
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f8fafd;
+      color: #202124;
+      line-height: 1.7;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 18px 24px;
+    }
+
+    .header-inner {
       max-width: 900px;
-      margin: 0 auto;
-      padding: 60px 24px 80px;
-      line-height: 1.75;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
     }
 
-    .legal-page h1 {
-      font-size: 40px;
-      margin-bottom: 10px;
-    }
-
-    .legal-page h2 {
-      margin-top: 40px;
-      margin-bottom: 12px;
-    }
-
-    .legal-page p,
-    .legal-page li {
-      color: var(--text-muted, #5f6368);
-    }
-
-    .legal-page ul {
-      padding-left: 25px;
-    }
-
-    .legal-date {
-      color: var(--text-muted, #6b7280);
-      margin-bottom: 35px;
-    }
-
-    .legal-nav {
-      margin-bottom: 35px;
-    }
-
-    .legal-nav a {
-      margin-right: 18px;
+    .brand {
+      color: #0b57d0;
       text-decoration: none;
+      font-size: 21px;
+      font-weight: 700;
+    }
+
+    nav a {
+      color: #5f6368;
+      text-decoration: none;
+      margin-left: 18px;
+      font-size: 14px;
+    }
+
+    nav a:hover {
       color: #0b57d0;
     }
 
-    .legal-page a {
-      color: #0b57d0;
+    main {
+      max-width: 900px;
+      margin: 45px auto;
+      padding: 0 24px;
     }
 
-    @media (max-width: 600px) {
-      .legal-page {
-        padding: 40px 18px 60px;
+    .content {
+      background: #ffffff;
+      padding: 42px;
+      border-radius: 18px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #202124;
+      font-size: 34px;
+    }
+
+    h2 {
+      margin-top: 35px;
+      color: #0b57d0;
+      font-size: 21px;
+    }
+
+    p, li {
+      color: #4b5563;
+      font-size: 15px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    footer a {
+      color: #5f6368;
+      text-decoration: none;
+      margin: 0 8px;
+    }
+
+    @media (max-width: 650px) {
+      .header-inner {
+        flex-direction: column;
+        align-items: flex-start;
       }
 
-      .legal-page h1 {
-        font-size: 32px;
+      nav a {
+        margin-left: 0;
+        margin-right: 14px;
+      }
+
+      .content {
+        padding: 25px;
+      }
+
+      h1 {
+        font-size: 28px;
       }
     }
   </style>
@@ -80,173 +125,162 @@
 
 <body>
 
-<main class="legal-page">
+<header>
+  <div class="header-inner">
+    <a class="brand" href="/">Prasun AI</a>
 
-  <nav class="legal-nav">
-    <a href="/">Prasun AI</a>
-    <a href="about.html">About</a>
-    <a href="terms.html">Terms</a>
-    <a href="contact.html">Contact</a>
-  </nav>
+    <nav>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="terms.html">Terms</a>
+    </nav>
+  </div>
+</header>
 
-  <h1>Privacy Policy</h1>
+<main>
+  <article class="content">
 
-  <p class="legal-date">
-    Last updated: August 11, 2026
-  </p>
+    <h1>Privacy Policy</h1>
 
-  <p>
-    Welcome to <strong>Prasun AI</strong>, available at
-    <strong>https://ai.prasunbarua.com</strong>.
-    Your privacy is important to us. This Privacy Policy explains
-    what information may be collected when you use our website,
-    how that information may be used, and the choices available to you.
-  </p>
+    <p>
+      <strong>Last updated:</strong> August 11, 2026
+    </p>
 
-  <h2>1. Information We Collect</h2>
+    <p>
+      Welcome to Prasun AI. Your privacy is important to us. This Privacy
+      Policy explains how information may be collected, used, and protected
+      when you use the Prasun AI website and services available at
+      <strong>ai.prasunbarua.com</strong>.
+    </p>
 
-  <p>
-    Prasun AI is designed to allow visitors to interact with an
-    artificial intelligence assistant. Depending on how you use the
-    website, the following information may be processed:
-  </p>
+    <h2>1. Information We Collect</h2>
 
-  <ul>
-    <li>Messages or prompts that you voluntarily submit to the AI assistant.</li>
-    <li>Information you voluntarily provide through our contact email.</li>
-    <li>Basic technical information such as browser type, device type, IP address, and approximate location that may be collected automatically by hosting, security, analytics, or advertising services.</li>
-    <li>Cookies and similar technologies used to provide, secure, analyze, or improve the website.</li>
-  </ul>
+    <p>
+      Prasun AI is designed to provide AI-powered assistance. Depending on
+      how you use the website, information that may be processed can include:
+    </p>
 
-  <h2>2. How We Use Information</h2>
+    <ul>
+      <li>Messages and prompts that you submit to the AI service.</li>
+      <li>Information you voluntarily provide through the contact form.</li>
+      <li>Basic technical information required to operate and secure the website.</li>
+      <li>Cookies or similar technologies used by third-party services.</li>
+    </ul>
 
-  <p>
-    Information may be used for purposes including:
-  </p>
+    <h2>2. AI Processing</h2>
 
-  <ul>
-    <li>Providing and operating Prasun AI.</li>
-    <li>Processing AI requests and generating responses.</li>
-    <li>Maintaining website security and preventing abuse.</li>
-    <li>Improving website performance and user experience.</li>
-    <li>Responding to questions, feedback, and support requests.</li>
-    <li>Understanding website usage and improving our services.</li>
-    <li>Displaying advertising where applicable.</li>
-  </ul>
+    <p>
+      Prasun AI uses Google Gemini technology to process AI requests.
+      Information submitted through the AI interface may be transmitted to
+      the relevant service provider for the purpose of generating a response.
+    </p>
 
-  <h2>3. AI Conversations</h2>
+    <p>
+      You should avoid submitting passwords, financial information,
+      confidential business information, or other sensitive personal
+      information into the AI chat.
+    </p>
 
-  <p>
-    When you submit a prompt to Prasun AI, the information necessary
-    to process your request may be transmitted to the AI service provider
-    used by the website.
-  </p>
+    <h2>3. Cookies and Advertising</h2>
 
-  <p>
-    Please do not submit passwords, payment information, government
-    identification numbers, confidential business information, or other
-    highly sensitive personal information into the AI chat.
-  </p>
+    <p>
+      We may use cookies and similar technologies to improve website
+      functionality, understand website usage, and support advertising
+      services.
+    </p>
 
-  <h2>4. Cookies</h2>
+    <p>
+      We may use Google AdSense or other third-party advertising services.
+      These services may use cookies or similar technologies to provide,
+      measure, and personalize advertisements in accordance with their
+      applicable policies.
+    </p>
 
-  <p>
-    Prasun AI may use cookies and similar technologies. Cookies may be
-    used to remember preferences, maintain functionality, understand
-    website usage, improve security, or provide advertising services.
-  </p>
+    <p>
+      Third-party advertising providers may collect information about users'
+      visits to this and other websites in order to provide relevant
+      advertising.
+    </p>
 
-  <p>
-    You can control or disable cookies through your browser settings.
-    Some website features may not function correctly if cookies are disabled.
-  </p>
+    <h2>4. Analytics and Technical Data</h2>
 
-  <h2>5. Advertising</h2>
+    <p>
+      We may use analytics or similar technologies to understand website
+      traffic, detect technical problems, improve performance, and maintain
+      website security.
+    </p>
 
-  <p>
-    We may display advertisements on Prasun AI, including advertisements
-    provided by third-party advertising networks such as Google AdSense.
-  </p>
+    <h2>5. How We Use Information</h2>
 
-  <p>
-    Third-party advertising providers may use cookies or similar
-    technologies to display advertisements based on a user's visits
-    to this and other websites.
-  </p>
+    <p>Information may be used to:</p>
 
-  <p>
-    Google may use advertising cookies to help serve ads based on a
-    user's previous visits to this website or other websites.
-  </p>
+    <ul>
+      <li>Provide and operate Prasun AI.</li>
+      <li>Generate responses to user requests.</li>
+      <li>Improve website functionality and user experience.</li>
+      <li>Maintain website security and reliability.</li>
+      <li>Respond to messages submitted through the contact form.</li>
+      <li>Support advertising and measurement where applicable.</li>
+    </ul>
 
-  <p>
-    Users may learn more about Google's advertising practices and
-    available controls through Google's advertising settings and
-    privacy resources.
-  </p>
+    <h2>6. Third-Party Services</h2>
 
-  <h2>6. Third-Party Services</h2>
+    <p>
+      Prasun AI may rely on third-party services, including AI, hosting,
+      analytics, security, and advertising providers. These providers may
+      process information according to their own privacy policies and terms.
+    </p>
 
-  <p>
-    Prasun AI may rely on third-party services for hosting, security,
-    AI processing, analytics, advertising, content delivery, or other
-    website functions.
-  </p>
+    <h2>7. Data Security</h2>
 
-  <p>
-    These third parties may process information according to their own
-    privacy policies and terms.
-  </p>
+    <p>
+      We take reasonable measures to protect information associated with the
+      website. However, no internet transmission or electronic storage system
+      can be guaranteed to be completely secure.
+    </p>
 
-  <h2>7. Data Security</h2>
+    <h2>8. Children's Privacy</h2>
 
-  <p>
-    We take reasonable measures to help protect information associated
-    with the website. However, no internet transmission or electronic
-    storage system can be guaranteed to be completely secure.
-  </p>
+    <p>
+      Prasun AI is not intended to knowingly collect personal information
+      from children in violation of applicable laws. If you believe that a
+      child has provided personal information through the website, please
+      contact us through the Contact page.
+    </p>
 
-  <h2>8. Children's Privacy</h2>
+    <h2>9. External Links</h2>
 
-  <p>
-    Prasun AI is not intended to knowingly collect personal information
-    from children. If you believe that a child has provided personal
-    information through the website, please contact us so that we can
-    review the situation and take appropriate action.
-  </p>
+    <p>
+      The website may contain links to third-party websites or services.
+      We are not responsible for the privacy practices, content, or security
+      of external websites.
+    </p>
 
-  <h2>9. External Links</h2>
+    <h2>10. Changes to This Privacy Policy</h2>
 
-  <p>
-    The website may contain links to third-party websites. We are not
-    responsible for the privacy practices, content, or security of
-    external websites.
-  </p>
+    <p>
+      We may update this Privacy Policy from time to time. Changes will be
+      posted on this page with an updated revision date.
+    </p>
 
-  <h2>10. Changes to This Privacy Policy</h2>
+    <h2>11. Contact</h2>
 
-  <p>
-    We may update this Privacy Policy from time to time to reflect
-    changes to the website, services, legal requirements, or privacy
-    practices. The updated version will be posted on this page with
-    a revised "Last updated" date.
-  </p>
+    <p>
+      If you have questions about this Privacy Policy, please use our
+      <a href="contact.html">Contact</a> page.
+    </p>
 
-  <h2>11. Contact Us</h2>
-
-  <p>
-    If you have questions about this Privacy Policy or our privacy
-    practices, please contact us at:
-  </p>
-
-  <p>
-    <strong>Email:</strong>
-    <a href="mailto:contact@prasunbarua.com">
-      contact@prasunbarua.com
-    </a>
-  </p>
-
+  </article>
 </main>
+
+<footer>
+  © 2026 Prasun AI
+  <br><br>
+  <a href="about.html">About</a>
+  <a href="privacy-policy.html">Privacy Policy</a>
+  <a href="terms.html">Terms</a>
+  <a href="contact.html">Contact</a>
+</footer>
 
 </body>
 </html>

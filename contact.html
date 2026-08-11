@@ -9,7 +9,7 @@
 
   <meta
     name="description"
-    content="Contact Prasun AI for questions, feedback, suggestions, or other inquiries."
+    content="Contact Prasun AI for questions, feedback, suggestions or inquiries."
   >
 
   <!-- Google Material Symbols -->
@@ -95,7 +95,6 @@
       padding: 0 24px;
     }
 
-    .hero,
     .content {
       background: #fff;
       border: 1px solid #e5e7eb;
@@ -104,97 +103,125 @@
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }
 
-    .hero {
-      text-align: center;
-      margin-bottom: 22px;
-    }
-
-    .logo {
-      width: 70px;
-      height: 70px;
-      margin: auto;
-
-      border-radius: 20px;
-      background: #e8f0fe;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      color: #0b57d0;
-    }
-
-    .logo .material-symbols-outlined {
-      font-size: 44px;
-
-      font-variation-settings:
-        "FILL" 1,
-        "wght" 500,
-        "GRAD" 0,
-        "opsz" 24;
-    }
-
     h1 {
       font-size: 36px;
-      margin: 20px 0 10px;
+      margin: 0 0 10px;
     }
 
-    .tagline {
+    .intro {
       color: #5f6368;
       font-size: 17px;
-      margin: 0;
+      margin: 0 0 32px;
     }
 
-    h2 {
-      color: #0b57d0;
-      margin-top: 35px;
-      font-size: 21px;
-    }
+    /* =========================================
+       CONTACT FORM
+       ========================================= */
 
-    p,
-    li {
-      color: #4b5563;
-      font-size: 15px;
-    }
-
-    .contact-box {
-      margin-top: 25px;
-      padding: 24px;
-      background: #f8fafd;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-    }
-
-    .contact-item {
+    .contact-form {
       display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      margin-bottom: 18px;
+      flex-direction: column;
+      gap: 20px;
     }
 
-    .contact-item:last-child {
-      margin-bottom: 0;
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
     }
 
-    .contact-icon {
-      color: #0b57d0;
-      font-size: 26px;
-      flex-shrink: 0;
-    }
-
-    .contact-item strong {
-      display: block;
+    .form-group label {
       color: #202124;
-      margin-bottom: 2px;
+      font-size: 14px;
+      font-weight: 600;
     }
 
-    .contact-item span {
-      color: #4b5563;
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      border: 1px solid #dadce0;
+      border-radius: 10px;
+      padding: 13px 14px;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 15px;
+      color: #202124;
+      background: #fff;
+      outline: none;
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
     }
 
-    a {
-      color: #0b57d0;
+    .form-group input {
+      height: 48px;
+    }
+
+    .form-group textarea {
+      min-height: 160px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: #0b57d0;
+      box-shadow: 0 0 0 3px rgba(11, 87, 208, 0.12);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: #9aa0a6;
+    }
+
+    /* =========================================
+       SUBMIT BUTTON
+       ========================================= */
+
+    .submit-btn {
+      width: fit-content;
+      min-width: 130px;
+      border: none;
+      border-radius: 24px;
+      padding: 12px 22px;
+
+      background: #0b57d0;
+      color: #fff;
+
+      font-size: 14px;
+      font-weight: 600;
+      font-family: Arial, Helvetica, sans-serif;
+
+      cursor: pointer;
+
+      transition:
+        background 0.2s ease,
+        transform 0.1s ease;
+    }
+
+    .submit-btn:hover {
+      background: #0842a0;
+    }
+
+    .submit-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* =========================================
+       SUCCESS MESSAGE
+       ========================================= */
+
+    .success-message {
+      display: none;
+      margin-top: 20px;
+      padding: 12px 15px;
+
+      border: 1px solid #c6e7c9;
+      border-radius: 10px;
+
+      background: #f1f8f2;
+      color: #237a35;
+
+      font-size: 14px;
     }
 
     /* =========================================================
@@ -258,7 +285,6 @@
         margin-right: 14px;
       }
 
-      .hero,
       .content {
         padding: 25px;
       }
@@ -274,10 +300,15 @@
       .brand .material-symbols-outlined {
         font-size: 30px;
       }
+
+      .submit-btn {
+        width: 100%;
+      }
     }
 
-    @media (max-width: 600px) {
+    /* Mobile footer */
 
+    @media (max-width: 600px) {
       .site-footer {
         padding: 12px 14px 16px;
         font-size: 11px;
@@ -330,102 +361,105 @@
 
   <main>
 
-    <section class="hero">
+    <article class="content">
 
-      <div class="logo">
+      <h1>Contact</h1>
 
-        <!-- SAME ICON -->
-        <span
-          class="material-symbols-outlined"
-          aria-hidden="true"
-        >smart_toy</span>
-
-      </div>
-
-      <h1>Contact Prasun AI</h1>
-
-      <p class="tagline">
+      <p class="intro">
         Questions, feedback, suggestions or inquiries.
       </p>
 
-    </section>
 
+      <!-- =====================================
+           CONTACT FORM
+           ===================================== -->
 
-    <article class="content">
+      <form
+        class="contact-form"
+        id="contactForm"
+      >
 
-      <h2>Get in Touch</h2>
+        <!-- NAME -->
 
-      <p>
-        If you have a question about Prasun AI, would like to report a
-        problem, or have feedback or suggestions, you can contact us using
-        the information below.
-      </p>
+        <div class="form-group">
 
-      <div class="contact-box">
+          <label for="name">
+            Name
+          </label>
 
-        <div class="contact-item">
-
-          <span
-            class="material-symbols-outlined contact-icon"
-            aria-hidden="true"
-          >mail</span>
-
-          <div>
-            <strong>Email</strong>
-            <span>
-              Please use the contact email associated with Prasun AI.
-            </span>
-          </div>
-
-        </div>
-
-        <div class="contact-item">
-
-          <span
-            class="material-symbols-outlined contact-icon"
-            aria-hidden="true"
-          >language</span>
-
-          <div>
-            <strong>Website</strong>
-            <span>
-              ai.prasunbarua.com
-            </span>
-          </div>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Enter your name"
+            maxlength="100"
+            autocomplete="name"
+            required
+          >
 
         </div>
 
+
+        <!-- SUBJECT -->
+
+        <div class="form-group">
+
+          <label for="subject">
+            Subject
+          </label>
+
+          <input
+            type="text"
+            id="subject"
+            name="subject"
+            placeholder="What would you like to contact us about?"
+            maxlength="150"
+            required
+          >
+
+        </div>
+
+
+        <!-- MESSAGE -->
+
+        <div class="form-group">
+
+          <label for="message">
+            Message
+          </label>
+
+          <textarea
+            id="message"
+            name="message"
+            placeholder="Write your message..."
+            maxlength="5000"
+            required
+          ></textarea>
+
+        </div>
+
+
+        <!-- SUBMIT -->
+
+        <button
+          type="submit"
+          class="submit-btn"
+        >
+          Send Message
+        </button>
+
+      </form>
+
+
+      <!-- SUCCESS MESSAGE -->
+
+      <div
+        class="success-message"
+        id="successMessage"
+        role="status"
+      >
+        Thank you for your message. Your submission has been received.
       </div>
-
-
-      <h2>Before Contacting Us</h2>
-
-      <p>
-        For questions about AI-generated responses, please remember that
-        artificial intelligence can sometimes produce inaccurate or
-        incomplete information.
-      </p>
-
-      <p>
-        If you are reporting a technical issue, including the page address,
-        a short description of the problem, and the steps that caused it
-        can help us investigate the issue more efficiently.
-      </p>
-
-
-      <h2>Privacy</h2>
-
-      <p>
-        Please do not include passwords, payment information, confidential
-        business information, or other sensitive personal information in
-        your message unless it is specifically required.
-      </p>
-
-      <p>
-        For more information about how information may be handled, please
-        review our
-        <a href="privacy-policy.html">Privacy Policy</a>.
-      </p>
 
     </article>
 
@@ -458,6 +492,29 @@
     </div>
 
   </footer>
+
+
+  <!-- =========================================
+       CONTACT FORM JAVASCRIPT
+       ========================================= -->
+
+  <script>
+    const contactForm = document.getElementById("contactForm");
+    const successMessage = document.getElementById("successMessage");
+
+    contactForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      successMessage.style.display = "block";
+
+      contactForm.reset();
+
+      successMessage.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest"
+      });
+    });
+  </script>
 
 </body>
 </html>

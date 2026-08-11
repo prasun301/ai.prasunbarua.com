@@ -6,84 +6,143 @@
 
   <title>About Prasun AI</title>
 
-  <meta
-    name="description"
-    content="Learn about Prasun AI, an AI assistant designed to provide helpful, accessible, and practical AI-powered answers."
-  >
-
-  <meta name="robots" content="index, follow">
-
-  <link rel="stylesheet" href="assets/css/style.css">
+  <meta name="description"
+        content="Learn about Prasun AI, an AI-powered assistant designed to provide fast, useful and accessible AI assistance.">
 
   <style>
-    .about-page {
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f8fafd;
+      color: #202124;
+      line-height: 1.7;
+    }
+
+    header {
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 18px 24px;
+    }
+
+    .header-inner {
       max-width: 900px;
-      margin: 0 auto;
-      padding: 60px 24px 80px;
-      line-height: 1.75;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    .about-hero {
+    .brand {
+      color: #0b57d0;
+      text-decoration: none;
+      font-size: 21px;
+      font-weight: 700;
+    }
+
+    nav a {
+      color: #5f6368;
+      text-decoration: none;
+      margin-left: 18px;
+      font-size: 14px;
+    }
+
+    nav a:hover {
+      color: #0b57d0;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 45px auto;
+      padding: 0 24px;
+    }
+
+    .hero,
+    .content {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 42px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+
+    .hero {
       text-align: center;
-      padding: 30px 0 45px;
+      margin-bottom: 22px;
     }
 
-    .about-icon {
-      width: 72px;
-      height: 72px;
-      margin: 0 auto 20px;
+    .logo {
+      width: 70px;
+      height: 70px;
+      margin: auto;
       border-radius: 20px;
-      background: #eef4ff;
+      background: #e8f0fe;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 38px;
       color: #0b57d0;
+      font-size: 36px;
+      font-weight: 700;
     }
 
-    .about-page h1 {
-      font-size: 42px;
-      margin-bottom: 12px;
+    h1 {
+      font-size: 36px;
+      margin: 20px 0 10px;
     }
 
-    .about-page h2 {
-      margin-top: 42px;
-      margin-bottom: 12px;
+    .tagline {
+      color: #5f6368;
+      font-size: 17px;
+      margin: 0;
     }
 
-    .about-page p,
-    .about-page li {
-      color: var(--text-muted, #5f6368);
-    }
-
-    .about-page ul {
-      padding-left: 25px;
-    }
-
-    .about-nav {
-      margin-bottom: 25px;
-    }
-
-    .about-nav a {
-      margin-right: 18px;
+    h2 {
       color: #0b57d0;
+      margin-top: 35px;
+      font-size: 21px;
+    }
+
+    p,
+    li {
+      color: #4b5563;
+      font-size: 15px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    footer a {
+      color: #5f6368;
       text-decoration: none;
+      margin: 0 8px;
     }
 
-    .about-card {
-      padding: 25px;
-      border: 1px solid #e4e7eb;
-      border-radius: 16px;
-      margin-top: 20px;
-    }
-
-    @media (max-width: 600px) {
-      .about-page {
-        padding: 40px 18px 60px;
+    @media (max-width: 650px) {
+      .header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
       }
 
-      .about-page h1 {
-        font-size: 34px;
+      nav a {
+        margin-left: 0;
+        margin-right: 14px;
+      }
+
+      .hero,
+      .content {
+        padding: 25px;
+      }
+
+      h1 {
+        font-size: 29px;
       }
     }
   </style>
@@ -91,116 +150,104 @@
 
 <body>
 
-<main class="about-page">
+<header>
+  <div class="header-inner">
+    <a class="brand" href="/">Prasun AI</a>
 
-  <nav class="about-nav">
-    <a href="/">Prasun AI</a>
-    <a href="privacy-policy.html">Privacy</a>
-    <a href="terms.html">Terms</a>
-    <a href="contact.html">Contact</a>
-  </nav>
+    <nav>
+      <a href="about.html">About</a>
+      <a href="privacy-policy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
 
-  <section class="about-hero">
+<main>
 
-    <div class="about-icon">
-      🤖
-    </div>
+  <section class="hero">
+
+    <div class="logo">AI</div>
 
     <h1>About Prasun AI</h1>
 
-    <p>
-      A simple, practical, and accessible AI assistant for everyday
-      questions, learning, creativity, and productivity.
+    <p class="tagline">
+      Simple, accessible and useful AI assistance.
     </p>
 
   </section>
 
-  <h2>What is Prasun AI?</h2>
+  <article class="content">
 
-  <p>
-    <strong>Prasun AI</strong> is an online AI assistant created to make
-    artificial intelligence easier and more useful for everyday users.
-    It provides a simple conversational interface where visitors can
-    ask questions, explore ideas, learn concepts, write content,
-    solve problems, and get assistance with a wide range of tasks.
-  </p>
+    <h2>What is Prasun AI?</h2>
 
-  <p>
-    Prasun AI uses modern AI technology to generate responses based on
-    the questions and instructions provided by users.
-  </p>
+    <p>
+      Prasun AI is an AI-powered assistant created to make artificial
+      intelligence simple and accessible through an easy-to-use web
+      interface.
+    </p>
 
-  <h2>Our Goal</h2>
+    <p>
+      The platform allows users to ask questions, explore ideas, learn
+      concepts, generate content, solve problems, and receive AI-assisted
+      explanations.
+    </p>
 
-  <p>
-    Our goal is to create a clean, straightforward, and useful AI
-    experience without unnecessary complexity.
-  </p>
+    <h2>Powered by Google Gemini</h2>
 
-  <div class="about-card">
+    <p>
+      Prasun AI uses Google Gemini technology to generate AI responses.
+      Different available Gemini models may provide different balances of
+      speed, capability, and reasoning performance.
+    </p>
 
-    <h3>What you can use Prasun AI for</h3>
+    <h2>Our Goal</h2>
 
-    <ul>
-      <li>Learning and understanding technical concepts</li>
-      <li>Explaining difficult topics in simpler language</li>
-      <li>Writing and improving text</li>
-      <li>Brainstorming ideas</li>
-      <li>Programming and web-development assistance</li>
-      <li>General research and information discovery</li>
-      <li>Everyday questions and productivity tasks</li>
-    </ul>
+    <p>
+      Our goal is to provide a clean and straightforward AI experience
+      without unnecessary complexity. Prasun AI is designed to be useful for
+      everyday questions, learning, writing, brainstorming, programming,
+      technical topics, and general exploration.
+    </p>
 
-  </div>
+    <h2>Important Information</h2>
 
-  <h2>AI-Generated Responses</h2>
+    <p>
+      AI technology can make mistakes. Responses generated by Prasun AI
+      should not automatically be treated as authoritative or professional
+      advice.
+    </p>
 
-  <p>
-    AI systems can sometimes produce incorrect, incomplete, or
-    misleading information. For this reason, Prasun AI should be
-    treated as an assistance and information tool rather than a
-    replacement for qualified professional advice.
-  </p>
+    <p>
+      For important decisions, users should verify information using
+      reliable sources and, where appropriate, consult a qualified
+      professional.
+    </p>
 
-  <p>
-    Important information should always be independently verified,
-    especially when it involves medical, legal, financial, safety,
-    engineering, or other high-impact decisions.
-  </p>
+    <h2>Continuous Improvement</h2>
 
-  <h2>Technology</h2>
+    <p>
+      We may continue improving the interface, features, performance, and
+      available AI capabilities of Prasun AI over time.
+    </p>
 
-  <p>
-    Prasun AI uses third-party artificial intelligence technology to
-    process user requests and generate responses. The available AI
-    models may change over time as technology and service availability
-    evolve.
-  </p>
+    <p>
+      Features and available models may change as the underlying technology
+      and services evolve.
+    </p>
 
-  <h2>Our Approach</h2>
-
-  <p>
-    We aim to keep the service simple, fast, useful, and accessible
-    across desktop and mobile devices. We also continuously work to
-    improve the website's interface, functionality, reliability, and
-    overall user experience.
-  </p>
-
-  <h2>Contact Us</h2>
-
-  <p>
-    If you have questions, suggestions, feedback, or would like to
-    report an issue with Prasun AI, please contact us.
-  </p>
-
-  <p>
-    <strong>Email:</strong>
-    <a href="mailto:contact@prasunbarua.com">
-      contact@prasunbarua.com
-    </a>
-  </p>
+  </article>
 
 </main>
+
+<footer>
+  © 2026 Prasun AI
+  <br><br>
+  <a href="about.html">About</a>
+  <a href="privacy-policy.html">Privacy Policy</a>
+  <a href="terms.html">Terms</a>
+  <a href="contact.html">Contact</a>
+</footer>
 
 </body>
 </html>

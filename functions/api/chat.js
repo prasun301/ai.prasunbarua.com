@@ -3,70 +3,39 @@ export async function onRequestPost(context) {
     const { request, env } = context;
     const body = await request.json();
 
-    const apiKey = env.GEMINI_API_KEY;
-    if (!apiKey) {
+    // Check if Cloudflare sees your API key
+    if (!env.GEMINI_API_KEY) {
       return new Response(
-        JSON.stringify({ error: { message: "GEMINI_API_KEY environment variable is not configured on the server." } }),
+        JSON.stringify({ error: "GEMINI_API_KEY is missing in Cloudflare settings." }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    const requestedModel = body.model || "gemini-2.0-flash";
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${requestedModel}:generateContent?key=${apiKey}`;
+    const model = body.model || "gemini-2.0-flash";
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`;
 
-    // Transform app chat history into Gemini API contents structure
-    const contents = (body.messages || []).map((msg) => {
-      const parts = [];
-      if (msg.attachment && msg.attachment.data) {
-        parts.push({
-          inline_data: {
-            mime_type: msg.attachment.mimeType,
-            data: msg.attachment.data
-          }
-        });
-      }
-      if (msg.content) {
-        parts.push({ text: msg.content });
-      }
-      return {
-        role: msg.role === "assistant" ? "model" : "user",
-        parts: parts
-      };
-    });
-
-    const payload = {
-      contents: contents,
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 2048
-      }
-    };
-
-    const apiResponse = await fetch(geminiUrl, {
+    const apiResponse = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ contents: body.messages })
     });
 
+    const data = await apiResponse.json();
+
     if (!apiResponse.ok) {
-      const errorData = await apiResponse.json().catch(() => ({}));
-      const errorMessage = errorData?.error?.message || `API error (${apiResponse.status})`;
-      return new Response(
-        JSON.stringify({ error: { message: errorMessage } }),
-        { status: apiResponse.status, headers: { "Content-Type": "application/json" } }
-      );
+      throw new Error(data.error?.message || "Error from Gemini API");
     }
 
-    const data = await apiResponse.json();
-    const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received.";
-
+    const replyText = data.candidates[0].content.parts[0].text;
+    
     return new Response(
       JSON.stringify({ response: replyText }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     );
+
   } catch (err) {
     return new Response(
-      JSON.stringify({ error: { message: err.message || "Failed to process chat request." } }),
+      JSON.stringify({ error: err.message }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }

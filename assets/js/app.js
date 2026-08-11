@@ -86,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendButton = getEl('sendButton') || getEl('submitBtn');
   const attachButton = getEl('attachButton');
   const fileInput = getEl('fileInput');
-  const searchButton = getEl('searchButton');
   const messagesContainer = getEl('messages') || getEl('chatContainer');
   const welcomeScreen = getEl('welcomeScreen');
   const newChatButton = getEl('newChatButton');
@@ -249,22 +248,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (attachButton) attachButton.style.color = '#1a73e8';
         if (sendButton) sendButton.disabled = false;
-      }
-    });
-  }
-
-  if (searchButton) {
-    searchButton.style.color = '#1a73e8';
-    searchButton.style.backgroundColor = 'rgba(26,115,232,0.08)';
-
-    searchButton.addEventListener('click', () => {
-      useGoogleSearch = !useGoogleSearch;
-      if (useGoogleSearch) {
-        searchButton.style.color = '#1a73e8';
-        searchButton.style.backgroundColor = 'rgba(26,115,232,0.08)';
-      } else {
-        searchButton.style.color = '';
-        searchButton.style.backgroundColor = '';
       }
     });
   }

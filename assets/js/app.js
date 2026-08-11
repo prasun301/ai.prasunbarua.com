@@ -1,24 +1,42 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Helper to safely get elements without crashing
+  // Helper to safely get elements
   const el = (id) => document.getElementById(id);
 
+  // Core UI Elements
   const sidebar = el("sidebar");
   const sidebarOverlay = el("sidebarOverlay");
   const openSidebarBtn = el("openSidebar");
   const closeSidebarBtn = el("closeSidebar");
+  
   const modelSelector = el("modelSelector");
   const modelDropdown = el("modelDropdown");
+  const modelOptions = document.querySelectorAll(".model-option");
+  const currentModelLabel = modelSelector?.querySelector(".model-name");
+
   const messageInput = el("messageInput");
   const sendButton = el("sendButton");
+  const attachButton = el("attachButton");
+  const fileInput = el("fileInput");
+  
   const chatArea = el("chatArea");
   const welcomeScreen = el("welcomeScreen");
   const messagesList = el("messages");
+  
+  // The buttons that were frozen
+  const newChatButton = el("newChatButton"); // Sidebar button
+  const clearChatButton = document.querySelector(".header-actions .material-symbols-outlined"); // Top right trash can
+  const suggestionCards = document.querySelectorAll(".suggestion-card"); // The 4 center cards
+  const themeButton = el("themeButton"); // Appearance button
+  const settingsButton = el("settingsButton"); // Settings button
 
   let conversationHistory = [];
   let activeModel = "gemini-2.0-flash";
+  let attachedFile = null;
   let isGenerating = false;
 
-  // 1. Sidebar Toggle (Anti-Freeze)
+  // ==========================================
+  // 1. SIDEBAR & THEME TOGGLES
+  // ==========================================
   function toggleSidebar() {
     if (!sidebar) return;
     if (window.innerWidth <= 768) {
@@ -33,21 +51,77 @@ document.addEventListener("DOMContentLoaded", () => {
   if (closeSidebarBtn) closeSidebarBtn.addEventListener("click", toggleSidebar);
   if (sidebarOverlay) sidebarOverlay.addEventListener("click", toggleSidebar);
 
-  // 2. Dropdown Logic
+  if (themeButton) {
+    themeButton.addEventListener("click", () => {
+      document.body.classList.toggle("dark-theme");
+    });
+  }
+
+  // ==========================================
+  // 2. NEW CHAT / CLEAR CHAT LOGIC
+  // ==========================================
+  function resetChat() {
+    conversationHistory = [];
+    if (messagesList) messagesList.innerHTML = "";
+    if (welcomeScreen) welcomeScreen.style.display = "flex";
+    if (messageInput) {
+      messageInput.value = "";
+      messageInput.style.height = "auto";
+    }
+    if (sendButton) sendButton.disabled = true;
+  }
+
+  if (newChatButton) newChatButton.addEventListener("click", resetChat);
+  // Bind to the trash can icon in the top right
+  if (clearChatButton) clearChatButton.addEventListener("click", resetChat);
+
+  // ==========================================
+  // 3. SUGGESTION CARDS LOGIC
+  // ==========================================
+  suggestionCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      // Find the paragraph text inside the clicked card
+      const promptText = card.querySelector("p")?.innerText || card.innerText;
+      if (messageInput) {
+        messageInput.value = promptText;
+        messageInput.style.height = "auto";
+        if (sendButton) sendButton.disabled = false;
+        // Optionally auto-send:
+        // handleSendMessage(); 
+      }
+    });
+  });
+
+  // ==========================================
+  // 4. MODEL DROPDOWN
+  // ==========================================
   if (modelSelector && modelDropdown) {
     modelSelector.addEventListener("click", (e) => {
       e.stopPropagation();
       modelDropdown.toggleAttribute("hidden");
     });
     document.addEventListener("click", () => modelDropdown.setAttribute("hidden", ""));
+
+    modelOptions.forEach((option) => {
+      option.addEventListener("click", (e) => {
+        e.stopPropagation();
+        modelOptions.forEach((opt) => opt.classList.remove("active"));
+        option.classList.add("active");
+        activeModel = option.getAttribute("data-model") || "gemini-2.0-flash";
+        if (currentModelLabel) currentModelLabel.innerText = option.querySelector("strong")?.innerText || "Gemini 2.0 Flash";
+        modelDropdown.setAttribute("hidden", "");
+      });
+    });
   }
 
-  // 3. Input Handling
+  // ==========================================
+  // 5. INPUT & ATTACHMENTS
+  // ==========================================
   if (messageInput) {
     messageInput.addEventListener("input", () => {
       messageInput.style.height = "auto";
       messageInput.style.height = Math.min(messageInput.scrollHeight, 200) + "px";
-      if (sendButton) sendButton.disabled = !messageInput.value.trim();
+      if (sendButton) sendButton.disabled = !messageInput.value.trim() && !attachedFile;
     });
 
     messageInput.addEventListener("keydown", (e) => {
@@ -58,19 +132,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 4. Send Message to Cloudflare Backend
+  if (attachButton && fileInput) {
+    attachButton.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        attachedFile = { name: file.name, type: file.type };
+        attachButton.style.color = "var(--accent-color)";
+        if (sendButton) sendButton.disabled = false;
+      }
+    });
+  }
+
+  // ==========================================
+  // 6. SEND MESSAGE (CLOUDFLARE API CALL)
+  // ==========================================
   async function handleSendMessage() {
     const text = messageInput.value.trim();
-    if (!text || isGenerating) return;
+    if (!text && !attachedFile) return;
+    if (isGenerating) return;
 
     isGenerating = true;
     if (welcomeScreen) welcomeScreen.style.display = "none";
 
-    // Show user message
     conversationHistory.push({ role: "user", parts: [{ text: text }] });
     renderMessage("user", text);
 
-    // Reset input
     messageInput.value = "";
     messageInput.style.height = "auto";
     if (sendButton) sendButton.disabled = true;
@@ -78,7 +165,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const thinkingNode = renderThinkingIndicator();
 
     try {
-      // Call your Cloudflare function securely
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -91,11 +177,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
       thinkingNode.remove();
 
-      if (!response.ok) {
-        throw new Error(data.error || "Server error");
-      }
+      if (!response.ok) throw new Error(data.error || "Server error");
 
-      // Show AI message
       const aiText = data.response;
       conversationHistory.push({ role: "model", parts: [{ text: aiText }] });
       renderMessage("ai", aiText);
@@ -111,7 +194,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (sendButton) sendButton.addEventListener("click", handleSendMessage);
 
-  // 5. Render Helpers
+  // ==========================================
+  // 7. UI RENDERING HELPERS
+  // ==========================================
   function renderMessage(sender, text) {
     if (!messagesList) return;
     const msgDiv = document.createElement("div");

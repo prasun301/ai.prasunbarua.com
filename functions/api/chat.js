@@ -29,7 +29,17 @@ export async function onRequestPost(context) {
 
     const body = await context.request.json().catch(() => ({}));
 
-    // Target Google Gemini 3.6 Flash Endpoint
+    // STRIP SEARCH TOOLS: Prevents quota errors if frontend tries to send search parameters
+    if (body.tools) {
+      body.tools = body.tools.filter(tool => !tool.googleSearch);
+      if (body.tools.length === 0) {
+        delete body.tools;
+      }
+    }
+    delete body.useSearch;
+    delete body.searchEnabled;
+
+    // Target Google Gemini Flash Endpoint
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(geminiUrl, {

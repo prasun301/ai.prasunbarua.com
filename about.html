@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -19,6 +20,7 @@
   >
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -30,6 +32,7 @@
       color: #202124;
       line-height: 1.7;
     }
+
 
     /* =========================================
        HEADER
@@ -49,6 +52,7 @@
       justify-content: space-between;
     }
 
+
     /* Prasun AI brand */
 
     .brand {
@@ -63,6 +67,7 @@
       font-weight: 700;
     }
 
+
     /* EXACT SAME ICON USED ON MAIN PRASUN AI PAGE */
 
     .brand .material-symbols-outlined {
@@ -76,6 +81,7 @@
         "opsz" 24;
     }
 
+
     nav a {
       color: #5f6368;
       text-decoration: none;
@@ -86,6 +92,7 @@
     nav a:hover {
       color: #0b57d0;
     }
+
 
     /* =========================================
        MAIN CONTENT
@@ -111,45 +118,20 @@
       margin-bottom: 22px;
     }
 
+
     /* =========================================
-       ABOUT PAGE ICON
+       PAGE TITLE
        ========================================= */
-
-    .logo {
-      width: 70px;
-      height: 70px;
-      margin: auto;
-
-      border-radius: 20px;
-      background: #e8f0fe;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      color: #0b57d0;
-    }
-
-    .logo .material-symbols-outlined {
-      font-size: 44px;
-
-      font-variation-settings:
-        "FILL" 1,
-        "wght" 500,
-        "GRAD" 0,
-        "opsz" 24;
-    }
 
     h1 {
       font-size: 36px;
-      margin: 20px 0 10px;
-    }
-
-    .tagline {
-      color: #5f6368;
-      font-size: 17px;
       margin: 0;
     }
+
+
+    /* =========================================
+       CONTENT HEADINGS
+       ========================================= */
 
     h2 {
       color: #0b57d0;
@@ -163,61 +145,52 @@
       font-size: 15px;
     }
 
-  /* =========================================================
-   PRASUN AI — SITE FOOTER
-   ========================================================= */
 
-.site-footer {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 14px 20px 18px;
-  text-align: center;
-  background: #ffffff;
-  border-top: 1px solid #e5e7eb;
-  color: #6b7280;
-  font-size: 12px;
-  line-height: 1.6;
-}
+    /* =========================================================
+       PRASUN AI — SITE FOOTER
+       ========================================================= */
 
-.footer-links {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-bottom: 4px;
-}
+    .site-footer {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px 20px 18px;
+      text-align: center;
+      background: #ffffff;
+      border-top: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 12px;
+      line-height: 1.6;
+    }
 
-.footer-links a,
-.copyright a {
-  color: #6b7280;
-  text-decoration: none;
-  transition:
-    color 0.2s ease,
-    opacity 0.2s ease;
-}
+    .footer-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 4px;
+    }
 
-.footer-links a:hover,
-.copyright a:hover {
-  color: #0b57d0;
-  text-decoration: underline;
-}
+    .footer-links a,
+    .copyright a {
+      color: #6b7280;
+      text-decoration: none;
+      transition:
+        color 0.2s ease,
+        opacity 0.2s ease;
+    }
 
-.copyright {
-  color: #6b7280;
-}
+    .footer-links a:hover,
+    .copyright a:hover {
+      color: #0b57d0;
+      text-decoration: underline;
+    }
 
-/* Mobile */
-@media (max-width: 600px) {
-  .site-footer {
-    padding: 12px 14px 16px;
-    font-size: 11px;
-  }
+    .copyright {
+      color: #6b7280;
+    }
 
-  .footer-links {
-    gap: 5px;
-  }
-}
+
     /* =========================================
        MOBILE
        ========================================= */
@@ -251,11 +224,25 @@
       .brand .material-symbols-outlined {
         font-size: 30px;
       }
+
+      .site-footer {
+        padding: 12px 14px 16px;
+        font-size: 11px;
+      }
+
+      .footer-links {
+        gap: 5px;
+      }
+
     }
+
   </style>
+
 </head>
 
+
 <body>
+
 
   <!-- =========================================
        HEADER
@@ -277,11 +264,17 @@
 
       </a>
 
+
       <nav>
+
         <a href="about.html">About</a>
+
         <a href="privacy-policy.html">Privacy</a>
+
         <a href="terms.html">Terms</a>
+
         <a href="contact.html">Contact</a>
+
       </nav>
 
     </div>
@@ -295,25 +288,12 @@
 
   <main>
 
-    <!-- HERO -->
+
+    <!-- PAGE TITLE -->
 
     <section class="hero">
 
-      <div class="logo">
-
-        <!-- SAME ICON -->
-        <span
-          class="material-symbols-outlined"
-          aria-hidden="true"
-        >smart_toy</span>
-
-      </div>
-
       <h1>About Prasun AI</h1>
-
-      <p class="tagline">
-        Simple, accessible and useful AI assistance.
-      </p>
 
     </section>
 
@@ -321,6 +301,7 @@
     <!-- CONTENT -->
 
     <article class="content">
+
 
       <h2>What is Prasun AI?</h2>
 
@@ -383,7 +364,9 @@
         and services evolve.
       </p>
 
+
     </article>
+
 
   </main>
 
@@ -392,27 +375,48 @@
        FOOTER
        ========================================= -->
 
- <footer class="site-footer">
+  <footer class="site-footer">
 
-  <div class="footer-links">
-    <a href="privacy-policy.html">Privacy Policy</a>
-    <a href="terms.html">Terms of Service</a>
-    <a href="about.html">About</a>
-    <a href="contact.html">Contact</a>
-  </div>
+    <div class="footer-links">
 
-  <div class="copyright">
-    © 2026 Prasun AI by
-    <a
-      href="https://www.prasunbarua.com"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Prasun Barua
-    </a>
-    . All rights reserved.
-  </div>
+      <a href="privacy-policy.html">
+        Privacy Policy
+      </a>
 
-</footer>
+      <a href="terms.html">
+        Terms of Service
+      </a>
+
+      <a href="about.html">
+        About
+      </a>
+
+      <a href="contact.html">
+        Contact
+      </a>
+
+    </div>
+
+
+    <div class="copyright">
+
+      © 2026 Prasun AI by
+
+      <a
+        href="https://www.prasunbarua.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Prasun Barua
+      </a>
+
+      . All rights reserved.
+
+    </div>
+
+  </footer>
+
+
 </body>
+
 </html>

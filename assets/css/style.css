@@ -1,3 +1,6 @@
+/* ==========================================
+   1. COLOR VARIABLES & THEMES
+   ========================================== */
 :root {
   --bg-color: #ffffff;
   --sidebar-bg: #f9f9fb;
@@ -11,7 +14,7 @@
   --card-bg: #f8f9fa;
 }
 
-/* Dark Theme Variables */
+/* Dark Theme Overrides */
 body.dark-theme {
   --bg-color: #131314;
   --sidebar-bg: #1e1f20;
@@ -25,6 +28,9 @@ body.dark-theme {
   --card-bg: #1e1f20;
 }
 
+/* ==========================================
+   2. GLOBAL RESETS & BASE STYLES
+   ========================================== */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -46,7 +52,9 @@ body, html {
   overflow: hidden;
 }
 
-/* Sidebar Styling & Transitions */
+/* ==========================================
+   3. SIDEBAR STYLING
+   ========================================== */
 #sidebar {
   width: 280px;
   background-color: var(--sidebar-bg);
@@ -59,7 +67,7 @@ body, html {
   flex-shrink: 0;
 }
 
-/* Desktop Collapse Rule (Toggled via JS) */
+/* Desktop Collapse Rule */
 #sidebar.collapsed {
   margin-left: -280px;
 }
@@ -267,7 +275,9 @@ body, html {
   color: var(--text-muted);
 }
 
-/* Main Workspace */
+/* ==========================================
+   4. MAIN WORKSPACE & TOPBAR
+   ========================================== */
 .main-wrapper {
   flex: 1;
   min-width: 0;
@@ -353,7 +363,9 @@ body, html {
   font-size: 0.75rem;
 }
 
-/* Chat Area */
+/* ==========================================
+   5. CHAT AREA & WELCOME SCREEN
+   ========================================== */
 .chat-area {
   flex: 1;
   overflow-y: auto;
@@ -421,7 +433,9 @@ body, html {
   gap: 20px;
 }
 
-/* Composer */
+/* ==========================================
+   6. COMPOSER / INPUT BOX
+   ========================================== */
 .composer-container {
   max-width: 800px;
   width: 100%;
@@ -514,7 +528,9 @@ body, html {
   color: var(--text-muted);
 }
 
-/* Backdrop Overlay Settings */
+/* ==========================================
+   7. MODAL & OVERLAY STYLING
+   ========================================== */
 .overlay {
   display: none;
   position: fixed;
@@ -523,7 +539,6 @@ body, html {
   z-index: 90;
 }
 
-/* Modal Dialog */
 .modal {
   border: none;
   border-radius: 16px;
@@ -583,31 +598,9 @@ body, html {
   vertical-align: middle;
 }
 
-/* Mobile Responsive Overrides */
-@media (max-width: 768px) {
-  #sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    margin-left: 0 !important; /* Overrides desktop collapsed margin */
-    transform: translateX(-100%);
-  }
-  
-  #sidebar.open {
-    transform: translateX(0);
-  }
-
-  /* Overlay only triggers on mobile when .active is added */
-  .overlay.active {
-    display: block;
-  }
-}
-
 /* ==========================================
-   MARKDOWN & CHAT BUBBLE FORMATTING
+   8. MARKDOWN & CHAT RESPONSE FORMATTING
    ========================================== */
-
-/* Paragraph spacing inside chat bubbles */
 .ai-bubble p,
 .user-message-wrapper p {
   margin-bottom: 0.75rem;
@@ -618,7 +611,6 @@ body, html {
   margin-bottom: 0;
 }
 
-/* Lists formatting (overrides global reset) */
 .ai-bubble ul,
 .ai-bubble ol {
   margin: 0.5rem 0 0.75rem 1.5rem;
@@ -637,7 +629,6 @@ body, html {
   margin-bottom: 0.25rem;
 }
 
-/* Headings inside messages */
 .ai-bubble h1,
 .ai-bubble h2,
 .ai-bubble h3,
@@ -653,7 +644,6 @@ body, html {
   margin-top: 0;
 }
 
-/* Inline Code & Code Blocks */
 .ai-bubble code {
   font-family: 'Fira Code', 'Courier New', Courier, monospace;
   font-size: 0.85em;
@@ -678,7 +668,6 @@ body, html {
   font-size: 0.9em;
 }
 
-/* Blockquotes & Tables */
 .ai-bubble blockquote {
   border-left: 3px solid var(--accent-color);
   padding-left: 12px;
@@ -706,7 +695,6 @@ body, html {
   font-weight: 600;
 }
 
-/* Responsive Images inside messages */
 .ai-bubble img {
   max-width: 100%;
   height: auto;
@@ -714,7 +702,27 @@ body, html {
   margin: 0.5rem 0;
 }
 
-/* Standard hidden utility fallback */
 [hidden] {
   display: none !important;
+}
+
+/* ==========================================
+   9. MOBILE RESPONSIVE OVERRIDES
+   ========================================== */
+@media (max-width: 768px) {
+  #sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin-left: 0 !important;
+    transform: translateX(-100%);
+  }
+  
+  #sidebar.open {
+    transform: translateX(0);
+  }
+
+  .overlay.active {
+    display: block;
+  }
 }

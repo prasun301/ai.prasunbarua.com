@@ -312,114 +312,113 @@
           </button>
 
 
-          <!-- =================================================
-               MODEL SELECTOR
-          ================================================== -->
-          <div class="model-selector-wrapper">
+         <!-- =================================================
+     MODEL SELECTOR
+================================================== -->
+<div class="model-selector-wrapper">
 
-            <button
-              class="model-selector-btn"
-              id="modelSelector"
-              type="button"
-              aria-expanded="false"
-              aria-haspopup="true"
-              aria-label="Select AI model"
-            >
+  <button
+    class="model-selector-btn"
+    id="modelSelector"
+    type="button"
+    aria-expanded="false"
+    aria-haspopup="true"
+    aria-label="Select AI model"
+  >
 
-              <span class="model-name">
-                Gemini 3.5 Flash-Lite
-              </span>
+    <span class="model-name">
+      Gemini 3.6 Flash
+    </span>
 
-              <span
-                class="material-symbols-outlined"
-                style="font-size: 18px;"
-                aria-hidden="true"
-              >
-                expand_more
-              </span>
+    <span
+      class="material-symbols-outlined"
+      style="font-size: 18px;"
+      aria-hidden="true"
+    >
+      expand_more
+    </span>
 
-            </button>
-
-
-            <!-- =================================================
-                 MODEL DROPDOWN
-            ================================================== -->
-            <div
-              class="model-dropdown"
-              id="modelDropdown"
-              hidden
-              role="menu"
-            >
-
-              <!-- =================================================
-                   GEMINI 3.5 FLASH-LITE
-              ================================================== -->
-              <button
-                class="model-option active"
-                data-model="gemini-3.5-flash-lite"
-                type="button"
-                role="menuitem"
-              >
-
-                <strong>
-                  Gemini 3.5 Flash-Lite
-                </strong>
-
-                <small>
-                  Fastest answers
-                </small>
-
-              </button>
+  </button>
 
 
-              <!-- =================================================
-                   GEMINI 3.6 FLASH
-              ================================================== -->
-              <button
-                class="model-option"
-                data-model="gemini-3.6-flash"
-                type="button"
-                role="menuitem"
-              >
+  <!-- =================================================
+       MODEL DROPDOWN
+  ================================================== -->
+  <div
+    class="model-dropdown"
+    id="modelDropdown"
+    hidden
+    role="menu"
+    aria-label="AI model selection"
+  >
 
-                <strong>
-                  Gemini 3.6 Flash
-                </strong>
+    <!-- =================================================
+         GEMINI 3.6 FLASH — DEFAULT
+    ================================================== -->
+    <button
+      class="model-option active"
+      data-model="gemini-3.6-flash"
+      type="button"
+      role="menuitem"
+      aria-current="true"
+    >
 
-                <small>
-                  Fast &amp; powerful
-                </small>
+      <strong>
+        Gemini 3.6 Flash
+      </strong>
 
-              </button>
+      <small>
+        Fast &amp; powerful
+      </small>
 
-
-              <!-- =================================================
-                   GEMINI 3.1 PRO
-              ================================================== -->
-              <button
-                class="model-option"
-                data-model="gemini-3.1-pro"
-                type="button"
-                role="menuitem"
-              >
-
-                <strong>
-                  Gemini 3.1 Pro
-                </strong>
-
-                <small>
-                  Extended thinking &amp; complex problem solving
-                </small>
-
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
+    </button>
 
 
+    <!-- =================================================
+         GEMINI 3.5 FLASH-LITE
+    ================================================== -->
+    <button
+      class="model-option"
+      data-model="gemini-3.5-flash-lite"
+      type="button"
+      role="menuitem"
+    >
+
+      <strong>
+        Gemini 3.5 Flash-Lite
+      </strong>
+
+      <small>
+        Fastest answers
+      </small>
+
+    </button>
+
+
+    <!-- =================================================
+         GEMINI 3.1 PRO
+    ================================================== -->
+    <button
+      class="model-option"
+      data-model="gemini-3.1-pro"
+      type="button"
+      role="menuitem"
+    >
+
+      <strong>
+        Gemini 3.1 Pro
+      </strong>
+
+      <small>
+        Extended thinking &amp; complex problem solving
+      </small>
+
+    </button>
+
+  </div>
+
+</div>
+          
         <!-- =================================================
              TOP RIGHT
         ================================================== -->

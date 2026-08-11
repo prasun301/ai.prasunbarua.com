@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   let selectedFilePart = null;
   let selectedFileName = '';
-  let useGoogleSearch = true;
+  let useGoogleSearch = false;
 
   // ==========================================
   // SIDEBAR HISTORY EDIT, DELETE & SEARCH HANDLERS

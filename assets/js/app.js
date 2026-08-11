@@ -1168,33 +1168,105 @@ const MODEL_MIGRATIONS = {
     let parsedContent = "";
 
     if (
-      sender === "ai" &&
-      typeof marked !== "undefined"
-    ) {
+  sender === "ai" &&
+  typeof marked !== "undefined"
+) {
 
-      try {
+  try {
 
-        parsedContent =
-          marked.parse(
-            String(text)
-          );
+    // Convert common LaTeX-style math into normal readable symbols
+    // before passing the response to Marked.js.
+    let cleanText = String(text);
 
-      } catch {
+    const latexSymbols = {
+      "\\rightarrow": "→",
+      "\\to": "→",
+      "\\leftarrow": "←",
+      "\\leftrightarrow": "↔",
+      "\\Rightarrow": "⇒",
+      "\\Leftarrow": "⇐",
+      "\\Leftrightarrow": "⇔",
+      "\\times": "×",
+      "\\div": "÷",
+      "\\pm": "±",
+      "\\approx": "≈",
+      "\\neq": "≠",
+      "\\ne": "≠",
+      "\\le": "≤",
+      "\\leq": "≤",
+      "\\ge": "≥",
+      "\\geq": "≥",
+      "\\cdot": "·",
+      "\\degree": "°",
+      "\\Delta": "Δ",
+      "\\alpha": "α",
+      "\\beta": "β",
+      "\\gamma": "γ",
+      "\\theta": "θ",
+      "\\lambda": "λ",
+      "\\mu": "μ",
+      "\\pi": "π",
+      "\\sigma": "σ",
+      "\\omega": "ω"
+    };
 
-        parsedContent =
-          `<p>${escapeHtml(
-            text
-          )}</p>`;
+    // Replace LaTeX commands with readable Unicode symbols
+    Object.entries(latexSymbols).forEach(
+      ([latex, symbol]) => {
+        cleanText = cleanText.split(latex).join(symbol);
       }
+    );
 
-    } else {
+    // Remove remaining inline LaTeX delimiters: $...$
+    cleanText = cleanText.replace(
+      /\$([^$\n]+)\$/g,
+      "$1"
+    );
 
-      parsedContent =
-        `<p>${escapeHtml(
-          text
-        )}</p>`;
-    }
+    // Remove remaining \( ... \) delimiters
+    cleanText = cleanText.replace(
+      /\\\(([\s\S]*?)\\\)/g,
+      "$1"
+    );
 
+    // Remove remaining \[ ... \] delimiters
+    cleanText = cleanText.replace(
+      /\\\[([\s\S]*?)\\\]/g,
+      "$1"
+    );
+
+    // Remove simple LaTeX braces
+    cleanText = cleanText.replace(
+      /\\?left|\\?right/g,
+      ""
+    );
+
+    cleanText = cleanText.replace(
+      /[{}]/g,
+      ""
+    );
+
+    parsedContent =
+      marked.parse(
+        cleanText
+      );
+
+  } catch {
+
+    parsedContent =
+      `<p>${escapeHtml(
+        text
+      )}</p>`;
+  }
+
+} else {
+
+  parsedContent =
+    `<p>${escapeHtml(
+      text
+    )}</p>`;
+}
+    
     msgDiv.innerHTML = `
       <div class="message-avatar ${
   sender === "ai" ? "ai-avatar" : "user-avatar-message"
